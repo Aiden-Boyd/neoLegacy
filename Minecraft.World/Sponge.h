@@ -13,7 +13,6 @@ public:
 	static const unsigned int SPONGE_DESCRIPTIONS[SPONGE_NAMES_LENGTH];
 	static const wstring TEXTURE_NAMES[];
 
-	bool wet;
 private:
 	Icon* icon_wet;
 	Icon* icon;

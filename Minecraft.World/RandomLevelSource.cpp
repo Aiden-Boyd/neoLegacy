@@ -877,5 +877,6 @@ void RandomLevelSource::recreateLogicStructuresForChunk(int chunkX, int chunkZ)
 		villageFeature->apply(this, level, chunkX, chunkZ, byteArray());
 		strongholdFeature->apply(this, level, chunkX, chunkZ, byteArray());
 		scatteredFeature->apply(this, level, chunkX, chunkZ, byteArray());
+		oceanMonument->apply(this, level, chunkX, chunkZ, byteArray());
 	}
 }

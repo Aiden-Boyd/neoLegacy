@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - steam-proton-base
+      - fix/base-stability
   workflow_dispatch:
 
 permissions:
@@ -59,6 +60,12 @@ jobs:
           dotnet --info | Out-File logs/dotnet-info.txt
           git rev-parse HEAD | Out-File logs/commit.txt
 
+      - name: Run base stability regression checks
+        shell: pwsh
+        run: |
+          python tests/base_stability_regression.py 2>&1 | Tee-Object logs/base-stability-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Configure Windows64
         shell: pwsh
         run: |
@@ -95,6 +102,7 @@ jobs:
           }
           New-Item -ItemType Directory -Force "$stage/Windows64/GameHDD" | Out-Null
           Copy-Item STEAM_PROTON.md "$stage/STEAM_PROTON.md"
+          Copy-Item BASE_STABILITY_TESTS.md "$stage/BASE_STABILITY_TESTS.md"
           @(
             "Commit: ${{ github.sha }}",
             "Configuration: Windows64 Release",
@@ -124,3 +132,4 @@ jobs:
           path: logs/
           if-no-files-found: ignore
           retention-days: 14
+

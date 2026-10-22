@@ -10,14 +10,12 @@ const unsigned int Sponge::SPONGE_DESCRIPTIONS[SPONGE_NAMES_LENGTH] = { IDS_DESC
 
 Sponge::Sponge(int id) : Tile(id, Material::sponge)
 {
-	wet = false;
 	icon = nullptr;
     icon_wet = nullptr;
 }
 
 void Sponge::onPlace(Level *level, int x, int y, int z)
 {
-    wet = level->getData(x, y, z) == 1;
     tryAbsorb(level, x, y, z);
 }
 
@@ -34,10 +32,8 @@ void Sponge::neighborChanged(Level* level, int x, int y, int z, int type)
 }
 
 void Sponge::tryAbsorb(Level* level, int x, int y, int z) {
-	if (!wet && absorb(level, x, y, z)) {
-		wet = true;
-        level->setTileAndData(x, y, z, Tile::sponge_Id, 1, UPDATE_CLIENTS);
-	}
+    if (level->getData(x, y, z) != 1)
+        absorb(level, x, y, z);
 }
 
 bool Sponge::absorb(Level* level, int x, int y, int z) {
@@ -59,7 +55,9 @@ bool Sponge::absorb(Level* level, int x, int y, int z) {
             int nz = bz + dz[i];
             if (level->getMaterial(nx, ny, nz) == Material::water)
             {
-                level->removeTile(nx, ny, nz);
+                const auto position = std::make_tuple(nx, ny, nz);
+                if (std::find(absorbed.begin(), absorbed.end(), position) != absorbed.end())
+                    continue;
                 absorbed.push_back({ nx, ny, nz });
                 ++count;
                 if (depth < 6)
@@ -70,17 +68,26 @@ bool Sponge::absorb(Level* level, int x, int y, int z) {
             break;
     }
 
+    if (absorbed.empty())
+        return false;
+
+    // Publish this block's wet state before water removal notifies neighbors.
+    // Those callbacks can revisit this sponge or start another sponge's absorption.
+    if (!level->setTileAndData(x, y, z, Tile::sponge_Id, 1, UPDATE_CLIENTS))
+        return false;
+
     for (auto [ax, ay, az] : absorbed)
     {
-        level->checkLight(ax, ay, az);
+        if (level->getMaterial(ax, ay, az) == Material::water)
+            level->removeTile(ax, ay, az);
     }
 
-    return count > 0;
+    return true;
 }
 
 void Sponge::animateTick(Level* level, int x, int y, int z, Random* random)
 {
-    if (wet) {
+    if (level->getData(x, y, z) == 1) {
         int facings[] = { Facing::UP, Facing::DOWN, Facing::WEST, Facing::EAST };
         int facing = facings[rand() % 4];
 
