@@ -47,7 +47,7 @@ void fillChest(shared_ptr<ChestTileEntity> chest,Random &random) {
         int choice=random.nextInt(total);const Treasure *selected=&entries[0];
         for(auto &entry:entries) {choice-=entry.weight;if(choice<0) {selected=&entry;break;}}
         auto item=std::make_shared<ItemInstance>(selected->id,selected->low+random.nextInt(selected->high-selected->low+1),0);
-        if(selected->enchanted) item=EnchantmentHelper::enchantItem(&random,item,20+random.nextInt(20));
+        if(selected->enchanted) item=EnchantmentHelper::enchantItem(&random,item,20+random.nextInt(20),true);
         // Spread rolls across empty slots; never silently overwrite an earlier roll.
         int slot=random.nextInt(chest->getContainerSize());
         for(unsigned i=0;i<chest->getContainerSize()&&chest->getItem(slot);++i) slot=(slot+1)%chest->getContainerSize();

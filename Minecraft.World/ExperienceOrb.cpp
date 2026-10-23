@@ -9,6 +9,8 @@
 #include "SharedConstants.h"
 #include "ExperienceOrb.h"
 #include "SoundTypes.h"
+#include "net.minecraft.world.item.h"
+#include "EnchantmentHelper.h"
 
 
 
@@ -198,7 +200,14 @@ void ExperienceOrb::playerTouch(shared_ptr<Player> player)
 		// 4J - sound change brought forward from 1.2.3
 		playSound(eSoundType_RANDOM_ORB, 0.1f, 0.5f * ((random->nextFloat() - random->nextFloat()) * 0.7f + 1.8f));
 		player->take(shared_from_this(), 1);
-		player->increaseXp(value);
+        auto mendingItem = EnchantmentHelper::getMendingItem(player, random);
+        if (mendingItem != nullptr && mendingItem->isDamaged() && value > 0)
+        {
+            const int repaired = min(value * 2, mendingItem->getDamageValue());
+            mendingItem->setAuxValue(mendingItem->getDamageValue() - repaired);
+            value -= repaired / 2;
+        }
+        if (value > 0) player->increaseXp(value);
 		remove();
 	}
 }

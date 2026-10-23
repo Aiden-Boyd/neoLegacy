@@ -6,6 +6,7 @@
 #include "WaterWalkerEnchantment.h"
 #include "LuckOfTheSeaEnchantment.h"
 #include "LureEnchantment.h"
+#include "MendingEnchantment.h"
 
 //Enchantment *Enchantment::enchantments[256];
 EnchantmentArray Enchantment::enchantments = EnchantmentArray( 256 );
@@ -44,6 +45,7 @@ Enchantment *Enchantment::arrowInfinite = nullptr;
 // fishing rod
 Enchantment *Enchantment::lure = nullptr;
 Enchantment *Enchantment::luckOfTheSea = nullptr;
+Enchantment *Enchantment::mending = nullptr;
 
 void Enchantment::staticCtor()
 {
@@ -80,6 +82,7 @@ void Enchantment::staticCtor()
 	// fishing rod
 	lure = new LureEnchantment(64, FREQ_RARE);
 	luckOfTheSea = new LuckOfTheSeaEnchantment(65, FREQ_RARE);
+	mending = new MendingEnchantment(70, FREQ_RARE);
 
 	for(unsigned int i = 0; i < 256; ++i)
 	{
@@ -112,6 +115,11 @@ Enchantment::Enchantment(int id, int frequency, const EnchantmentCategory *categ
 Enchantment::Enchantment(int id) : id(id), frequency(FREQ_COMMON), category(EnchantmentCategory::all)
 {
 	_init(id);
+}
+
+bool Enchantment::isTreasureOnly() const
+{
+	return false;
 }
 
 int Enchantment::getFrequency()

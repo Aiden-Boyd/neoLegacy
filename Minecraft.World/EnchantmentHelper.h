@@ -82,6 +82,7 @@ public:
 	static bool hasWaterWorkerBonus(shared_ptr<LivingEntity> source);
     static int getWaterWalker(shared_ptr<LivingEntity> source);
 	static int getArmorThorns(shared_ptr<LivingEntity> source);
+	static shared_ptr<ItemInstance> getMendingItem(shared_ptr<LivingEntity> source, Random *random);
 	static shared_ptr<ItemInstance> getRandomItemWith(Enchantment *enchantment, shared_ptr<LivingEntity> source);
 
 	/**
@@ -97,7 +98,7 @@ public:
 	*/
 	static int getEnchantmentCost(Random *random, int slot, int bookcases, shared_ptr<ItemInstance> itemInstance);
 
-	static shared_ptr<ItemInstance> enchantItem(Random *random, shared_ptr<ItemInstance> itemInstance, int enchantmentCost);
+	static shared_ptr<ItemInstance> enchantItem(Random *random, shared_ptr<ItemInstance> itemInstance, int enchantmentCost, bool allowTreasure = false);
 
 	/**
 	* 
@@ -106,6 +107,6 @@ public:
 	* @param enchantmentCost
 	* @return
 	*/
-	static vector<EnchantmentInstance *> *selectEnchantment(Random *random, shared_ptr<ItemInstance> itemInstance, int enchantmentCost);
-	static unordered_map<int, EnchantmentInstance *> *getAvailableEnchantmentResults(int value, shared_ptr<ItemInstance> itemInstance);
+	static vector<EnchantmentInstance *> *selectEnchantment(Random *random, shared_ptr<ItemInstance> itemInstance, int enchantmentCost, bool allowTreasure = false);
+	static unordered_map<int, EnchantmentInstance *> *getAvailableEnchantmentResults(int value, shared_ptr<ItemInstance> itemInstance, bool allowTreasure = false);
 };

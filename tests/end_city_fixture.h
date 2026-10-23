@@ -103,6 +103,6 @@ struct Level {
 struct Difficulty {static constexpr int PEACEFUL=0;};
 struct ItemFrame:Entity {shared_ptr<ItemInstance> item;int direction;ItemFrame(Level*l,int x,int y,int z,int d):Entity(l),direction(d){double dx[4]={0,-.5625,0,.5625},dz[4]={.5625,0,-.5625,0};setPos(x+.5+dx[d],y+.5,z+.5+dz[d]);}eINSTANCEOF GetType() override{return eTYPE_ITEM_FRAME;}void setItem(shared_ptr<ItemInstance> i,bool){item=i;}};
 struct Direction {static constexpr int SOUTH=0;};
-struct EnchantmentHelper {static shared_ptr<ItemInstance> enchantItem(Random*,shared_ptr<ItemInstance> i,int level){assert(level>=20&&level<=39);i->enchanted=true;return i;}};
+struct EnchantmentHelper {static shared_ptr<ItemInstance> enchantItem(Random*,shared_ptr<ItemInstance> i,int level,bool treasure){assert(treasure);assert(level>=20&&level<=39);i->enchanted=true;return i;}};
 struct EndIslandTerrain {static bool isOuterChunk(int x,int z){return int64_t(x)*x+int64_t(z)*z>4096;}};
 struct TheEndLevelRandomLevelSource {void prepareHeights(int,int,byteArray b,BiomeArray){for(int x=0;x<16;++x)for(int z=0;z<16;++z)for(int y=0;y<=70;++y)b[(x<<11)|(z<<7)|y]=121;}};

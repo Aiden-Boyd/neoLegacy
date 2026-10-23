@@ -480,6 +480,8 @@ void Villager::addOffers(int addCount)
 			int level = Mth::nextInt(random, enchantment->getMinLevel(), enchantment->getMaxLevel());
 			shared_ptr<ItemInstance> book = Item::enchantedBook->createForEnchantment(new EnchantmentInstance(enchantment, level));
 			int cost = 2 + random->nextInt(5 + (level * 10)) + 3 * level;
+			if (enchantment->isTreasureOnly()) cost *= 2;
+			cost = min(cost, 64);
 
 			newOffers->push_back(new MerchantRecipe(std::make_shared<ItemInstance>(Item::book), std::make_shared<ItemInstance>(Item::emerald, cost), book));
 		}
@@ -792,3 +794,4 @@ void Villager::thunderHit(const LightningBolt *lightningBolt)
 	level->addEntity(witch);
 	remove();
 }
+

@@ -51,6 +51,7 @@ public :
 	// fishing rod
 	static Enchantment *lure;
 	static Enchantment *luckOfTheSea;
+	static Enchantment *mending;
 
 	const int id;
 
@@ -73,6 +74,7 @@ protected:
 	Enchantment(int id);
 
 public:
+	virtual bool isTreasureOnly() const;
 	virtual int getFrequency();
 	virtual int getMinLevel();
 	virtual int getMaxLevel();

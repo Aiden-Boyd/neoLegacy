@@ -244,6 +244,22 @@ int EnchantmentHelper::getArmorThorns(shared_ptr<LivingEntity> source)
 	return getEnchantmentLevel(Enchantment::thorns->id, source->getEquipmentSlots());
 }
 
+shared_ptr<ItemInstance> EnchantmentHelper::getMendingItem(shared_ptr<LivingEntity> source, Random *random)
+{
+    vector<shared_ptr<ItemInstance> > candidates;
+    auto consider = [&](shared_ptr<ItemInstance> item) {
+        if (item == nullptr || item->count <= 0 || !item->isDamageableItem() ||
+            getEnchantmentLevel(Enchantment::mending->id, item) <= 0) return;
+        // Some entity equipment arrays also contain the held item.
+        if (find(candidates.begin(), candidates.end(), item) == candidates.end()) candidates.push_back(item);
+    };
+    consider(source->getCarriedItem());
+    ItemInstanceArray equipment = source->getEquipmentSlots();
+    for (unsigned int i = 0; i < equipment.length; ++i) consider(equipment[i]);
+    // CU59-era behavior chooses before checking damage: an undamaged selection gives XP normally.
+    return candidates.empty() ? nullptr : candidates[random->nextInt(static_cast<int>(candidates.size()))];
+}
+
 shared_ptr<ItemInstance> EnchantmentHelper::getRandomItemWith(Enchantment *enchantment, shared_ptr<LivingEntity> source)
 {
 	ItemInstanceArray items = source->getEquipmentSlots();
@@ -299,9 +315,9 @@ int EnchantmentHelper::getEnchantmentCost(Random *random, int slot, int bookcase
 	return selected;
 }
 
-shared_ptr<ItemInstance> EnchantmentHelper::enchantItem(Random *random, shared_ptr<ItemInstance> itemInstance, int enchantmentCost)
+shared_ptr<ItemInstance> EnchantmentHelper::enchantItem(Random *random, shared_ptr<ItemInstance> itemInstance, int enchantmentCost, bool allowTreasure)
 {
-	vector<EnchantmentInstance *> *newEnchantment = EnchantmentHelper::selectEnchantment(random, itemInstance, enchantmentCost);
+	vector<EnchantmentInstance *> *newEnchantment = EnchantmentHelper::selectEnchantment(random, itemInstance, enchantmentCost, allowTreasure);
 	bool isBook = itemInstance->id == Item::book_Id;
 
 	if (isBook) itemInstance->id = Item::enchantedBook_Id;
@@ -335,7 +351,7 @@ shared_ptr<ItemInstance> EnchantmentHelper::enchantItem(Random *random, shared_p
 * @param enchantmentCost
 * @return
 */
-vector<EnchantmentInstance *> *EnchantmentHelper::selectEnchantment(Random *random, shared_ptr<ItemInstance> itemInstance, int enchantmentCost)
+vector<EnchantmentInstance *> *EnchantmentHelper::selectEnchantment(Random *random, shared_ptr<ItemInstance> itemInstance, int enchantmentCost, bool allowTreasure)
 {
 	// withdraw bonus from item
 	Item *item = itemInstance->getItem();
@@ -361,7 +377,7 @@ vector<EnchantmentInstance *> *EnchantmentHelper::selectEnchantment(Random *rand
 
 	vector<EnchantmentInstance *> *results = nullptr;
 
-	unordered_map<int, EnchantmentInstance *> *availableEnchantments = getAvailableEnchantmentResults(realValue, itemInstance);
+	unordered_map<int, EnchantmentInstance *> *availableEnchantments = getAvailableEnchantmentResults(realValue, itemInstance, allowTreasure);
 	if (availableEnchantments && !availableEnchantments->empty())
 	{
 		vector<WeighedRandomItem *> values;
@@ -435,7 +451,7 @@ vector<EnchantmentInstance *> *EnchantmentHelper::selectEnchantment(Random *rand
 	return results;
 }
 
-unordered_map<int, EnchantmentInstance *> *EnchantmentHelper::getAvailableEnchantmentResults(int value, shared_ptr<ItemInstance> itemInstance)
+unordered_map<int, EnchantmentInstance *> *EnchantmentHelper::getAvailableEnchantmentResults(int value, shared_ptr<ItemInstance> itemInstance, bool allowTreasure)
 {
 	Item *item = itemInstance->getItem();
 	unordered_map<int, EnchantmentInstance *> *results = nullptr;
@@ -446,13 +462,13 @@ unordered_map<int, EnchantmentInstance *> *EnchantmentHelper::getAvailableEnchan
 	for(unsigned int i = 0; i < Enchantment::enchantments.length; ++i)
 	{
 		Enchantment *e = Enchantment::enchantments[i];
-		if (e == nullptr)
+		if (e == nullptr || (e->isTreasureOnly() && !allowTreasure))
 		{
 			continue;
 		}
 
 		// Only picks "normal" enchantments, no specialcases
-		if (!e->category->canEnchant(item) && !isBook)
+		if ((!e->category->canEnchant(item) || (e->isTreasureOnly() && !e->canEnchant(itemInstance))) && !isBook)
 		{
 			continue;
 		}

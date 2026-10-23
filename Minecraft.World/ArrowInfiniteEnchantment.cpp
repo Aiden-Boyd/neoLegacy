@@ -6,6 +6,11 @@ ArrowInfiniteEnchantment::ArrowInfiniteEnchantment(int id, int frequency) : Ench
 	setDescriptionId(IDS_ENCHANTMENT_ARROW_INFINITE);
 }
 
+bool ArrowInfiniteEnchantment::isCompatibleWith(Enchantment *other) const
+{
+	return other != Enchantment::mending && Enchantment::isCompatibleWith(other);
+}
+
 int ArrowInfiniteEnchantment::getMinCost(int level)
 {
 	return 20;

@@ -90,14 +90,14 @@ std::shared_ptr<ItemInstance> FishingHelper::handleCatch(CatchWeighedItem* weigh
 	}
 	else if (itemInstance->id == Item::fishingRod_Id && catchType == CatchType::TREASURE) {
 		itemInstance->setAuxValue((int)((double) itemInstance->getMaxDamage() * ((double)random->nextInt(251) / 1000.0))); // 0% to 25% damage
-		EnchantmentHelper::enchantItem(random, itemInstance, 30);
+		EnchantmentHelper::enchantItem(random, itemInstance, 30, true);
 	}
 	else if (itemInstance->id == Item::bow_Id) {
 		itemInstance->setAuxValue((int)((double) itemInstance->getMaxDamage() * ((double)random->nextInt(251) / 1000.0))); // 0% to 25% damage
-		EnchantmentHelper::enchantItem(random, itemInstance, 30);
+		EnchantmentHelper::enchantItem(random, itemInstance, 30, true);
 	}
 	else if (itemInstance->id == Item::book_Id) {
-		EnchantmentHelper::enchantItem(random, itemInstance, 30);
+		EnchantmentHelper::enchantItem(random, itemInstance, 30, true);
 	}
 
 	return itemInstance;

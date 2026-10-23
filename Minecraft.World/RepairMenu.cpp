@@ -145,7 +145,7 @@ void RepairMenu::createResult()
 					int extra = level - current;
 					bool compatible = enchantment->canEnchant(input);
 
-					if (player->abilities.instabuild) compatible = true;
+					if (player->abilities.instabuild || input->id == Item::enchantedBook_Id) compatible = true;
 
 					for(auto& it2 : *enchantments)
 					{
