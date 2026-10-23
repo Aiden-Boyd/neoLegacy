@@ -315,6 +315,7 @@ void LocalPlayer::aiStep()
 			printf("flying was %s\n", abilities.flying ? "on" : "off");
 #endif
 			abilities.flying = !abilities.flying;
+			if (abilities.flying && isElytraFlying()) setElytraFlying(false);
 #ifndef _CONTENT_PACKAGE
 			printf("flying is %s\n", abilities.flying ? "on" : "off");
 #endif
@@ -386,7 +387,7 @@ void LocalPlayer::aiStep()
 	}
 
 
-	if (abilities.flying)
+	if (abilities.flying && !isElytraFlying())
 	{
 		//            yd = 0;
 		// 4J - note that the 0.42 added for going down is to make it match with what happens when you jump - jumping itself adds 0.42 to yd in Mob::jumpFromGround
@@ -1813,3 +1814,4 @@ void LocalPlayer::SetPlayerAdditionalModelParts(vector<ModelPart *>pAdditionalMo
 {
 	m_pAdditionalModelParts=pAdditionalModelParts;
 }
+

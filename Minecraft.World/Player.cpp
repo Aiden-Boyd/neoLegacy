@@ -2208,8 +2208,7 @@ void Player::travel(float xa, float ya)
 		yd *= 0.98;
 		zd *= 0.99;
 
-		if (jumping && abilities.instabuild)
-			yd += (double)abilities.getFlyingSpeed() * 3.0;
+		// Gliding uses the same lift/drag in Creative and Survival. Jump is not thrust.
 
 		m_elytraImpactYd = (float)yd; 
 		move(xd, yd, zd);

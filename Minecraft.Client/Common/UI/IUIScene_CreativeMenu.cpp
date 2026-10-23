@@ -1021,11 +1021,11 @@ void IUIScene_CreativeMenu::TabSpec::populateMenu(AbstractContainerMenu *menu, i
 	int lastSlotIndex = 0;
 
 	// Fill the dynamic group
-	if(m_dynamicGroupsCount > 0 && m_dynamicGroupsA != nullptr)
+	if(m_dynamicGroupsCount > 0 && m_dynamicGroupsA != nullptr && dynamicIndex >= 0 && dynamicIndex < m_dynamicGroupsCount)
 	{
         for (auto it = categoryGroups[m_dynamicGroupsA[dynamicIndex]].rbegin(); it != categoryGroups[m_dynamicGroupsA[dynamicIndex]].rend() && lastSlotIndex < MAX_SIZE; ++it)
         {
-			Slot *slot = menu->getSlot(++lastSlotIndex);
+			Slot *slot = menu->getSlot(lastSlotIndex++);
 			slot->set( *it );
 		}
 	}
@@ -1058,6 +1058,13 @@ void IUIScene_CreativeMenu::TabSpec::populateMenu(AbstractContainerMenu *menu, i
 	{
 		for(; lastSlotIndex < MAX_SIZE;)
 		{
+			// Registry reloads and sparse groups can leave empty groups between items.
+			while(currentGroup < m_staticGroupsCount && currentItem >= categoryGroups[m_staticGroupsA[currentGroup]].size())
+			{
+				currentItem = 0;
+				++currentGroup;
+			}
+			if(currentGroup >= m_staticGroupsCount) break;
 			Slot *slot = menu->getSlot(lastSlotIndex++);
 			slot->set(categoryGroups[m_staticGroupsA[currentGroup]][currentItem]);
 
@@ -1087,7 +1094,6 @@ void IUIScene_CreativeMenu::TabSpec::populateMenu(AbstractContainerMenu *menu, i
 			currentIndex = 0;
 			currentGroup = 0;
 			currentItem = 0;
-			bool showDebug = false;
 			for(; currentGroup < m_debugGroupsCount; ++currentGroup)
 			{
 				int size = categoryGroups[m_debugGroupsA[currentGroup]].size();
@@ -1102,6 +1108,12 @@ void IUIScene_CreativeMenu::TabSpec::populateMenu(AbstractContainerMenu *menu, i
 
 			for(; lastSlotIndex < MAX_SIZE;)
 			{
+				while(currentGroup < m_debugGroupsCount && currentItem >= categoryGroups[m_debugGroupsA[currentGroup]].size())
+				{
+					currentItem = 0;
+					++currentGroup;
+				}
+				if(currentGroup >= m_debugGroupsCount) break;
 				Slot *slot = menu->getSlot(lastSlotIndex++);
 				slot->set(categoryGroups[m_debugGroupsA[currentGroup]][currentItem]);
 
@@ -1123,7 +1135,7 @@ void IUIScene_CreativeMenu::TabSpec::populateMenu(AbstractContainerMenu *menu, i
 	for(; lastSlotIndex < MAX_SIZE; ++lastSlotIndex)
 	{
 		Slot *slot = menu->getSlot(lastSlotIndex);
-		slot->remove(1);
+		slot->set(shared_ptr<ItemInstance>());
 	}
 }
 
@@ -1562,3 +1574,4 @@ void IUIScene_CreativeMenu::BuildFirework(vector<shared_ptr<ItemInstance> > *lis
 
 	list->push_back(firework);
 }
+

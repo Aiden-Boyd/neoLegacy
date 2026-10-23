@@ -20,7 +20,6 @@ private:
 
     HumanoidModel *armorParts1;
     HumanoidModel *armorParts2;
-    HumanoidModel *armorParts3;
     HumanoidModel *armorParts4;
 	bool defaultSlimHands;
 

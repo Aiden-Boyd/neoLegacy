@@ -73,7 +73,6 @@ PlayerRenderer::PlayerRenderer() : LivingEntityRenderer(new HumanoidModel(0), 0.
 
 	armorParts1 = new HumanoidModel(1.0f);
 	armorParts2 = new HumanoidModel(0.5f);
-	armorParts3 = new HumanoidModel(0.5f);
 }
 
 unsigned int PlayerRenderer::getNametagColour(int index)
@@ -104,7 +103,6 @@ int PlayerRenderer::prepareArmor(shared_ptr<LivingEntity> _player, int layer, fl
 			ArmorItem* armorItem = dynamic_cast<ArmorItem*>(item);
 			bindTexture(HumanoidMobRenderer::getArmorLocation(armorItem, layer));
 
-			SkullItem* skullItem = dynamic_cast<SkullItem*>(item);
 			HumanoidModel* armor = layer == 2 ? armorParts2 : armorParts1;
 
 			armor->head->visible = layer == 0;
@@ -141,52 +139,9 @@ int PlayerRenderer::prepareArmor(shared_ptr<LivingEntity> _player, int layer, fl
 
 			return 1;
 		}
-		else if (dynamic_cast<SkullItem*>(item)) {
-			SkullItem* skullItem = dynamic_cast<SkullItem*>(item);
-			HumanoidModel* armor = armorParts1;
-			//auto t = new SkeletonHeadModel(0, 0, 64, 64, 1);
-			//armor->head->_init();
-			//armor->head = t->head;
-			//armor->head->addHumanoidBox(-4, -8, -4, 8, 8, 8, 0.5); // Head
-			switch (itemInstance->getAuxValue())
-			{
-			case SkullTileEntity::TYPE_WITHER:
-				bindTexture(&WITHER_SKELETON_LOCATION);
-				break;
-			case SkullTileEntity::TYPE_ZOMBIE:
-				bindTexture(&ZOMBIE_LOCATION);
-				break;
-			case SkullTileEntity::TYPE_CREEPER:
-				bindTexture(&CREEPER_LOCATION);
-				break;
-			case SkullTileEntity::TYPE_CHAR:
-			{
-				armor = armorParts3;
-				auto t = new SkeletonHeadModel(0, 0, 64, 64, 1);
-				armor->head = t->head;
-				bindTexture(&PlayerRenderer::DEFAULT_LOCATION);
-				break;
-			}
-			case SkullTileEntity::TYPE_SKELETON:
-			default:
-				bindTexture(&SKELETON_LOCATION);
-				break;
-			}
-			armor->head->visible = layer == 0;
+		// Equipped skulls use additionalRendering's cached skull renderer, attached
+		// to the actual skin head pose rather than an independently animated helmet.
 
-			armor->hair->visible = false;
-			armor->body->visible = false;
-			armor->arm0->visible = false;
-			armor->arm1->visible = false;
-			armor->leg0->visible = false;
-			armor->leg1->visible = false;
-			setArmor(armor);
-			if (armor != nullptr) armor->attackTime = model->attackTime;
-			if (armor != nullptr) armor->riding = model->riding;
-			if (armor != nullptr) armor->young = model->young;
-
-			return 1;
-		}
 
 	}
 	return -1;
@@ -432,9 +387,10 @@ void PlayerRenderer::additionalRendering(shared_ptr<LivingEntity> _mob, float a)
 
 				entityRenderDispatcher->itemInHandRenderer->renderItem(mob, headGear, 0);
 			}
-			/*else if (headGear->getItem()->id == Item::skull_Id)
+			else if (headGear->getItem()->id == Item::skull_Id && SkullTileRenderer::instance != nullptr)
 			{
-				float s = 17 / 16.0f;
+				// Cover the skin head and its outer hat layer.
+				float s = 19 / 16.0f;
 				glScalef(s, -s, -s);
 
 				wstring extra = L"";
@@ -443,7 +399,7 @@ void PlayerRenderer::additionalRendering(shared_ptr<LivingEntity> _mob, float a)
 					extra = headGear->getTag()->getString(L"SkullOwner");
 				}
 				SkullTileRenderer::instance->renderSkull(-0.5f, 0, -0.5f, Facing::UP, 180, headGear->getAuxValue(), extra);
-			}*/
+			}
 			//SkullTileRenderer::instance->renderSkull(-0.5f, 0, -0.5f, Facing::UP, 180, headGear->getAuxValue(), extra);
 			glPopMatrix();
 		}

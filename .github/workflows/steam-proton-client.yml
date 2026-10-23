@@ -6,6 +6,7 @@ on:
       - steam-proton-base
       - fix/base-stability
       - feature/end-palette
+      - fix/flight-head-inventory
   workflow_dispatch:
 
 permissions:
@@ -17,7 +18,7 @@ concurrency:
 
 jobs:
   build-client:
-    name: Windows64 End palette candidate
+    name: Windows64 flight and inventory candidate
     runs-on: windows-2022
     timeout-minutes: 45
     env:
@@ -73,6 +74,12 @@ jobs:
           python tests/end_palette_regression.py 2>&1 | Tee-Object logs/end-palette-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run flight, inventory and furnace regressions
+        shell: pwsh
+        run: |
+          python tests/flight_inventory_regression.py 2>&1 | Tee-Object logs/flight-inventory-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Configure Windows64
         shell: pwsh
         run: |
@@ -111,11 +118,12 @@ jobs:
           Copy-Item STEAM_PROTON.md "$stage/STEAM_PROTON.md"
           Copy-Item BASE_STABILITY_TESTS.md "$stage/BASE_STABILITY_TESTS.md"
           Copy-Item END_UPDATE_TESTS.md "$stage/END_UPDATE_TESTS.md"
+          Copy-Item FLIGHT_INVENTORY_TESTS.md "$stage/FLIGHT_INVENTORY_TESTS.md"
           @(
             "Commit: ${{ github.sha }}",
             "Configuration: Windows64 Release",
             "Runtime: Windows executable; test through Steam/Proton on Bazzite.",
-            "Milestone: End building palette; expanded islands, cities and boss update are pending.",
+            "Candidate: flight, heads, Creative inventory and furnace fixes, with End building palette.",
             "Compilation does not establish controller compatibility or CU59 parity."
           ) | Set-Content "$stage/BUILD_INFO.txt"
           Get-ChildItem $stage -Recurse -File |
@@ -128,7 +136,7 @@ jobs:
       - name: Upload client test artifact
         uses: actions/upload-artifact@v6
         with:
-          name: neoLegacy-end-palette-windows64
+          name: neoLegacy-flight-inventory-windows64
           path: staging/
           if-no-files-found: error
           retention-days: 14
@@ -141,5 +149,6 @@ jobs:
           path: logs/
           if-no-files-found: ignore
           retention-days: 14
+
 
 
