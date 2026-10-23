@@ -81,6 +81,7 @@ protected:
 	int jumpTriggerTime;
 
 public:
+	int chorusFruitCooldown;
 	int ticksElytraFlying;
 	float rotateElytraX; 
 	float rotateElytraY;

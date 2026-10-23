@@ -176,7 +176,8 @@ public:
 	static const int SHAPE_QUARTZ = 39;
 	static const int SHAPE_THIN_PANE = 40;
 
-	static const int SHAPE_COUNT = 41;
+	static const int SHAPE_END_PLANT = 41;
+	static const int SHAPE_COUNT = 42;
 
 	static  Tile **tiles;
 
@@ -406,9 +407,9 @@ public:
 	static const int jungle_door_Id = 195;
 	static const int acacia_door_Id = 196;
 	static const int dark_oak_door_Id = 197;
-	//end_rod 			198
-	//chorus_plant 		199
-	//chorus_flower 	200
+	static const int endRod_Id = 198;
+	static const int chorusPlant_Id = 199;
+	static const int chorusFlower_Id = 200;
 	static const int purpurBlock_Id = 201;
 	static const int purpurPillar_Id = 202;
 	static const int purpurStairs_Id = 203;
@@ -553,6 +554,9 @@ public:
 	static Tile *endPortalTile;
 	static Tile *endPortalFrameTile;
 	static Tile *endStone;
+	static Tile *endRod;
+	static Tile *chorusPlant;
+	static Tile *chorusFlower;
 	static Tile *purpurBlock;
 	static Tile *purpurPillar;
 	static Tile *purpurStairs;

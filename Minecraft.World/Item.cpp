@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "ChorusFruitItem.h"
 
 #include "net.minecraft.locale.h"
 #include "net.minecraft.world.h"
@@ -272,6 +273,8 @@ Item* Item::rabbitStew = nullptr;
 Item* Item::prismarine_crystal = nullptr;
 Item* Item::prismarine_shard = nullptr;
 
+Item* Item::chorusFruit = nullptr;
+Item* Item::poppedChorusFruit = nullptr;
 Item* Item::elytra = nullptr;
 
 
@@ -540,6 +543,8 @@ void Item::staticCtor()
 	Item::armor_stand = (new ArmorStandItem(160))							->setBaseItemTypeAndMaterial(eBaseItemType_HangingItem,eMaterial_cloth)->setIconName(L"armorStand")->setDescriptionId(IDS_ITEM_ARMOR_STAND)->setUseDescriptionId(IDS_DESC_ARMOR_STAND);
 	Item::prismarine_crystal = (new Item(154))->setIconName(L"prismarineCrystal")->setDescriptionId(IDS_ITEM_PRISMARINE_CRYSTAL)->setUseDescriptionId(IDS_ITEM_PRISMARINE_CRYSTAL_DESC);
 	Item::prismarine_shard = (new Item(153))->setIconName(L"prismarineShard")->setDescriptionId(IDS_ITEM_PRISMARINE_SHARD)->setUseDescriptionId(IDS_ITEM_PRISMARINE_SHARD_DESC);
+	Item::chorusFruit = (new ChorusFruitItem(chorusFruit_Id-256))->setIconName(L"chorus_fruit")->setDescriptionId(IDS_ITEM_CHORUS_FRUIT)->setUseDescriptionId(IDS_DESC_CHORUS_FRUIT);
+	Item::poppedChorusFruit = (new Item(poppedChorusFruit_Id-256))->setIconName(L"chorus_fruit_popped")->setDescriptionId(IDS_ITEM_POPPED_CHORUS_FRUIT)->setUseDescriptionId(IDS_DESC_POPPED_CHORUS_FRUIT);
 	Item::elytra = (new ElytraItem())->setBaseItemTypeAndMaterial(eBaseItemType_chestplate, eMaterial_cloth)->setIconName(L"elytra")->setDescriptionId(IDS_ITEM_ELYTRA)->setUseDescriptionId(IDS_ITEM_ELYTRA);
 }
 

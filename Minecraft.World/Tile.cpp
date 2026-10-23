@@ -19,6 +19,7 @@
 
 #include "Facing.h"
 #include "EndBuildingTiles.h"
+#include "EndPlantTiles.h"
 
 
 
@@ -178,6 +179,9 @@ CauldronTile *Tile::cauldron = nullptr;
 Tile *Tile::endPortalTile = nullptr;
 Tile *Tile::endPortalFrameTile = nullptr;
 Tile *Tile::endStone = nullptr;
+Tile *Tile::endRod = nullptr;
+Tile *Tile::chorusPlant = nullptr;
+Tile *Tile::chorusFlower = nullptr;
 Tile *Tile::purpurBlock = nullptr;
 Tile *Tile::purpurPillar = nullptr;
 Tile *Tile::purpurStairs = nullptr;
@@ -561,6 +565,9 @@ void Tile::staticCtor()
 	Tile::tallgrass2 = static_cast<TallGrass2*>((new TallGrass2(175))->setDestroyTime(0.0f)->setSoundType(Tile::SOUND_GRASS)->setIconName(L"tallgrass2_tall_grass_upper")->setDescriptionId(IDS_DESC_DOUBLE_TALL_GRASS)->setUseDescriptionId(IDS_DESC_TALL_GRASS)->disableMipmap()->sendTileData(0xFF));
 
 	// End building palette. Preserve the reserved 201-206 save IDs.
+	Tile::endRod = (new EndRodTile(endRod_Id))->setDestroyTime(0.f)->setSoundType(SOUND_WOOD)->setIconName(L"end_rod")->setDescriptionId(IDS_TILE_END_ROD)->setUseDescriptionId(IDS_DESC_END_ROD)->setLightEmission(14.f/15.f)->sendTileData();
+	Tile::chorusPlant = (new ChorusPlantTile(chorusPlant_Id))->setDestroyTime(0.4f)->setSoundType(SOUND_WOOD)->setIconName(L"chorus_plant")->setDescriptionId(IDS_TILE_CHORUS_PLANT)->setUseDescriptionId(IDS_DESC_CHORUS_PLANT);
+	Tile::chorusFlower = (new ChorusFlowerTile(chorusFlower_Id))->setDestroyTime(0.4f)->setSoundType(SOUND_WOOD)->setIconName(L"chorus_flower")->setDescriptionId(IDS_TILE_CHORUS_FLOWER)->setUseDescriptionId(IDS_DESC_CHORUS_FLOWER)->sendTileData();
 	Tile::purpurBlock = (new Tile(purpurBlock_Id, Material::stone))->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock, Item::eMaterial_stone)->setDestroyTime(1.5f)->setExplodeable(10)->setSoundType(SOUND_STONE)->setIconName(L"purpur_block")->setDescriptionId(IDS_TILE_PURPUR_BLOCK)->setUseDescriptionId(IDS_DESC_PURPUR_BLOCK);
 	Tile::purpurPillar = (new PurpurPillarTile(purpurPillar_Id))->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock, Item::eMaterial_stone)->setDestroyTime(1.5f)->setExplodeable(10)->setSoundType(SOUND_STONE)->setIconName(L"purpur_pillar")->setDescriptionId(IDS_TILE_PURPUR_PILLAR)->setUseDescriptionId(IDS_DESC_PURPUR_PILLAR)->sendTileData();
 	Tile::purpurStairs = (new StairTile(purpurStairs_Id, Tile::purpurBlock, 0))->setBaseItemTypeAndMaterial(Item::eBaseItemType_stairs, Item::eMaterial_stone)->setIconName(L"purpur_block")->setDescriptionId(IDS_TILE_PURPUR_STAIRS)->setUseDescriptionId(IDS_DESC_STAIRS)->sendTileData();

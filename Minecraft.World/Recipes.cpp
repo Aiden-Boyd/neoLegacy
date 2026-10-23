@@ -48,6 +48,10 @@ void Recipes::_init()
 
 void Recipes::_compileRecipes()
 {
+	addShapedRecipy(new ItemInstance(Tile::purpurBlock, 4),
+		L"sscig", L"##", L"##", L'#', Item::poppedChorusFruit, L'S');
+	addShapedRecipy(new ItemInstance(Tile::endRod, 4),
+		L"sscicig", L"B", L"F", L'B', Item::blazeRod, L'F', Item::poppedChorusFruit, L'D');
 	// End palette recipes use the existing console and classic recipe registry.
 	addShapedRecipy(new ItemInstance(Tile::endStoneBricks, 4),
 		L"ssctg", L"##", L"##", L'#', Tile::endStone, L'S');

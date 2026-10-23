@@ -84,6 +84,7 @@ void Player::_init()
 	m_uiDebugOptions=0L;
 
 	jumpTriggerTime = 0;
+	chorusFruitCooldown = 0;
 	ticksElytraFlying = 0;
 	rotateElytraX = 0.2617994f;
 	rotateElytraY = 0.0f;
@@ -1008,6 +1009,7 @@ void Player::serverAiStep()
 
 void Player::aiStep()
 {
+	if (chorusFruitCooldown > 0) --chorusFruitCooldown;
 	if (jumpTriggerTime > 0) jumpTriggerTime--;
 	if (m_elytraFallProtectTicks > 0) m_elytraFallProtectTicks--;
 

@@ -569,6 +569,8 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(14,	6,	L"rabbitHide")
 		ADD_ICON(13,    14, L"prismarineCrystal");
 		ADD_ICON(13,	 13, L"prismarineShard");
+		ADD_ICON(15, 12, L"chorus_fruit");
+		ADD_ICON(15, 13, L"chorus_fruit_popped");
 		ADD_ICON(13, 12, L"elytra");
 		ADD_ICON(13, 11, L"broken_elytra");
 
@@ -1001,6 +1003,10 @@ void PreStitchedTextureMap::loadUVs()
 
 		
 		// Unused row 25 in the default terrain atlas: original End textures.
+		ADD_ICON(25, 4, L"end_rod");
+		ADD_ICON(25, 5, L"chorus_plant");
+		ADD_ICON(25, 6, L"chorus_flower");
+		ADD_ICON(25, 7, L"chorus_flower_dead");
 		ADD_ICON(25, 0, L"purpur_block");
 		ADD_ICON(25, 1, L"purpur_pillar");
 		ADD_ICON(25, 2, L"purpur_pillar_top");

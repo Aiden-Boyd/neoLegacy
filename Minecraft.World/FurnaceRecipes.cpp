@@ -41,6 +41,8 @@ FurnaceRecipes::FurnaceRecipes()
 	addFurnaceRecipy(Tile::netherRack_Id, new ItemInstance(Item::netherbrick), .1f);
 	addFurnaceRecipy(new ItemInstance(Tile::sponge, 1, 1), new ItemInstance(Tile::sponge, 1, 0), .15f);
 
+	addFurnaceRecipy(Item::chorusFruit_Id, new ItemInstance(Item::poppedChorusFruit), .1f);
+
 	// special silk touch related recipes:
 	addFurnaceRecipy(Tile::coalOre_Id, new ItemInstance(Item::coal), .1f);
 	addFurnaceRecipy(Tile::redStoneOre_Id, new ItemInstance(Item::redStone), .7f);

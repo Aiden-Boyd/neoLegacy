@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../Minecraft.World/EndPlantTiles.h"
 
 #include "TileRenderer.h"
 #include "GameRenderer.h"
@@ -280,6 +281,8 @@ bool TileRenderer::tesselateInWorld( Tile* tt, int x, int y, int z, int forceDat
 	bool retVal = false;
 	switch(shape)
 	{
+	case Tile::SHAPE_END_PLANT:
+		return tesselateEndPlant(tt,x,y,z,forceData>=0?forceData:level->getData(x,y,z),false);
 	case Tile::SHAPE_BLOCK:
 		{
 			// 4J - added these faceFlags so we can detect whether this block is going to have no visible faces and early out
@@ -7927,6 +7930,49 @@ void TileRenderer::renderCube( Tile* tile, float alpha )
 
 }
 
+bool TileRenderer::tesselateEndPlant(Tile *tile,int x,int y,int z,int data,bool inventory)
+{
+    EndPlantTile *plant=static_cast<EndPlantTile*>(tile);
+    EndPlantPart parts[7];
+    int count=plant->getParts(inventory?nullptr:level,x,y,z,data,parts);
+    Tesselator *t=Tesselator::getInstance();
+    if(!inventory && SharedConstants::TEXTURE_LIGHTING) t->tex2(getLightColor(tile,level,x,y,z));
+    const float shades[6]={.5f,1.f,.8f,.8f,.6f,.6f};
+    for(int i=0;i<count;++i) {
+        const EndPlantPart &p=parts[i];
+        float vertices[6][4][3]={
+            {{p.x0,p.y0,p.z1},{p.x0,p.y0,p.z0},{p.x1,p.y0,p.z0},{p.x1,p.y0,p.z1}},
+            {{p.x0,p.y1,p.z0},{p.x0,p.y1,p.z1},{p.x1,p.y1,p.z1},{p.x1,p.y1,p.z0}},
+            {{p.x1,p.y1,p.z0},{p.x1,p.y0,p.z0},{p.x0,p.y0,p.z0},{p.x0,p.y1,p.z0}},
+            {{p.x0,p.y1,p.z1},{p.x0,p.y0,p.z1},{p.x1,p.y0,p.z1},{p.x1,p.y1,p.z1}},
+            {{p.x0,p.y1,p.z0},{p.x0,p.y0,p.z0},{p.x0,p.y0,p.z1},{p.x0,p.y1,p.z1}},
+            {{p.x1,p.y1,p.z1},{p.x1,p.y0,p.z1},{p.x1,p.y0,p.z0},{p.x1,p.y1,p.z0}}
+        };
+        for(int face=0;face<6;++face) if(p.faces&(1u<<face)) {
+            float nx=8.f+Facing::STEP_X[face],ny=8.f+Facing::STEP_Y[face],nz=8.f+Facing::STEP_Z[face];
+            rotateEndPlantPoint(p.facing,nx,ny,nz);nx-=8;ny-=8;nz-=8;
+            int worldFace=ny<-.5?0:ny>.5?1:nz<-.5?2:nz>.5?3:nx<-.5?4:5;
+            float light=inventory||SharedConstants::TEXTURE_LIGHTING?1.f:level->getBrightness(x,y,z);
+            t->color(shades[worldFace]*light,shades[worldFace]*light,shades[worldFace]*light);
+            if(inventory) t->normal(nx,ny,nz);
+            Icon *tex=getTextureOrMissing(fixedTexture?fixedTexture:plant->getPartTexture(p.uv[face].texture,data));
+            const EndPlantUV &uv=p.uv[face];
+            float us[4]={uv.u0,uv.u0,uv.u1,uv.u1},vs[4]={uv.v0,uv.v1,uv.v1,uv.v0};
+            // Horizontal faces use the model's X/Z UV axes rather than wall axes.
+            if(face==Facing::DOWN) {vs[0]=uv.v1;vs[1]=uv.v0;vs[2]=uv.v0;vs[3]=uv.v1;}
+            if(face==Facing::UP) {vs[0]=uv.v0;vs[1]=uv.v1;vs[2]=uv.v1;vs[3]=uv.v0;}
+            for(int v=0;v<4;++v) {
+                float vx=vertices[face][v][0],vy=vertices[face][v][1],vz=vertices[face][v][2];
+                rotateEndPlantPoint(p.facing,vx,vy,vz);
+                float u=tex->getU0(true)+(tex->getU1(true)-tex->getU0(true))*us[v]/16.f;
+                float vv=tex->getV0(true)+(tex->getV1(true)-tex->getV0(true))*vs[v]/16.f;
+                t->vertexUV(x+vx/16.f,y+vy/16.f,z+vz/16.f,u,vv);
+            }
+        }
+    }
+    return true;
+}
+
 void TileRenderer::renderTile( Tile* tile, int data, float brightness, float fAlpha, bool useCompiled )
 {
 	Tesselator* t = Tesselator::getInstance();
@@ -7957,6 +8003,11 @@ void TileRenderer::renderTile( Tile* tile, int data, float brightness, float fAl
 
 	t->setMipmapEnable( Tile::mipmapEnable[tile->id] );	// 4J added
 
+    if(shape==Tile::SHAPE_END_PLANT) {
+        glPushMatrix();glRotatef(90,0,1,0);glTranslatef(-.5f,-.5f,-.5f);
+        t->begin();tesselateEndPlant(tile,0,0,0,data,true);t->end();
+        glPopMatrix();return;
+    }
 	if ( shape == Tile::SHAPE_BLOCK || shape == Tile::SHAPE_TREE || shape == Tile::SHAPE_QUARTZ || shape == Tile::SHAPE_PISTON_BASE || shape == Tile::SHAPE_PORTAL_FRAME )
 	{
 		if ( shape == Tile::SHAPE_PISTON_BASE )
@@ -8554,6 +8605,7 @@ void TileRenderer::renderTile( Tile* tile, int data, float brightness, float fAl
 
 bool TileRenderer::canRender( int renderShape )
 {
+	if (renderShape == Tile::SHAPE_END_PLANT) return true;
 	if ( renderShape == Tile::SHAPE_BLOCK ) return true;
 	if ( renderShape == Tile::SHAPE_TREE ) return true;
 	if ( renderShape == Tile::SHAPE_QUARTZ) return true;

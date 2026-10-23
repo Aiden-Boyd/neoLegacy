@@ -23,4 +23,14 @@
   <data name="IDS_DESC_END_STONE_BRICKS">
     <value>Decorative bricks crafted from End Stone.</value>
   </data>
+  <data name="IDS_TILE_END_ROD"><value>End Rod</value></data>
+  <data name="IDS_DESC_END_ROD"><value>A light source crafted from a blaze rod and popped chorus fruit.</value></data>
+  <data name="IDS_TILE_CHORUS_PLANT"><value>Chorus Plant</value></data>
+  <data name="IDS_DESC_CHORUS_PLANT"><value>A branching End plant. Breaking it may drop chorus fruit.</value></data>
+  <data name="IDS_TILE_CHORUS_FLOWER"><value>Chorus Flower</value></data>
+  <data name="IDS_DESC_CHORUS_FLOWER"><value>Plant on End Stone to grow chorus. Harvest flowers directly to replant them.</value></data>
+  <data name="IDS_ITEM_CHORUS_FRUIT"><value>Chorus Fruit</value></data>
+  <data name="IDS_DESC_CHORUS_FRUIT"><value>Eat to restore hunger and teleport to a nearby safe position.</value></data>
+  <data name="IDS_ITEM_POPPED_CHORUS_FRUIT"><value>Popped Chorus Fruit</value></data>
+  <data name="IDS_DESC_POPPED_CHORUS_FRUIT"><value>Smelt chorus fruit to make this crafting ingredient for purpur and end rods.</value></data>
 </root>

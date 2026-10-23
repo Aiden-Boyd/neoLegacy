@@ -250,6 +250,9 @@ void IUIScene_CreativeMenu::staticCtor()
 
 	// Decoration
 	DEF(eCreativeInventory_Decoration)
+		ITEM(Tile::endRod_Id)
+		ITEM(Tile::chorusFlower_Id)
+		ITEM(Tile::chorusPlant_Id)
 		ITEM_AUX(Item::skull_Id,SkullTileEntity::TYPE_SKELETON)
 		ITEM_AUX(Item::skull_Id,SkullTileEntity::TYPE_WITHER)
 		ITEM_AUX(Item::skull_Id,SkullTileEntity::TYPE_ZOMBIE)
@@ -536,6 +539,7 @@ void IUIScene_CreativeMenu::staticCtor()
 
 	// Food
 	DEF(eCreativeInventory_Food)
+		ITEM(Item::chorusFruit_Id)
 		ITEM(Item::apple_Id)
 		ITEM(Item::apple_gold_Id)
 		ITEM_AUX(Item::apple_gold_Id,1) // Enchanted
@@ -662,6 +666,7 @@ void IUIScene_CreativeMenu::staticCtor()
 
 	// Materials
 	DEF(eCreativeInventory_Materials)
+		ITEM(Item::poppedChorusFruit_Id)
 		ITEM(Item::coal_Id)
 		ITEM_AUX(Item::coal_Id,1)
 		ITEM(Item::diamond_Id)

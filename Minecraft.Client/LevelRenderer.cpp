@@ -17,6 +17,7 @@
 #include "NoteParticle.h"
 #include "NetherPortalParticle.h"
 #include "EnderParticle.h"
+#include "EndRodParticle.h"
 #include "ExplodeParticle.h"
 #include "FlameParticle.h"
 #include "LavaParticle.h"
@@ -2919,6 +2920,9 @@ shared_ptr<Particle> LevelRenderer::addParticleInternal(ePARTICLE_TYPE eParticle
 		break;
 	case eParticleType_largeexplode:
 		particle = std::make_shared<HugeExplosionParticle>(textures, lev, x, y, z, xa, ya, za);
+		break;
+	case eParticleType_endRod:
+		particle = std::make_shared<EndRodParticle>(lev,x,y,z,xa,ya,za);
 		break;
 	case eParticleType_fireworksspark:
 		particle = std::make_shared<FireworksParticles::FireworksSparkParticle>(lev, x, y, z, xa, ya, za, mc->particleEngine);

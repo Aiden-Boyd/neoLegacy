@@ -37,6 +37,7 @@ class TileRenderer
 	bool xFlipTexture;
 	bool noCulling;
 	public :
+	bool tesselateEndPlant(Tile*,int,int,int,int,bool);
 	static bool fancy;
 	bool setColor;
 
