@@ -120,7 +120,8 @@ int main(){
 def main():
     with tempfile.TemporaryDirectory() as tmp:
         f=Path(tmp)
-        for name in ['stdafx.h','net.minecraft.world.item.h','Enchantment.h']:(f/name).write_text(STUB)
+        (f/'stdafx.h').write_text(STUB)
+        for name in ['net.minecraft.world.item.h','Enchantment.h']:(f/name).write_text('#include "stdafx.h"\n')
         for name in ['MendingEnchantment.h','MendingEnchantment.cpp','ArrowInfiniteEnchantment.h','ArrowInfiniteEnchantment.cpp']:(f/name).write_bytes((W/name).read_bytes())
         bodies='\n'.join(method(file,sig) for file,sig in [
             ('Enchantment.cpp','bool Enchantment::isCompatibleWith'),
@@ -145,8 +146,8 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         f=Path(tmp)
         (f/'stdafx.h').write_text(STUB)
-        (f/'Enchantment.h').write_text(STUB)
-        (f/'net.minecraft.world.item.h').write_text(STUB)
+        (f/'Enchantment.h').write_text('#include "stdafx.h"\n')
+        (f/'net.minecraft.world.item.h').write_text('#include "stdafx.h"\n')
         for name in ['MendingEnchantment.h','MendingEnchantment.cpp','ArrowInfiniteEnchantment.h','ArrowInfiniteEnchantment.cpp']:(f/name).write_bytes((W/name).read_bytes())
         check='''\nbool applicable(Enchantment* enchantment, shared_ptr<ItemInstance> input, unordered_map<int,int>* enchantments,shared_ptr<Player> player) { int id=enchantment->id,price=0,extra=1;\n'''+block+'\nreturn compatible;}\n'
         tests=r'''
