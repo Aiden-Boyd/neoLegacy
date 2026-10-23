@@ -1,0 +1,86 @@
+{
+  "base_floor": {
+    "blob_sha": "a0fa080579abb7c23de0bd5889d6034ab7683b70",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/base_floor.nbt"
+  },
+  "base_roof": {
+    "blob_sha": "1c5bb7748c81c6d236cedce4febf77163adcd228",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/base_roof.nbt"
+  },
+  "bridge_end": {
+    "blob_sha": "2f9bf02f616dba2576e6918de93978a14d3ef00b",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/bridge_end.nbt"
+  },
+  "bridge_gentle_stairs": {
+    "blob_sha": "5509c8102655079e248a21ec60951d7f1ed65a05",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/bridge_gentle_stairs.nbt"
+  },
+  "bridge_piece": {
+    "blob_sha": "5a829b03c1e4bba0c91837764c4fc5ec4f79181c",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/bridge_piece.nbt"
+  },
+  "bridge_steep_stairs": {
+    "blob_sha": "aa40f7cc8656b526a5af2a94189e88e179266ef9",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/bridge_steep_stairs.nbt"
+  },
+  "fat_tower_base": {
+    "blob_sha": "12679c2f3aadcda45189ddae1b9453303bb446da",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/fat_tower_base.nbt"
+  },
+  "fat_tower_middle": {
+    "blob_sha": "bf392fc3b8b4b46140c4b64a27e93bfa9c70cf45",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/fat_tower_middle.nbt"
+  },
+  "fat_tower_top": {
+    "blob_sha": "22a5dfb88d950b015ea50402e73f290a90df383c",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/fat_tower_top.nbt"
+  },
+  "second_floor_2": {
+    "blob_sha": "f56985a0aa68af77e880cc11d5992d15b23ba370",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/second_floor_2.nbt"
+  },
+  "second_roof": {
+    "blob_sha": "cdbc1ee52d370ef6d7a0875fd0b4dd1367f68e19",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/second_roof.nbt"
+  },
+  "ship": {
+    "blob_sha": "ad447c0b1911f50c6e1271eaa55a6cf5a5efc041",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/ship.nbt"
+  },
+  "third_roof": {
+    "blob_sha": "26735a5eac047ff863fb163726381d7179f7d0b8",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/third_roof.nbt"
+  },
+  "tower_base": {
+    "blob_sha": "1274e98b3b12299a16c45b49b51a5910623277a1",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/tower_base.nbt"
+  },
+  "tower_floor": {
+    "blob_sha": "9af27b49fd490d4e05fb10560e7f1d35e7ffc44c",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/tower_floor.nbt"
+  },
+  "tower_piece": {
+    "blob_sha": "e100a6a5f99081b7bfbb0cfce6c1b90c312724ac",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/tower_piece.nbt"
+  },
+  "tower_top": {
+    "blob_sha": "c8928966a537d8a99a551e183ceee87a0cd8846e",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/tower_top.nbt"
+  },
+  "second_floor": {
+    "blob_sha": "c4589ed9bb0b4de5eee6c7a240e2f39729549a96",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/second_floor.nbt"
+  },
+  "third_floor": {
+    "blob_sha": "43e30ca87d8ef9675981dc24d555d8d25f6cbb96",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/third_floor.nbt"
+  },
+  "third_floor_b": {
+    "blob_sha": "863073cd282da8f2fd7dceac59503df8396f98b0",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/third_floor_b.nbt"
+  },
+  "third_floor_c": {
+    "blob_sha": "d0c8b81833e51f781e9a1dbec9b52d982ddeb61c",
+    "source": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.12.2/assets/minecraft/structures/endcity/third_floor_c.nbt"
+  }
+}
