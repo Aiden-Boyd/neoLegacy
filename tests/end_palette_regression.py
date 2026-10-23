@@ -57,7 +57,9 @@ struct Tile {
     Material* material;
     Icon* icon = nullptr;
     float y0=0, y1=1;
-    Tile(int id,Material* m,bool=true) : id(id),material(m) { tiles[id]=this; }
+    Tile(int id,Material* m,bool opaque=true) : id(id),material(m) {
+        tiles[id]=this; solid[id]=opaque;
+    }
     virtual ~Tile() = default;
     void setShape(float,float bottom,float,float,float top,float) { y0=bottom; y1=top; }
     virtual int getRenderShape() { return 0; }
@@ -103,6 +105,7 @@ int main() {
         assert(pillar.getSpawnResourcesAuxValue(data)==0); // rotations stack together
     }
     PurpurSlabTile half(205,false), full(204,true);
+    assert(!Tile::solid[205] && Tile::solid[204]); // no full-face occlusion by a half
     assert(!half.isCubeShaped() && full.isCubeShaped());
     assert(half.getResourceCount(nullptr)==1 && full.getResourceCount(nullptr)==2);
     assert(half.getResource(8,nullptr,0)==205 && full.getResource(0,nullptr,0)==205);
