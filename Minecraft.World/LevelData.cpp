@@ -13,6 +13,7 @@ LevelData::LevelData()
 LevelData::LevelData(CompoundTag *tag)
 {
 	seed = tag->getLong(L"RandomSeed");
+	setEndGatewaysGenerated(tag->getInt(L"EndGatewaysGenerated"));
 
 	// Allow server.properties to override the world seed for biome generation
 	// on existing worlds (e.g. to fix monotonous biomes after world expansion).
@@ -313,6 +314,7 @@ LevelData::LevelData(LevelData *copy)
 	xStrongholdEndPortal = copy->xStrongholdEndPortal;
 	zStrongholdEndPortal = copy->zStrongholdEndPortal;
 	bStrongholdEndPortal = copy->bStrongholdEndPortal;
+	endGatewaysGenerated = copy->getEndGatewaysGenerated();
 	m_xzSize = copy->m_xzSize;
 	m_hellScale = copy->m_hellScale;
 #ifdef _LARGE_WORLDS
@@ -377,6 +379,7 @@ void LevelData::setTagData(CompoundTag *tag)
 	tag->putBoolean(L"hasStrongholdEndPortal", bStrongholdEndPortal);
 	tag->putInt(L"StrongholdEndPortalX", xStrongholdEndPortal);
 	tag->putInt(L"StrongholdEndPortalZ", zStrongholdEndPortal);
+	tag->putInt(L"EndGatewaysGenerated", endGatewaysGenerated);
 	tag->putInt(L"XZSize", m_xzSize);
 #ifdef _LARGE_WORLDS
 	tag->putInt(L"ClassicMoat", m_classicEdgeMoat);
@@ -750,3 +753,6 @@ int LevelData::getHellScale()
 {
 	return m_hellScale;
 }
+
+int LevelData::getEndGatewaysGenerated() {return endGatewaysGenerated;}
+void LevelData::setEndGatewaysGenerated(int count) {endGatewaysGenerated=count<0?0:count>20?20:count;}

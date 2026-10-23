@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "EndGateway.h"
 #include "net.minecraft.world.level.h"
 #include "net.minecraft.world.level.tile.h"
 #include "net.minecraft.world.entity.h"
@@ -1244,6 +1245,7 @@ void EnderDragon::tickDeath()
 			zo = 0;
 		}
 		// 4J-PB changed to center this between the pillars
+		EndGateways::dragonDefeated(level);
 		spawnExitPortal(0,0);//Mth::floor(x), Mth::floor(z));
 		remove();
 	}

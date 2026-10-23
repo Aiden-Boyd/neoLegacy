@@ -6,6 +6,8 @@
 #include "../Minecraft.Client/ServerPlayer.h"
 #include "../Minecraft.Client/PlayerConnection.h"
 #include "ThrownEnderpearl.h"
+#include "EndGateway.h"
+#include "Tile.h"
 #include "Endermite.h"
 #if defined(_WINDOWS64) && defined(MINECRAFT_SERVER_BUILD)
 #include "../Minecraft.Server/FourKitBridge.h"
@@ -36,6 +38,13 @@ ThrownEnderpearl::ThrownEnderpearl(Level *level, double x, double y, double z) :
 
 void ThrownEnderpearl::onHit(HitResult *res)
 {
+	if(res->type==HitResult::TILE && level->getTile(res->x,res->y,res->z)==Tile::endGateway_Id) {
+		auto gateway=dynamic_pointer_cast<EndGatewayTileEntity>(level->getTileEntity(res->x,res->y,res->z));
+		if(gateway) gateway->transport(shared_from_this());
+		if(!level->isClientSide && !removed) remove();
+		return;
+	}
+
 	if (res->entity != nullptr)
 	{
 		DamageSource *damageSource = DamageSource::thrown(shared_from_this(), getOwner());

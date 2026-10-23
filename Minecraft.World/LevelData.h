@@ -13,6 +13,7 @@ class LevelData
 {
 	friend class DerivedLevelData;
 private:
+	int endGatewaysGenerated=0;
 	int64_t seed;
 	LevelType *m_pGenerator;// = LevelType.normal;
 	wstring generatorOptions;
@@ -147,6 +148,8 @@ public:
 	virtual bool isInitialized();
 	virtual void setInitialized(bool initialized);
 	virtual GameRules *getGameRules();
+	virtual int getEndGatewaysGenerated();
+	virtual void setEndGatewaysGenerated(int);
 	virtual int getXZSize(); // 4J Added
 #ifdef _LARGE_WORLDS
 	virtual  int getXZSizeOld(); // 4J Added

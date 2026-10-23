@@ -33,4 +33,6 @@
   <data name="IDS_DESC_CHORUS_FRUIT"><value>Eat to restore hunger and teleport to a nearby safe position.</value></data>
   <data name="IDS_ITEM_POPPED_CHORUS_FRUIT"><value>Popped Chorus Fruit</value></data>
   <data name="IDS_DESC_POPPED_CHORUS_FRUIT"><value>Smelt chorus fruit to make this crafting ingredient for purpur and end rods.</value></data>
+  <data name="IDS_TILE_END_GATEWAY"><value>End Gateway</value></data>
+  <data name="IDS_DESC_END_GATEWAY"><value>A gateway between the central island and the outer End.</value></data>
 </root>

@@ -20,6 +20,7 @@
 #include "Facing.h"
 #include "EndBuildingTiles.h"
 #include "EndPlantTiles.h"
+#include "EndGateway.h"
 
 
 
@@ -179,6 +180,7 @@ CauldronTile *Tile::cauldron = nullptr;
 Tile *Tile::endPortalTile = nullptr;
 Tile *Tile::endPortalFrameTile = nullptr;
 Tile *Tile::endStone = nullptr;
+Tile *Tile::endGateway = nullptr;
 Tile *Tile::endRod = nullptr;
 Tile *Tile::chorusPlant = nullptr;
 Tile *Tile::chorusFlower = nullptr;
@@ -565,6 +567,7 @@ void Tile::staticCtor()
 	Tile::tallgrass2 = static_cast<TallGrass2*>((new TallGrass2(175))->setDestroyTime(0.0f)->setSoundType(Tile::SOUND_GRASS)->setIconName(L"tallgrass2_tall_grass_upper")->setDescriptionId(IDS_DESC_DOUBLE_TALL_GRASS)->setUseDescriptionId(IDS_DESC_TALL_GRASS)->disableMipmap()->sendTileData(0xFF));
 
 	// End building palette. Preserve the reserved 201-206 save IDs.
+	Tile::endGateway = (new EndGatewayTile(endGateway_Id))->setDestroyTime(-1.f)->setExplodeable(6000000.f)->setLightEmission(1.f)->setIconName(L"portal")->setDescriptionId(IDS_TILE_END_GATEWAY)->setUseDescriptionId(IDS_DESC_END_GATEWAY);
 	Tile::endRod = (new EndRodTile(endRod_Id))->setDestroyTime(0.f)->setSoundType(SOUND_WOOD)->setIconName(L"end_rod")->setDescriptionId(IDS_TILE_END_ROD)->setUseDescriptionId(IDS_DESC_END_ROD)->setLightEmission(14.f/15.f)->sendTileData();
 	Tile::chorusPlant = (new ChorusPlantTile(chorusPlant_Id))->setDestroyTime(0.4f)->setSoundType(SOUND_WOOD)->setIconName(L"chorus_plant")->setDescriptionId(IDS_TILE_CHORUS_PLANT)->setUseDescriptionId(IDS_DESC_CHORUS_PLANT);
 	Tile::chorusFlower = (new ChorusFlowerTile(chorusFlower_Id))->setDestroyTime(0.4f)->setSoundType(SOUND_WOOD)->setIconName(L"chorus_flower")->setDescriptionId(IDS_TILE_CHORUS_FLOWER)->setUseDescriptionId(IDS_DESC_CHORUS_FLOWER)->sendTileData();

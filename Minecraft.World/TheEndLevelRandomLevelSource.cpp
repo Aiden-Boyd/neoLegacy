@@ -10,6 +10,7 @@
 #include "TheEndLevelRandomLevelSource.h"
 #include "EndIslandTerrain.h"
 #include "EndOuterFeatures.h"
+#include "EndGateway.h"
 
 TheEndLevelRandomLevelSource::TheEndLevelRandomLevelSource(Level *level, int64_t seed)
 {
@@ -378,8 +379,11 @@ void TheEndLevelRandomLevelSource::postProcess(ChunkSource *parent, int xt, int 
 	pprandom->setSeed(((xt * xScale) + (zt * zScale)) ^ level->getSeed());
 
 	Biome *biome = level->getBiome(xo + 16, zo + 16);
-	if (EndIslandTerrain::isOuterChunk(xt,zt))
-		EndOuterFeatures::decorate(level,pprandom,xt,zt,EndIslandTerrain::height(islandNoise,xt*2+1,zt*2+1));
+	if (EndIslandTerrain::isOuterChunk(xt,zt)) {
+		float height=EndIslandTerrain::height(islandNoise,xt*2+1,zt*2+1);
+		EndOuterFeatures::decorate(level,pprandom,xt,zt,height);
+		EndGateways::decorateOuter(level,pprandom,xt,zt,height);
+	}
 	else biome->decorate(level, pprandom, xo, zo);		// 4J - passing pprandom rather than level->random here to make this consistent with our parallel world generation
 
 	HeavyTile::instaFall = false;

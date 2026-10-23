@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../Minecraft.World/EndGateway.h"
 #include "ClientConnection.h"
 #include "MultiPlayerLevel.h"
 #include "MultiPlayerLocalPlayer.h"
@@ -3440,6 +3441,12 @@ void ClientConnection::handleTileEntityData(shared_ptr<TileEntityDataPacket> pac
 	if (minecraft->level->hasChunkAt(packet->x, packet->y, packet->z))
 	{
 		shared_ptr<TileEntity> te = minecraft->level->getTileEntity(packet->x, packet->y, packet->z);
+
+        if(packet->type==TileEntityDataPacket::TYPE_END_GATEWAY) {
+            auto gateway=dynamic_pointer_cast<EndGatewayTileEntity>(te);
+            if(gateway) gateway->load(packet->tag);
+            return;
+        }
 
 		if (te != nullptr)
 		{

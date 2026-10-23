@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ServerLevel.h"
+#include "../Minecraft.World/EndGateway.h"
 
 #include <memory>
 #include "MinecraftServer.h"
@@ -198,6 +199,7 @@ ServerLevel::~ServerLevel()
 
 void ServerLevel::tick()
 {
+	if(dimension->id==1 && getGameTime()%20==0) EndGateways::migrateDefeatedWorld(this);
 #if defined(_WINDOWS64) && defined(MINECRAFT_SERVER_BUILD) && defined(MINECRAFT_SERVER_PROFILER)
 	// ts[N] = wall-clock at substep N. Logged when level total exceeds
 	// LEVEL_SLOW_THRESHOLD_MS to pinpoint the dominant substep.

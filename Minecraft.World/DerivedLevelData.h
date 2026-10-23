@@ -61,6 +61,8 @@ public:
 	bool isInitialized();
 	void setInitialized(bool initialized);
 	GameRules *getGameRules();
+	int getEndGatewaysGenerated() override;
+	void setEndGatewaysGenerated(int) override;
 	int getXZSize(); // 4J Added
 	int getHellScale(); // 4J Addded
 };

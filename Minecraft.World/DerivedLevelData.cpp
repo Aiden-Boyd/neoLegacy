@@ -225,3 +225,6 @@ int DerivedLevelData::getHellScale()
 {
 	return wrapped->getHellScale();
 }
+
+int DerivedLevelData::getEndGatewaysGenerated() {return wrapped->getEndGatewaysGenerated();}
+void DerivedLevelData::setEndGatewaysGenerated(int count) {wrapped->setEndGatewaysGenerated(count);}

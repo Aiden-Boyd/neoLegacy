@@ -10,6 +10,7 @@ on:
       - fix/end-portal-projection
       - feature/chorus-end-rods
       - feature/outer-end-islands
+      - feature/end-gateways
   workflow_dispatch:
 
 permissions:
@@ -21,7 +22,7 @@ concurrency:
 
 jobs:
   build-client:
-    name: Windows64 outer End islands candidate
+    name: Windows64 End gateway candidate
     runs-on: windows-2022
     timeout-minutes: 45
     env:
@@ -101,6 +102,12 @@ jobs:
           python tests/outer_end_regression.py 2>&1 | Tee-Object logs/outer-end-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run gateway transport, persistence and renderer regressions
+        shell: pwsh
+        run: |
+          python tests/gateway_regression.py 2>&1 | Tee-Object logs/gateway-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Configure Windows64
         shell: pwsh
         run: |
@@ -143,11 +150,12 @@ jobs:
           Copy-Item PORTAL_RENDER_TESTS.md "$stage/PORTAL_RENDER_TESTS.md"
           Copy-Item CHORUS_TESTS.md "$stage/CHORUS_TESTS.md"
           Copy-Item OUTER_END_TESTS.md "$stage/OUTER_END_TESTS.md"
+          Copy-Item GATEWAY_TESTS.md "$stage/GATEWAY_TESTS.md"
           @(
             "Commit: ${{ github.sha }}",
             "Configuration: Windows64 Release",
             "Runtime: Windows executable; test through Steam/Proton on Bazzite.",
-            "Candidate: Expanded finite End, seeded outer islands and natural chorus; includes previous content and fixes.",
+            "Candidate: End gateways with linked transport, saved progress and cooldowns; includes outer islands and prior content/fixes.",
             "Compilation does not establish controller compatibility or CU59 parity."
           ) | Set-Content "$stage/BUILD_INFO.txt"
           Get-ChildItem $stage -Recurse -File |
@@ -160,7 +168,7 @@ jobs:
       - name: Upload client test artifact
         uses: actions/upload-artifact@v6
         with:
-          name: neoLegacy-outer-end-islands-windows64
+          name: neoLegacy-end-gateways-windows64
           path: staging/
           if-no-files-found: error
           retention-days: 14

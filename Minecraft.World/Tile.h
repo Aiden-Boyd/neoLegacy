@@ -418,7 +418,7 @@ public:
 	static const int endStoneBricks_Id = 206;
 	//beetroots         207
 	//grass_path		208
-	//end_gateway		209
+	static const int endGateway_Id = 209;
 	//frosted_ice		212
 	//magma				213
 	//nether_wart_block 214
@@ -554,6 +554,7 @@ public:
 	static Tile *endPortalTile;
 	static Tile *endPortalFrameTile;
 	static Tile *endStone;
+	static Tile *endGateway;
 	static Tile *endRod;
 	static Tile *chorusPlant;
 	static Tile *chorusFlower;
