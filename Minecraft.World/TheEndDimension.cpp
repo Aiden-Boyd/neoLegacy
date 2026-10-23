@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "TheEndDimension.h"
+#include "ChunkSource.h"
 #include "FixedBiomeSource.h"
 #include "net.minecraft.world.level.levelgen.h"
 #include "net.minecraft.world.level.h"
@@ -88,4 +89,8 @@ bool TheEndDimension::isFoggyAt(int x, int z)
 int TheEndDimension::getSpawnYPosition()
 {
 	return 50;
+}
+int TheEndDimension::getXZSize()
+{
+	return END_LEVEL_MIN_WIDTH;
 }

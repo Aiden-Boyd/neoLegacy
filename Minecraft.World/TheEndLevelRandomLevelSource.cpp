@@ -8,6 +8,8 @@
 #include "net.minecraft.world.level.tile.h"
 #include "net.minecraft.world.level.storage.h"
 #include "TheEndLevelRandomLevelSource.h"
+#include "EndIslandTerrain.h"
+#include "EndOuterFeatures.h"
 
 TheEndLevelRandomLevelSource::TheEndLevelRandomLevelSource(Level *level, int64_t seed)
 {
@@ -23,6 +25,8 @@ TheEndLevelRandomLevelSource::TheEndLevelRandomLevelSource(Level *level, int64_t
 
 	scaleNoise = new PerlinNoise(random, 10);
 	depthNoise = new PerlinNoise(random, 16);
+	// Consume the island seed after the original noise fields: preserve central terrain.
+	islandNoise = new SimplexNoise(random);
 }
 
 TheEndLevelRandomLevelSource::~TheEndLevelRandomLevelSource()
@@ -34,6 +38,7 @@ TheEndLevelRandomLevelSource::~TheEndLevelRandomLevelSource()
 	delete perlinNoise1;
 	delete scaleNoise;
 	delete depthNoise;
+	delete islandNoise;
 }
 
 void TheEndLevelRandomLevelSource::prepareHeights(int xOffs, int zOffs, byteArray blocks, BiomeArray biomes)
@@ -229,11 +234,7 @@ doubleArray TheEndLevelRandomLevelSource::getHeights(doubleArray buffer, int x, 
 			if (depth < 0) depth = -depth * 0.3;
 			depth = depth * 3.0 - 2.0;
 
-			float xd = ((xx + x) - 0) / 1.0f;
-			float zd = ((zz + z) - 0) / 1.0f;
-			float doffs = 100 - sqrt(xd * xd + zd * zd) * 8;
-			if (doffs > 80) doffs = 80;
-			if (doffs < -100) doffs = -100;
+			float doffs = EndIslandTerrain::height(islandNoise,xx+x,zz+z);
 			if (depth > 1) depth = 1;
 			depth = depth / 8;
 			depth = 0;
@@ -377,7 +378,9 @@ void TheEndLevelRandomLevelSource::postProcess(ChunkSource *parent, int xt, int 
 	pprandom->setSeed(((xt * xScale) + (zt * zScale)) ^ level->getSeed());
 
 	Biome *biome = level->getBiome(xo + 16, zo + 16);
-	biome->decorate(level, pprandom, xo, zo);		// 4J - passing pprandom rather than level->random here to make this consistent with our parallel world generation
+	if (EndIslandTerrain::isOuterChunk(xt,zt))
+		EndOuterFeatures::decorate(level,pprandom,xt,zt,EndIslandTerrain::height(islandNoise,xt*2+1,zt*2+1));
+	else biome->decorate(level, pprandom, xo, zo);		// 4J - passing pprandom rather than level->random here to make this consistent with our parallel world generation
 
 	HeavyTile::instaFall = false;
 

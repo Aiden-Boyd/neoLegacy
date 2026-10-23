@@ -44,8 +44,14 @@ class TilePos;
 #define END_LEVEL_SCALE 3
 // 4J Stu - Fix the size of the end for all platforms
 // 54 / 3 = 18
+#ifdef _LARGE_WORLDS
+// A finite 4096-block End; cache, renderer and send flags share these dimensions.
+#define END_LEVEL_MAX_WIDTH 256
+#define END_LEVEL_MIN_WIDTH 256
+#else
 #define END_LEVEL_MAX_WIDTH 18
 #define END_LEVEL_MIN_WIDTH 18
+#endif
 //#define END_LEVEL_MAX_WIDTH (LEVEL_MAX_WIDTH / END_LEVEL_SCALE)
 
 class ChunkSource

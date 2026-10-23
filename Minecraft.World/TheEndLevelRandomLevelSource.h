@@ -2,6 +2,7 @@
 
 #include "ChunkSource.h"
 class PerlinNoise;
+class SimplexNoise;
 
 class TheEndLevelRandomLevelSource : public ChunkSource
 {
@@ -20,6 +21,7 @@ private:
 	PerlinNoise *lperlinNoise1;
 	PerlinNoise *lperlinNoise2;
 	PerlinNoise *perlinNoise1;
+	SimplexNoise *islandNoise;
 public:
 	PerlinNoise *scaleNoise;
 	PerlinNoise *depthNoise;

@@ -4,6 +4,7 @@
 class TheEndDimension : public Dimension
 {
 public:
+	int getXZSize() override;
 	virtual void init();
 	virtual ChunkSource *createRandomLevelSource() const;
 	virtual float getTimeOfDay(int64_t time, float a) const;
