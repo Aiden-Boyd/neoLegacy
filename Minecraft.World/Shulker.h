@@ -1,5 +1,7 @@
 #pragma once
 #include "Monster.h"
+#include "SoundTypes.h"
+#include "SynchedEntityData.h"
 #include "Throwable.h"
 
 class Shulker : public Monster
@@ -8,15 +10,16 @@ class Shulker : public Monster
     float peek=0,oldPeek=0;
     bool supported(int,int,int,int);
     void updateShellBox();
+    void setPeek(int);
 protected:
     void defineSynchedData() override;
     void registerAttributes() override;
     void serverAiStep() override {}
     bool useNewAi() override {return false;}
     bool removeWhenFarAway() override {return false;}
-    int getAmbientSound() override {return -1;}
-    int getHurtSound() override {return -1;}
-    int getDeathSound() override {return -1;}
+    int getAmbientSound() override {return entityData->getByte(17)>0?eSoundType_SHULKER_AMBIENT:-1;}
+    int getHurtSound() override {return entityData->getByte(17)==0?eSoundType_SHULKER_HURT_CLOSED:eSoundType_SHULKER_HURT;}
+    int getDeathSound() override {return eSoundType_SHULKER_DEATH;}
     void dropDeathLoot(bool,int) override;
 public:
     explicit Shulker(Level*);
@@ -29,6 +32,7 @@ public:
     void aiStep() override;
     void travel(float,float) override;
     bool isPushable() override {return false;}
+    AABB *getCollideBox() override {return isAlive()?bb:nullptr;}
     int getArmorValue() override;
     bool hurt(DamageSource*,float) override;
     void addAdditonalSaveData(CompoundTag*) override;

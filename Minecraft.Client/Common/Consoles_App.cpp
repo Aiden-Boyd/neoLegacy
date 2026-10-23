@@ -8904,6 +8904,8 @@ wstring CMinecraftApp::getEntityName(eINSTANCEOF type)
 {
 	switch(type)
 	{
+    case eTYPE_SHULKER:
+        return app.GetString(IDS_SHULKER);
 	case eTYPE_WOLF:
 		return app.GetString(IDS_WOLF);
 	case eTYPE_CREEPER:

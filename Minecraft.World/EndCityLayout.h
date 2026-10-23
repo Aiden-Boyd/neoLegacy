@@ -27,7 +27,8 @@ inline unsigned char rotateData(int id,int data,int rotation) {
 }
 inline int floorDiv(int n,int d) {int q=n/d;return n<0&&n%d?q-1:q;}
 inline void site(int64_t seed,int rx,int rz,int &cx,int &cz) {
-    Random random(seed+int64_t(rx)*341873128712LL+int64_t(rz)*132897987541LL+10387313LL);
+    uint64_t mixed=uint64_t(seed)+uint64_t(int64_t(rx)*341873128712LL)+uint64_t(int64_t(rz)*132897987541LL)+10387313ULL;
+    Random random(static_cast<int64_t>(mixed));
     cx=rx*20+(random.nextInt(9)+random.nextInt(9))/2;
     cz=rz*20+(random.nextInt(9)+random.nextInt(9))/2;
 }

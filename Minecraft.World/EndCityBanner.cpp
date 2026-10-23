@@ -5,6 +5,11 @@
 #include "ItemInstance.h"
 
 EndCityBanner::EndCityBanner(int id):BaseEntityTile(id,Material::wood,false) {setLightBlock(0);}
+bool EndCityBanner::mayPlace(Level *level,int x,int y,int z,int face) {
+    if(face<2||face>5||!BaseEntityTile::mayPlace(level,x,y,z)) return false;
+    int xx=x,zz=z;if(face==2)++zz;if(face==3)--zz;if(face==4)++xx;if(face==5)--xx;
+    return level->getMaterial(xx,y,zz)->blocksMotion();
+}
 int EndCityBanner::getPlacedOnFaceDataValue(Level*,int,int,int,int face,float,float,float,int) {return face>=2&&face<=5?face:2;}
 void EndCityBanner::neighborChanged(Level *level,int x,int y,int z,int) {
     int face=level->getData(x,y,z),xx=x,zz=z;

@@ -276,6 +276,14 @@ enum eSOUND_TYPE
 	eSoundType_MOB_ELDER_GUARDIAN_HIT,
 	eSoundType_MOB_ELDER_GUARDIAN_IDLE,
 	
+	eSoundType_SHULKER_AMBIENT,
+	eSoundType_SHULKER_CLOSE,
+	eSoundType_SHULKER_DEATH,
+	eSoundType_SHULKER_HURT,
+	eSoundType_SHULKER_HURT_CLOSED,
+	eSoundType_SHULKER_OPEN,
+	eSoundType_SHULKER_SHOOT,
+	eSoundType_SHULKER_BULLET_HIT,
 	eSoundType_MAX
 };
 

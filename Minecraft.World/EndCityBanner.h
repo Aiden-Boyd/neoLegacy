@@ -19,6 +19,7 @@ public:
     bool isCubeShaped() override {return false;}
     int getRenderShape() override {return SHAPE_INVISIBLE;}
     AABB *getAABB(Level*,int,int,int) override {return nullptr;}
+    bool mayPlace(Level*,int,int,int,int) override;
     int getPlacedOnFaceDataValue(Level*,int,int,int,int,float,float,float,int) override;
     void neighborChanged(Level*,int,int,int,int) override;
 };

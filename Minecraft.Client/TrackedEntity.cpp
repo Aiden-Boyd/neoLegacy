@@ -688,6 +688,11 @@ shared_ptr<Packet> TrackedEntity::getAddEntityPacket()
 	}
 
 	// 4J-PB - replacing with a switch, rather than tons of ifs
+	if (e->GetType()==eTYPE_SHULKER)
+    {
+        yHeadRotp=Mth::floor(e->getYHeadRot()*256/360);
+        return std::make_shared<AddMobPacket>(dynamic_pointer_cast<LivingEntity>(e),yRotp,xRotp,xp,yp,zp,yHeadRotp);
+    }
 	if (dynamic_pointer_cast<Creature>(e) != nullptr)
 	{
 		yHeadRotp = Mth::floor(e->getYHeadRot() * 256 / 360);

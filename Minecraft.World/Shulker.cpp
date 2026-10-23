@@ -6,6 +6,7 @@
 #include "net.minecraft.world.entity.player.h"
 #include "net.minecraft.world.entity.ai.attributes.h"
 #include "DamageSource.h"
+#include "SharedMonsterAttributes.h"
 #include "Difficulty.h"
 #include "net.minecraft.world.level.dimension.h"
 #include "CompoundTag.h"
@@ -47,10 +48,16 @@ bool Shulker::teleportSomewhere() {
         int xx=bx+random->nextInt(17)-8,yy=by+random->nextInt(17)-8,zz=bz+random->nextInt(17)-8;
         for(int face=0;face<6;++face) if(supported(xx,yy,zz,face)) {
             setPos(xx+.5,yy,zz+.5);entityData->set(16,byte(face));entityData->set(17,byte(0));
-            setTarget(nullptr);shotDelay=20;fallDistance=0;peek=oldPeek=0;updateShellBox();return true;
+            playSound(eSoundType_MOB_ENDERMEN_PORTAL,1,1);setTarget(nullptr);shotDelay=20;fallDistance=0;peek=oldPeek=0;updateShellBox();return true;
         }
     }
     return false;
+}
+void Shulker::setPeek(int value) {
+    int old=entityData->getByte(17);
+    if(!level->isClientSide&&old==0&&value>0) playSound(eSoundType_SHULKER_OPEN,1,1);
+    if(!level->isClientSide&&old>0&&value==0) playSound(eSoundType_SHULKER_CLOSE,1,1);
+    entityData->set(17,byte(value));
 }
 void Shulker::updateShellBox() {
     double xx=std::floor(x),yy=std::floor(y-heightOffset),zz=std::floor(z);
@@ -66,8 +73,8 @@ void Shulker::tick() {
     if(peek>desired) peek=(std::max)(desired,peek-.05f);
     updateShellBox();
     if(!level->isClientSide&&peek>oldPeek) {
-        auto entities=level->getEntities(shared_from_this(),bb);
-        for(auto e:*entities) if(e->isPushable()&&!e->instanceof(eTYPE_SHULKER)) {
+        auto entities=*level->getEntities(shared_from_this(),bb);
+        for(auto e:entities) if(e->isPushable()&&!e->instanceof(eTYPE_SHULKER)) {
             int f=getAttachFace();e->move(-dx[f]*.05,-dy[f]*.05,-dz[f]*.05);
         }
     }
@@ -89,15 +96,15 @@ void Shulker::aiStep() {
         target=level->getNearestAttackablePlayer(shared_from_this(),16);setTarget(target);
     }
     if(target) {
-        entityData->set(17,byte(100));lookAt(target,180,180);
+        setPeek(100);lookAt(target,180,180);
         if(--shotDelay<=0&&canSee(target)) {
             auto bullet=std::make_shared<ShulkerBullet>(level,dynamic_pointer_cast<LivingEntity>(shared_from_this()),target,getAttachFace());
-            level->addEntity(bullet);shotDelay=20+random->nextInt(10)*10;
+            level->addEntity(bullet);playSound(eSoundType_SHULKER_SHOOT,2,1);shotDelay=20+random->nextInt(10)*10;
         }
     } else {
         shotDelay=20;
-        if(idlePeek>0) {--idlePeek;entityData->set(17,byte(30));}
-        else {entityData->set(17,byte(0));if(random->nextInt(40)==0&&supported(xx,yy,zz,getAttachFace())) idlePeek=20+random->nextInt(3)*20;}
+        if(idlePeek>0) {--idlePeek;setPeek(30);}
+        else {setPeek(0);if(random->nextInt(40)==0&&supported(xx,yy,zz,getAttachFace())) idlePeek=20+random->nextInt(3)*20;}
     }
 }
 bool Shulker::hurt(DamageSource *source,float amount) {
@@ -149,14 +156,15 @@ void ShulkerBullet::tick() {
 void ShulkerBullet::onHit(HitResult *hit) {
     if(level->isClientSide) return;
     if(hit->type==HitResult::ENTITY&&hit->entity) {
+        if(hit->entity==getOwner()) return;
         auto victim=dynamic_pointer_cast<LivingEntity>(hit->entity);
         DamageSource *damage=DamageSource::thrown(shared_from_this(),getOwner());
         if(hit->entity->hurt(damage,4)&&victim) victim->addEffect(new MobEffectInstance(MobEffect::levitation->id,200,0));
         delete damage;
     }
-    remove();
+    playSound(eSoundType_SHULKER_BULLET_HIT,1,1);remove();
 }
-bool ShulkerBullet::hurt(DamageSource*,float) {if(level->isClientSide) return false;remove();return true;}
+bool ShulkerBullet::hurt(DamageSource*,float) {if(level->isClientSide) return false;playSound(eSoundType_SHULKER_BULLET_HIT,1,1);remove();return true;}
 void ShulkerBullet::addAdditonalSaveData(CompoundTag *tag) {
     Throwable::addAdditonalSaveData(tag);tag->putString(L"OwnerUUID",ownerUuid);tag->putString(L"Target",targetUuid);tag->putInt(L"Age",age);tag->putInt(L"Direction",direction);tag->putInt(L"TurnDelay",turnDelay);
     tag->putDouble(L"SteerX",steerX);tag->putDouble(L"SteerY",steerY);tag->putDouble(L"SteerZ",steerZ);

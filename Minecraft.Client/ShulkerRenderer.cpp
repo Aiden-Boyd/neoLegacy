@@ -9,6 +9,7 @@ ShulkerModel::ShulkerModel():base(this,0,28),lid(this,0,0),head(this,0,52) {
     base.addBox(-8,-8,-8,16,8,16);base.setPos(0,24,0);
     lid.addBox(-8,-16,-8,16,12,16);lid.setPos(0,24,0);
     head.addBox(-3,-6,-3,6,6,6);head.setPos(0,16,0);
+    base.compile(1.f/16.f);lid.compile(1.f/16.f);head.compile(1.f/16.f);
 }
 void ShulkerModel::render(shared_ptr<Entity> entity,float,float,float,float yaw,float pitch,float scale,bool compiled) {
     auto shulker=dynamic_pointer_cast<Shulker>(entity);float peek=shulker?shulker->getPeek(partial):0;
@@ -30,9 +31,10 @@ void ShulkerRenderer::setupRotations(shared_ptr<LivingEntity> mob,float,float,fl
 ShulkerBulletRenderer::ShulkerBulletRenderer():bullet(&bulletModel,0,0),texture(wstring(L"mob/shulker_spark.png")) {
     bulletModel.texWidth=bulletModel.texHeight=64;bullet.setTexSize(64,64);
     bullet.addBox(-4,-4,-1,8,8,2);bullet.addBox(-1,-4,-4,2,8,8);bullet.addBox(-4,-1,-4,8,2,8);
+    bullet.compile(1.f/16.f);
 }
 void ShulkerBulletRenderer::render(shared_ptr<Entity> entity,double x,double y,double z,float,float a) {
-    bindTexture(&texture);glPushMatrix();glTranslatef(float(x),float(y)+.15f,float(z));
+    bindTexture(&texture);glColor4f(1,1,1,1);glPushMatrix();glTranslatef(float(x),float(y)+.15f,float(z));
     glRotatef((entity->tickCount+a)*12,0,1,0);glRotatef((entity->tickCount+a)*8,1,0,0);
     glDisable(GL_LIGHTING);bullet.render(1.f/16.f,true);glEnable(GL_LIGHTING);glPopMatrix();
 }

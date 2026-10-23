@@ -45,7 +45,7 @@ void EntityIO::setId(entityCreateFn createFn, eINSTANCEOF clas, const wstring &i
 
 void EntityIO::staticCtor()
 {
-	setId(Shulker::create,eTYPE_SHULKER,L"Shulker",69,eMinecraftColour_Mob_Endermite_Colour1,eMinecraftColour_Mob_Endermite_Colour2,IDS_SHULKER);
+	setId(Shulker::create,eTYPE_SHULKER,L"Shulker",69,eMinecraftColour_Mob_Shulker_Colour1,eMinecraftColour_Mob_Shulker_Colour2,IDS_SHULKER);
 	setId(ShulkerBullet::create,eTYPE_SHULKER_BULLET,L"ShulkerBullet",25);
 	setId(ItemEntity::create, eTYPE_ITEMENTITY,  L"Item", 1);
 	setId(ExperienceOrb::create, eTYPE_EXPERIENCEORB, L"XPOrb", 2);

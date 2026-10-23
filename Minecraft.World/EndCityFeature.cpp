@@ -14,6 +14,7 @@
 #include "ItemFrame.h"
 #include "ItemInstance.h"
 #include "Item.h"
+#include "PotionItem.h"
 #include "EnchantmentHelper.h"
 #include "Direction.h"
 #include <set>

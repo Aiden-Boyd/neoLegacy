@@ -62,6 +62,7 @@ void EntityTracker::addEntity(shared_ptr<Entity> e)
     else if (e->instanceof(eTYPE_MINECART)) addEntity(e, 16 * 5, 1, true);
     else if (e->instanceof(eTYPE_BOAT)) addEntity(e, 16 * 5, 1, true);
     else if (e->instanceof(eTYPE_SQUID)) addEntity(e, 16 * 4, 1, true);
+	else if (e->instanceof(eTYPE_SHULKER)) addEntity(e, 80, 1, true);
 	else if (e->instanceof(eTYPE_WITHERBOSS)) addEntity(e, 16 * 5, 1, false);
 	else if (e->instanceof(eTYPE_BAT)) addEntity(e, 16 * 5, 1, false);
     else if (dynamic_pointer_cast<Creature>(e)!=nullptr) addEntity(e, 16 * 5, 1, true);

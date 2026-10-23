@@ -16,7 +16,7 @@ public:
         head.addBox(L"upperlip",-6,-1,-24,12,5,16);head.addBox(L"upperhead",-8,-8,-10,16,16,16);
         head.bMirror=true;head.addBox(L"scale",-5,-12,-4,2,4,6);head.addBox(L"nostril",-5,-3,-22,2,2,4);
         head.bMirror=false;head.addBox(L"scale",3,-12,-4,2,4,6);head.addBox(L"nostril",3,-3,-22,2,2,4);
-        jaw.setPos(0,4,-8);jaw.addBox(L"jaw",-6,0,-16,12,4,16);head.addChild(&jaw);
+        jaw.setPos(0,4,-8);jaw.addBox(L"jaw",-6,0,-16,12,4,16);head.addChild(&jaw);head.compile(1.f/16.f);jaw.compile(1.f/16.f);
     }
     void render(shared_ptr<Entity>,float,float,float,float yaw,float pitch,float scale,bool compiled) override {
         head.yRot=yaw*.01745329252f;head.xRot=pitch*.01745329252f;jaw.xRot=0;

@@ -258,6 +258,8 @@ void IUIScene_CreativeMenu::staticCtor()
 		ITEM_AUX(Item::skull_Id,SkullTileEntity::TYPE_ZOMBIE)
 		ITEM_AUX(Item::skull_Id,SkullTileEntity::TYPE_CHAR)
 		ITEM_AUX(Item::skull_Id,SkullTileEntity::TYPE_CREEPER)
+        ITEM_AUX(Item::skull_Id,SkullTileEntity::TYPE_DRAGON)
+        ITEM(177)
 		ITEM_AUX(Tile::sponge_Id, 0) // dry sponge
 		ITEM_AUX(Tile::sponge_Id, 1) // wet sponge
 		ITEM(Tile::melon_Id)
@@ -490,6 +492,7 @@ void IUIScene_CreativeMenu::staticCtor()
 		
 		ITEM_AUX(Item::spawnEgg_Id, 67); // Endermite
 		ITEM_AUX(Item::spawnEgg_Id, 68); // Guardian
+        ITEM_AUX(Item::spawnEgg_Id, 69); // Shulker
 		ITEM_AUX(Item::spawnEgg_Id, 4); // Elder Guardian 
 		ITEM_AUX(Item::spawnEgg_Id, 90); // Pig
 		ITEM_AUX(Item::spawnEgg_Id, 91); // Sheep
@@ -667,6 +670,7 @@ void IUIScene_CreativeMenu::staticCtor()
 	// Materials
 	DEF(eCreativeInventory_Materials)
 		ITEM(Item::poppedChorusFruit_Id)
+        ITEM(Item::shulkerShell_Id)
 		ITEM(Item::coal_Id)
 		ITEM_AUX(Item::coal_Id,1)
 		ITEM(Item::diamond_Id)

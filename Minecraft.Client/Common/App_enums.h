@@ -559,6 +559,9 @@ enum eMinecraftColour
 	//eHTMLColor_e_dark = 0x3f3f15, //r:3f , g: 3f, b: 15, i: 1e
 	//eHTMLColor_f_dark = 0x3f3f3f, //r:3f , g: 3f, b: 3f, i: 1f
 
+	eMinecraftColour_Effect_Levitation,
+	eMinecraftColour_Mob_Shulker_Colour1,
+	eMinecraftColour_Mob_Shulker_Colour2,
 	eMinecraftColour_COUNT,
 };
 

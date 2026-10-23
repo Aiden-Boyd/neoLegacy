@@ -409,6 +409,9 @@ void ColourTable::setColour(const wstring &colourName, const wstring &value)
 
 unsigned int ColourTable::getColour(eMinecraftColour id)
 {
+    if(id==eMinecraftColour_Effect_Levitation) return 0xffceffff;
+    if(id==eMinecraftColour_Mob_Shulker_Colour1) return 0xff946794;
+    if(id==eMinecraftColour_Mob_Shulker_Colour2) return 0xff4d3852;
 	int idx = static_cast<int>(id);
 	if (idx >= 0 && idx < eMinecraftColour_COUNT)
 	{
