@@ -8,7 +8,7 @@ Natural outer End islands and chorus generation are not included in this milesto
 
 ## Automated validation
 
-`python tests/chorus_regression.py` compiles the actual new tile/item implementations against deterministic engine fixtures. It checks six rod orientations and paired reversal, upward growth, branching, dead flowers, support loss, flower harvest versus indirect breaking, live/dead textures, connections, food use/cooldown/Creative counts, and teleport rejection for unloaded chunks, collisions and liquids. These fixtures do not exercise the renderer, real network transport or saves. CI also runs all earlier regressions and compiles the full Windows64 client.
+`python tests/chorus_regression.py` compiles the actual new tile/item implementations against deterministic engine fixtures. It checks six rod orientations and paired reversal, upward growth, branching, dead flowers, support loss, flower harvest versus indirect breaking, live/dead textures, connections, food use/cooldown/Creative counts, player eye/feet offsets, Windows min/max macros, and teleport rejection for unloaded chunks, collisions and liquids. The geometry fixture also compiles the production tessellation method and checks nonzero outward-wound quads, UV bounds, light values and inventory geometry. Real GPU rendering, network transport and saves remain outside these fixtures. CI also runs all earlier regressions and compiles the full Windows64 client.
 
 ## In-game acceptance (not yet verified)
 
@@ -23,3 +23,7 @@ Use a copied test world and the default texture pack. Run the executable through
 7. Recheck the portal from different viewing angles, Elytra/head rendering, sponge inventory and wet-sponge furnace transfer. Record a Proton log for any crash.
 
 Keep the candidate separate until these checks pass. Exact visual matching, controller use, multiplayer behavior, alternate texture packs and piston interactions need runtime acceptance.
+
+## Asset provenance
+
+The added PNGs and model coordinates/UVs use the original vanilla 1.12.2 assets, mirrored at https://github.com/InventivetalentDev/minecraft-assets/tree/1.12.2/assets/minecraft. The native gameplay code in this change is implemented against this engine's existing APIs.

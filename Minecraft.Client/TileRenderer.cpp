@@ -7933,7 +7933,7 @@ void TileRenderer::renderCube( Tile* tile, float alpha )
 bool TileRenderer::tesselateEndPlant(Tile *tile,int x,int y,int z,int data,bool inventory)
 {
     EndPlantTile *plant=static_cast<EndPlantTile*>(tile);
-    EndPlantPart parts[7];
+    EndPlantPart parts[EndPlantTile::MAX_PARTS];
     int count=plant->getParts(inventory?nullptr:level,x,y,z,data,parts);
     Tesselator *t=Tesselator::getInstance();
     if(!inventory && SharedConstants::TEXTURE_LIGHTING) t->tex2(getLightColor(tile,level,x,y,z));

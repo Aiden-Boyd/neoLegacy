@@ -22,8 +22,18 @@ static const EndPlantPart CHORUS_FLOWER_PARTS[6] = {
 {14.f,2.f,2.f,16.f,14.f,14.f,47,1,{{2.f,14.f,0.f,2.f,0},{14.f,2.f,16.f,14.f,0},{0.f,2.f,2.f,14.f,0},{14.f,2.f,16.f,14.f,0},{2.f,2.f,14.f,14.f,0},{2.f,2.f,14.f,14.f,1}}},
 {2.f,0.f,2.f,14.f,14.f,14.f,63,1,{{14.f,14.f,2.f,2.f,0},{2.f,2.f,14.f,14.f,0},{2.f,2.f,14.f,16.f,0},{2.f,2.f,14.f,16.f,0},{2.f,2.f,14.f,16.f,0},{2.f,2.f,14.f,16.f,0}}}
 };
-inline EndPlantPart makeEndPlantBox(float x0,float y0,float z0,float x1,float y1,float z1) {
- EndPlantPart p={x0,y0,z0,x1,y1,z1,63,1,{}};
- for(int f=0;f<6;++f) p.uv[f]={4,4,12,12,0};
- return p;
-}
+// Connected stem models normalized from north to up for the shared placement rotations.
+static const EndPlantPart CHORUS_PLANT_SIDE[1]={
+{4.f,12.f,4.f,12.f,16.f,12.f,60,1,{{0,0,0,0,0},{4.f,4.f,12.f,12.f,0},{4.f,12.f,12.f,16.f,0},{4.f,0.f,12.f,4.f,0},{0.f,4.f,4.f,12.f,0},{12.f,4.f,16.f,12.f,0}}}
+};
+static const EndPlantPart CHORUS_PLANT_NOSIDE[1]={
+{4.f,4.f,4.f,12.f,12.f,12.f,2,1,{{0,0,0,0,0},{4.f,4.f,12.f,12.f,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}}}
+};
+static const EndPlantPart CHORUS_PLANT_NOSIDE1[2]={
+{4.f,4.f,4.f,12.f,12.f,12.f,2,1,{{0,0,0,0,0},{4.f,4.f,12.f,12.f,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}}},
+{4.f,12.f,4.f,12.f,13.f,12.f,62,1,{{0,0,0,0,0},{4.f,4.f,12.f,12.f,0},{4.f,12.f,12.f,13.f,0},{4.f,3.f,12.f,4.f,0},{3.f,4.f,4.f,12.f,0},{12.f,4.f,13.f,12.f,0}}}
+};
+static const EndPlantPart CHORUS_PLANT_NOSIDE2[2]={
+{4.f,4.f,4.f,12.f,12.f,12.f,2,1,{{0,0,0,0,0},{4.f,4.f,12.f,12.f,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}}},
+{5.f,12.f,5.f,11.f,14.f,11.f,62,1,{{0,0,0,0,0},{5.f,5.f,11.f,11.f,0},{5.f,12.f,11.f,14.f,0},{5.f,2.f,11.f,4.f,0},{2.f,5.f,4.f,11.f,0},{12.f,5.f,14.f,11.f,0}}}
+};

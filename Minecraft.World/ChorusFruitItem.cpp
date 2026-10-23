@@ -28,15 +28,17 @@ shared_ptr<ItemInstance> ChorusFruitItem::useTimeDepleted(shared_ptr<ItemInstanc
 bool ChorusFruitItem::teleport(Level *level,shared_ptr<Player> player) {
     if(level->isClientSide) return false;
     const double oldX=player->x,oldY=player->y,oldZ=player->z;
+    const double feetY=player->bb->y0;
     for(int attempt=0;attempt<16;++attempt) {
         double x=oldX+(level->random->nextDouble()-.5)*16;
-        double y=std::max(0.,std::min(double(Level::maxBuildHeight-1),oldY+level->random->nextInt(16)-8));
+        double y=(std::max)(0.,(std::min)(double(Level::maxBuildHeight-1),feetY+level->random->nextInt(16)-8));
         double z=oldZ+(level->random->nextDouble()-.5)*16;
         int bx=int(std::floor(x)),by=int(std::floor(y)),bz=int(std::floor(z));
         if(!level->hasChunkAt(bx,by,bz)) continue;
         while(by>0&&!level->getMaterial(bx,by-1,bz)->blocksMotion()) { --by;--y; }
         if(by<=0) continue;
-        double dx=x-oldX,dy=y-oldY,dz=z-oldZ;
+        // teleportTo takes feet coordinates, whereas Player::y can include an eye offset.
+        double dx=x-oldX,dy=y-feetY,dz=z-oldZ;
         AABB *target=AABB::newTemp(player->bb->x0+dx,player->bb->y0+dy,player->bb->z0+dz,
                                   player->bb->x1+dx,player->bb->y1+dy,player->bb->z1+dz);
         if(target->y0<0||target->y1>Level::maxBuildHeight) continue;

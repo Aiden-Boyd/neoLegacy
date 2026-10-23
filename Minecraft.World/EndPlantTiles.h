@@ -16,6 +16,7 @@ void rotateEndPlantPoint(int facing, float &x, float &y, float &z);
 class EndPlantTile : public Tile
 {
 public:
+    static const int MAX_PARTS = 12;
     EndPlantTile(int id, Material *material);
     bool isSolidRender(bool isServerLevel = false) override;
     bool isCubeShaped() override;

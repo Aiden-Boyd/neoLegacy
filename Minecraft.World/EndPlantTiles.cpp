@@ -75,13 +75,17 @@ bool ChorusPlantTile::connects(LevelSource *level,int x,int y,int z,int face) {
 }
 int ChorusPlantTile::getParts(LevelSource *level,int x,int y,int z,int,EndPlantPart *parts) {
     if(!level) { for(int i=0;i<7;++i) parts[i]=CHORUS_INVENTORY_PARTS[i];return 7; }
-    parts[0]=makeEndPlantBox(4,4,4,12,12,12);
-    int count=1;
-    for(int face=0;face<6;++face) if(connects(level,x,y,z,face)) {
-        parts[0].faces &= ~(1u<<face);
-        parts[count]=makeEndPlantBox(4,12,4,12,16,12);
-        parts[count].faces &= ~((1u<<Facing::UP)|(1u<<Facing::DOWN));
-        parts[count++].facing=face;
+    int count=0;
+    unsigned int seed=unsigned(x)*73428767u ^ unsigned(y)*912931u ^ unsigned(z)*438289u;
+    for(int face=0;face<6;++face) {
+        const EndPlantPart *model=CHORUS_PLANT_SIDE;int size=1;
+        if(!connects(level,x,y,z,face)) {
+            // Stable per-position variation; never consume the world's gameplay RNG while meshing.
+            unsigned int choice=(seed ^ (0x9e3779b9u*unsigned(face+1)))%5;
+            if(choice<2) model=CHORUS_PLANT_NOSIDE;
+            else {model=choice==3?CHORUS_PLANT_NOSIDE2:CHORUS_PLANT_NOSIDE1;size=2;}
+        }
+        for(int i=0;i<size;++i) {parts[count]=model[i];parts[count++].facing=face;}
     }
     return count;
 }
