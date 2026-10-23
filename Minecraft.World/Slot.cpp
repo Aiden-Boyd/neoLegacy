@@ -6,6 +6,7 @@
 #include "Slot.h"
 #include "ContainerOpenPacket.h"
 #include "ShulkerBox.h"
+#include "ShulkerBoxRecolor.h"
 
 Slot::Slot(shared_ptr<Container> container, int slot, int x, int y) : container( container ), slot( slot )
 {
@@ -130,6 +131,7 @@ bool Slot::mayCombine(shared_ptr<ItemInstance> second)
 	shared_ptr<ItemInstance> first = getItem();
 
 	if(first == nullptr || second == nullptr) return false;
+	if(ShulkerBoxes::canRecolor(first,second))return true;
 
 	ArmorItem *thisItem = dynamic_cast<ArmorItem *>(first->getItem());
 	if(thisItem)
@@ -151,6 +153,7 @@ shared_ptr<ItemInstance> Slot::combine(shared_ptr<ItemInstance> item)
 {
 	shared_ptr<ItemInstance> result = nullptr;
 	shared_ptr<ItemInstance> first = getItem();
+	if(ShulkerBoxes::canRecolor(first,item))return ShulkerBoxes::recolor(first,ShulkerBoxes::FIRST+15-item->getAuxValue());
 
 	shared_ptr<CraftingContainer> craftSlots = std::make_shared<CraftingContainer>(nullptr, 2, 2);
 	craftSlots->setItem(0, item);

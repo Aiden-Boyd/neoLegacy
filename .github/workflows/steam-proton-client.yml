@@ -13,6 +13,7 @@ on:
       - feature/end-gateways
       - feature/end-cities-shulkers
       - feature/shulker-boxes
+      - feature/shulker-box-polish
   workflow_dispatch:
 
 permissions:
@@ -24,7 +25,7 @@ concurrency:
 
 jobs:
   build-client:
-    name: Windows64 shulker box candidate
+    name: Windows64 shulker box recolor and dispenser candidate
     runs-on: windows-2022
     timeout-minutes: 45
     env:
@@ -126,6 +127,12 @@ jobs:
           python tests/shulker_box_regression.py 2>&1 | Tee-Object logs/shulker-boxes.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run box recolor and dispenser regressions
+        shell: pwsh
+        run: |
+          python tests/shulker_box_polish_regression.py 2>&1 | Tee-Object logs/shulker-box-polish.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Configure Windows64
         shell: pwsh
         run: |
@@ -175,7 +182,7 @@ jobs:
             "Commit: ${{ github.sha }}",
             "Configuration: Windows64 Release",
             "Runtime: Windows executable; test through Steam/Proton on Bazzite.",
-            "Candidate: Shulker boxes; includes End cities, ships, shulkers, gateways and prior content/fixes.",
+            "Candidate: Shulker box recoloring and dispenser placement; includes previous End content and stability fixes.",
             "Compilation does not establish controller compatibility or CU59 parity."
           ) | Set-Content "$stage/BUILD_INFO.txt"
           Get-ChildItem $stage -Recurse -File |
@@ -188,7 +195,7 @@ jobs:
       - name: Upload client test artifact
         uses: actions/upload-artifact@v6
         with:
-          name: neoLegacy-shulker-boxes-windows64
+          name: neoLegacy-shulker-box-polish-windows64
           path: staging/
           if-no-files-found: error
           retention-days: 14

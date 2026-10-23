@@ -11,6 +11,8 @@
 #include "DispenserTile.h"
 #include "net.minecraft.h"
 #include "Mob.h"
+#include "ShulkerBox.h"
+#include "ShulkerBoxDispenseBehavior.h"
 
 BehaviorRegistry DispenserTile::REGISTRY = BehaviorRegistry(new DefaultDispenseItemBehavior());
 
@@ -138,6 +140,7 @@ void DispenserTile::dispenseFrom(Level *level, int x, int y, int z)
 
 DispenseItemBehavior *DispenserTile::getDispenseMethod(shared_ptr<ItemInstance> item)
 {
+	if(item&&ShulkerBoxes::isBox(item->id)){static ShulkerBoxDispenseBehavior behavior;return &behavior;}
 	return REGISTRY.get(item->getItem());
 }
 

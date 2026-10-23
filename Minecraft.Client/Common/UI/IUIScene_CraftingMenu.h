@@ -22,7 +22,7 @@ protected:
 
 	static const int m_iMaxHSlotC = 40;
 	static const int m_iMaxHCraftingSlotC = 40;
-	static const int m_iMaxVSlotC = 99; 
+	static const int m_iMaxVSlotC = 16 * 16 + 1; // 256 recolors plus the shell/chest recipe 
 	static const int m_iMaxDisplayedVSlotC = 3;
 	static const int m_iIngredients3x3SlotC = 9;
 	static const int m_iIngredients2x2SlotC = 4;

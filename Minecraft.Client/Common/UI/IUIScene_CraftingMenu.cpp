@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../../../Minecraft.World/ShulkerBoxRecolor.h"
 
 #include "../../../Minecraft.World/net.minecraft.world.item.crafting.h"
 #include "../../../Minecraft.World/net.minecraft.world.level.tile.h"
@@ -290,6 +291,7 @@ bool IUIScene_CraftingMenu::handleKeyDown(int iPad, int iAction, bool bRepeat)
 								}
 
 								// 4J Stu - Fix for #13097 - Bug: Milk Buckets are removed when crafting Cake
+								if(auto colored=ShulkerBoxes::recolor(ingItemInst,pTempItemInst->id))pTempItemInst=colored;
 								if (ingItemInst != nullptr)
 								{
 									if (ingItemInst->getItem()->hasCraftingRemainingItem())
@@ -783,6 +785,10 @@ void IUIScene_CraftingMenu::CheckRecipesAvailable()
 				{
 					iBaseType=pTempItemInst->getItem()->getBaseItemType();
 				}
+
+				// A UI-only family keeps recolor variants in one horizontal entry.
+				// Item base types are non-negative; this value is never serialized.
+				iBaseType=ShulkerBoxes::craftingFamily(iID,iBaseType);
 
 				// ignore for the misc base type - these have not been placed in a base type group
 				if(iBaseType!=Item::eBaseItemType_undefined)
@@ -1432,3 +1438,4 @@ bool IUIScene_CraftingMenu::isItemSelected(int itemId)
 	}
 	return isSelected;
 }
+

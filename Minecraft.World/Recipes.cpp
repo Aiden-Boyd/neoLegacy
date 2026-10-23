@@ -8,6 +8,7 @@
 #include "net.minecraft.world.level.tile.h"
 #include "net.minecraft.world.item.crafting.h"
 #include "DyePowderItem.h"
+#include "ShulkerBox.h"
 
 Recipes *Recipes::instance = nullptr;
 ArmorRecipes *Recipes::pArmorRecipes=nullptr;
@@ -48,6 +49,11 @@ void Recipes::_init()
 
 void Recipes::_compileRecipes()
 {
+	// Ordinary shapeless records preserve console/registry synchronization.
+	for(int source=ShulkerBoxes::FIRST;source<=ShulkerBoxes::LAST;++source) for(int dye=0;dye<16;++dye) {
+		ItemInstance input(source,1,ANY_AUX_VALUE),pigment(Item::dye_powder_Id,1,dye);
+		addShapelessRecipy(new ItemInstance(ShulkerBoxes::FIRST+15-dye,1,0),L"zzg",&input,&pigment,L'M');
+	}
 	addShapedRecipy(new ItemInstance(229,1,0),L"ssscictg",L"S",L"C",L"S",L'S',Item::shulkerShell,L'C',Tile::chest,L'M');
 	addShapedRecipy(new ItemInstance(Tile::purpurBlock, 4),
 		L"sscig", L"##", L"##", L'#', Item::poppedChorusFruit, L'S');

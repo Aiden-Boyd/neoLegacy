@@ -26,9 +26,12 @@ struct CompoundTag:Tag {
  void put(wstring k,Tag*v){children[k].reset(v);}CompoundTag*getCompound(wstring k){if(!children.count(k))put(k,new CompoundTag);return dynamic_cast<CompoundTag*>(children[k].get());}
  ListTag<CompoundTag>*getList(wstring k){if(!children.count(k))put(k,new ListTag<CompoundTag>);return static_cast<ListTag<CompoundTag>*>(children[k].get());}
 };
+struct Item {enum{dye_powder_Id=351};int id=0;bool hasCraftingRemainingItem(){return false;}Item*getCraftingRemainingItem(){return this;}};
 struct ItemInstance {
  int id,count,aux;unique_ptr<CompoundTag>tag;wstring name;
  ItemInstance(int id,int count,int aux):id(id),count(count),aux(aux){}
+ explicit ItemInstance(Item*item):ItemInstance(item->id,1,0){}
+ int getAuxValue()const{return aux;}void setAuxValue(int v){aux=v;}Item*getItem(){static Item item;item.id=id;return &item;}
  int getMaxStackSize(){return id>=219&&id<=234?1:64;}bool hasTag(){return bool(tag);}CompoundTag*getTag(){return tag.get();}void setTag(CompoundTag*t){tag.reset(t);}
  bool hasCustomHoverName(){return !name.empty();}wstring getHoverName(){return name;}void setHoverName(wstring n){name=n;}
  CompoundTag*save(CompoundTag*t){t->putInt(L"id",id);t->putInt(L"Count",count);t->putInt(L"Damage",aux);if(tag)t->put(L"tag",tag->copy());if(!name.empty())t->putString(L"name",name);return t;}
@@ -41,9 +44,11 @@ struct AABB {double x0,y0,z0,x1,y1,z1;static AABB*newTemp(double a,double b,doub
 struct Entity {double xd=0,yd=0,zd=0;virtual ~Entity()=default;bool isPushable(){return true;}void move(double x,double y,double z){xd+=x;yd+=y;zd+=z;}};
 struct LivingEntity:Entity{};
 struct Container;struct Player:LivingEntity {struct {bool instabuild=false;}abilities;int opened=0;void openContainer(shared_ptr<Container>){++opened;}};
-struct Facing {inline static int STEP_X[6]={0,0,0,0,-1,1},STEP_Y[6]={-1,1,0,0,0,0},STEP_Z[6]={0,0,-1,1,0,0};};
+struct Facing {enum{DOWN=0,UP=1};inline static int STEP_X[6]={0,0,0,0,-1,1},STEP_Y[6]={-1,1,0,0,0,0},STEP_Z[6]={0,0,-1,1,0,0};};
 struct TileEntity;struct Tile;
 struct Level {
+ static const int maxBuildHeight=256;
+ bool allowPlacement=true,allowSet=true,supported=false;int placeCalls=0,placedX=0,placedY=0,placedZ=0;
  bool isClientSide=false,blocked=false;int data=1;shared_ptr<TileEntity>te;Tile*worldTile=nullptr;
  vector<shared_ptr<ItemInstance>> drops;vector<shared_ptr<Entity>>entities;vector<AABB*>cubes;int sounds=0,events=0;
  shared_ptr<TileEntity>getTileEntity(int,int,int){return te;}void removeTileEntity(int,int,int){te.reset();}int getData(int,int,int){return data;}
@@ -51,6 +56,10 @@ struct Level {
  vector<shared_ptr<Entity>>*getEntities(shared_ptr<Entity>,AABB*){return &entities;}
  void tileEvent(int,int,int,int,int,int){++events;}void playSound(double,double,double,int,float,float){++sounds;}
  void updateNeighbourForOutputSignal(int,int,int,int){}
+ bool isEmptyTile(int,int,int){return !supported;}
+ bool mayPlace(int,int,int,int,bool,int,shared_ptr<Entity>,shared_ptr<ItemInstance>){++placeCalls;return allowPlacement;}
+ bool setTileAndData(int,int,int,int,int,int);
+ void removeTile(int,int,int){te.reset();worldTile=nullptr;}
 };
 struct Container {virtual ~Container()=default;virtual int getContainerType(){return 0;}virtual shared_ptr<ItemInstance>getItem(unsigned){return nullptr;}virtual void setItem(unsigned,shared_ptr<ItemInstance>){}virtual int getMaxStackSize()const{return 64;}};
 struct Material {enum {PUSH_DESTROY=1};inline static Material *stone=nullptr;};
@@ -69,7 +78,7 @@ struct ChestTileEntity:TileEntity,Container {
  virtual void checkNeighbors(){}virtual void startOpen(){}virtual void stopOpen(){}shared_ptr<TileEntity>clone()override{return nullptr;}
 };
 struct Tile {
- enum{SHAPE_ENTITYTILE_ANIMATED=22};int id;Icon*icon=nullptr;explicit Tile(int i):id(i){}virtual ~Tile()=default;
+ enum{SHAPE_ENTITYTILE_ANIMATED=22,UPDATE_ALL=3};inline static Tile*tiles[256]={};int id;Icon*icon=nullptr;explicit Tile(int i):id(i){tiles[i]=this;}virtual ~Tile()=default;
  virtual bool isSolidRender(bool=false){return true;}virtual bool isCubeShaped(){return true;}virtual int getRenderShape(){return 0;}virtual int getResourceCount(Random*){return 1;}virtual int getPistonPushReaction(){return 0;}
  virtual shared_ptr<TileEntity>newTileEntity(Level*){return nullptr;}virtual int getPlacedOnFaceDataValue(Level*,int,int,int,int,float,float,float,int){return 0;}
  virtual void setPlacedBy(Level*,int,int,int,shared_ptr<LivingEntity>,shared_ptr<ItemInstance>){}virtual bool TestUse(){return false;}
@@ -78,6 +87,7 @@ struct Tile {
  void setLightBlock(int){}void popResource(Level*l,int,int,int,shared_ptr<ItemInstance>i){l->drops.push_back(i);}
 };
 struct BaseEntityTile:Tile {BaseEntityTile(int i,Material*,bool):Tile(i){}void onRemove(Level*l,int x,int y,int z,int,int)override{l->removeTileEntity(x,y,z);}};
+inline bool Level::setTileAndData(int x,int y,int z,int id,int metadata,int){if(!allowSet)return false;worldTile=Tile::tiles[id];te=worldTile->newTileEntity(this);te->level=this;te->x=x;te->y=y;te->z=z;data=metadata;placedX=x;placedY=y;placedZ=z;return true;}
 struct ContainerOpenPacket {enum {SHULKER_BOX=18};};
 struct AbstractContainerMenu {static int getRedstoneSignalFromContainer(shared_ptr<Container>){return 0;}};
 struct HtmlString {wstring text;explicit HtmlString(wstring s):text(s){}};

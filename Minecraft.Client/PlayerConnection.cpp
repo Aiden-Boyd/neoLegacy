@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../Minecraft.World/ShulkerBoxRecolor.h"
 #include "PlayerConnection.h"
 #include "ServerPlayer.h"
 #include "ServerLevel.h"
@@ -2687,6 +2688,7 @@ void PlayerConnection::handleCraftItem(shared_ptr<CraftItemPacket> packet)
 				}
 
 				// 4J Stu - Fix for #13097 - Bug: Milk Buckets are removed when crafting Cake
+				if(auto colored=ShulkerBoxes::recolor(ingItemInst,pTempItemInst->id))pTempItemInst=colored;
 				if (ingItemInst != nullptr)
 				{
 					if (ingItemInst->getItem()->hasCraftingRemainingItem())
@@ -2706,7 +2708,7 @@ void PlayerConnection::handleCraftItem(shared_ptr<CraftItemPacket> packet)
 			player->drop(pTempItemInst);
 		}
 
-		if( pTempItemInst->id == Item::map_Id )
+		if( pTempItemInst->id == Item::map_Id || ShulkerBoxes::isBox(pTempItemInst->id) )
 		{
 			// 4J Stu - Maps need to have their aux value update, so the client should always be assumed to be wrong
 			// This is how the Java works, as the client also incorrectly predicts the auxvalue of the mapItem
@@ -2843,3 +2845,4 @@ bool PlayerConnection::isGuest()
 		return isGuest;
 	}
 }
+

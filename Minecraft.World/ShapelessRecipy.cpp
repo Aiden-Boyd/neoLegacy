@@ -11,6 +11,7 @@
 #include "Recipy.h"
 #include "Recipes.h"
 #include "ShapelessRecipy.h"
+#include "ShulkerBoxRecolor.h"
 
 ShapelessRecipy::ShapelessRecipy(ItemInstance *result, vector<ItemInstance *> *ingredients, _eGroupType egroup) :
 	result(result),
@@ -44,6 +45,12 @@ const ItemInstance *ShapelessRecipy::getResultItem()
 
 bool ShapelessRecipy::matches(shared_ptr<CraftingContainer> craftSlots, Level *level) 
 {
+	// Reject extra stacks for box recipes; the legacy matcher otherwise accepts
+	// repeated copies of an already matched ingredient.
+	if(ShulkerBoxes::isBox(result->id)) {
+		unsigned int occupied=0;for(unsigned int i=0;i<craftSlots->getContainerSize();++i)if(craftSlots->getItem(i))++occupied;
+		if(occupied!=ingredients->size())return false;
+	}
 	vector <ItemInstance *> tempList = *ingredients;
 	
 	for (int y = 0; y < 3; y++) 
@@ -81,6 +88,9 @@ bool ShapelessRecipy::matches(shared_ptr<CraftingContainer> craftSlots, Level *l
 
 shared_ptr<ItemInstance> ShapelessRecipy::assemble(shared_ptr<CraftingContainer> craftSlots) 
 {
+	if(craftSlots&&ShulkerBoxes::isBox(result->id)) for(unsigned int i=0;i<craftSlots->getContainerSize();++i) {
+		if(auto colored=ShulkerBoxes::recolor(craftSlots->getItem(i),result->id))return colored;
+	}
 	return result->copy();
 }
 
@@ -244,3 +254,4 @@ ShapelessRecipy* ShapelessRecipy::readFromStream(DataInputStream* dis) {
 
 	return new ShapelessRecipy(resultItem, ingredients, (Recipy::_eGroupType)groupType);
 }
+

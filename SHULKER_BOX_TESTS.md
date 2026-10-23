@@ -1,6 +1,6 @@
 # Shulker box candidate
 
-Branch `feature/shulker-boxes`, based on the accepted-compilation End city and
+Branch `feature/shulker-box-polish` (based on `feature/shulker-boxes`), based on the accepted-compilation End city and
 shulker candidate. The previous build remains separately downloadable. This is
 a Windows64 build for testing through the existing Steam/Proton setup on Bazzite.
 In-game/controller acceptance is still required; compilation and fixtures alone
@@ -28,18 +28,35 @@ do not establish vanilla CU59 parity.
 - Corrected the missing comma before the first shulker sound family, which had
   concatenated two names and shifted later sound mappings.
 
+## Recoloring and dispenser additions
+
+All 256 source-color/dye combinations are registered using ordinary synchronized
+shapeless recipes. Classic crafting copies the actual input box. Console crafting
+uses the precise inventory ingredient selected by both the client prediction and
+the server; the server refreshes the final box result. Names, stored item tags and
+other portable box metadata are deep-copied. The controller inventory combine
+action also accepts dye applied to a box. Extra ingredient stacks are rejected.
+The console crafting list groups all boxes into one family and reserves space
+for its 256 recolors plus the shell/chest recipe, avoiding hidden recipes and
+exhausting horizontal slots. No persisted item classification is changed.
+
+Dispensers place a box in the adjacent facing cell when placement is allowed,
+restore its inventory/name, then consume exactly one item. The box faces up if
+there is a non-air block below, otherwise it follows the dispenser facing.
+Blocked, out-of-height, failed and client-side placements retain the item and
+use the existing failure outcome. Droppers keep their existing ejection/transfer
+behavior. Every box color uses this placement behavior.
+
 ## Remaining work
 
-Dye recipes are deliberately not registered yet: the console crafting path must
-preserve filled-box NBT before recoloring is enabled. Colored boxes other than
-purple currently come from Creative. Dispenser auto-placement, cauldron washing,
-precise lid entity-push parity and all dedicated box sound/particle variations
+Cauldron washing, precise lid entity-push parity and all dedicated box sound/particle variations
 remain to audit. Breaking particles currently reuse purpur. This batch does not
 add Mending or certify the earlier End features as in-game accepted.
 
 ## Automated verification
 
-Run `python tests/shulker_box_regression.py`. It compiles production box code
+Run `python tests/shulker_box_regression.py` and
+`python tests/shulker_box_polish_regression.py`. They compile production box code
 against a focused engine fixture and checks all colors through save/break/place,
 deep-copy isolation, retained custom NBT/names, repeated removal, nested-box and
 invalid-save rejection, Creative/client drop guards, six orientations, blocked
@@ -47,14 +64,21 @@ opening and multiple viewers. Extracted production slot/quick-move methods are
 checked for rejected nested placement and allowed ordinary transfer. A separate
 compiled check validates the complete sound-name table, including the shulker
 and box indexes. Existing content/regression checks and the full Windows build
-remain in the candidate workflow. These fixtures do not simulate actual network,
-GPU, console crafting or hopper ticks.
+remain in the candidate workflow. The polish fixture also compiles the actual
+recipe-registration loop, classic assembly/matching, both console ingredient
+consumption loops, dispenser dispatch and placement. It covers every recolor,
+the UI variant bound, exact consumed source, metadata isolation, all six dispenser
+facings with/without support, and failed placement. These fixtures do not simulate actual network,
+GPU, full crafting UI interaction or hopper ticks.
 
 ## In-game acceptance
 
 Use a copied or disposable world. Both multiplayer players must run this build.
 
-1. Craft a purple box in both crafting interfaces. In Creative find all colors;
+1. Craft a purple box in both crafting interfaces. Recolor filled and named boxes
+   with every dye in both interfaces, including when several boxes share a color.
+   Verify only the selected input is consumed and its contents/name survive.
+   In Creative find all colors;
    verify names, inventory/held/dropped appearance and placed textures.
 2. Place on floors, walls and ceilings. Open with a controller; check lid movement,
    opening obstruction, close sound, collisions and adjacent boxes staying separate.
@@ -64,7 +88,10 @@ Use a copied or disposable world. Both multiplayer players must run this build.
 4. Try normal placement, shift-click, controller swaps and hopper insertion of
    every box color into another box. They must fail without losing the source
    item. Ordinary items should transfer; hoppers should extract normally.
-5. Break empty and filled boxes in Creative. Exercise piston breaking, explosions
+5. Dispense filled, named boxes in all six directions, with/without support and
+   with blocked target cells. A failed placement must retain the item. Confirm
+   droppers still eject/transfer rather than place.
+   Break empty and filled boxes in Creative. Exercise piston breaking, explosions
    and comparator output in the disposable world; record differences from CU59.
 6. Have two players open the same box, move items, close in different orders,
    disconnect and reconnect. Verify no stuck lid, inventory divergence or dupes.
