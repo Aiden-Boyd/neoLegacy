@@ -89,7 +89,7 @@ enum {TN_MISC_TUNNEL,TN_MISC_PARTICLEFIELD,TN_MISC_BEACON_BEAM,GL_LIGHTING,GL_BL
 struct ResourceLocation {explicit ResourceLocation(int){}};
 inline void glEnable(int){}inline void glDisable(int){}inline void glBlendFunc(int,int){}
 struct TileEntityRenderer {virtual ~TileEntityRenderer()=default;virtual void render(shared_ptr<TileEntity>,double,double,double,float,bool,float,bool){}void bindTexture(ResourceLocation*){}};
-struct Tesselator {struct Vertex {double x,y,z,u,v;};vector<Vertex> vertices;static Tesselator *getInstance(){static Tesselator t;return &t;}void begin(){}void end(){}void color(float,float,float,float){}void vertexUV(double x,double y,double z,double u,double v){vertices.push_back({x,y,z,u,v});}};
+struct Tesselator {struct Vertex {double x,y,z,u,v;};vector<Vertex> vertices;static Tesselator *getInstance(){static Tesselator t;return &t;}void begin(){}void end(){}void color(float,float,float,float){}void color(int,int,int,int){}void vertexUV(double x,double y,double z,double u,double v){vertices.push_back({x,y,z,u,v});}};
 '''
 RENDER_TEST=r'''
 #include "Minecraft.Client/EndGatewayRenderer.cpp"

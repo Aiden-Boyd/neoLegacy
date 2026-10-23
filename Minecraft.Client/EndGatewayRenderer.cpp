@@ -50,7 +50,7 @@ void EndGatewayRenderer::render(shared_ptr<TileEntity> tile,double x,double y,do
             double bottom=y+.5-height,top=y+.5+height;
             double x0=x+.5-radius,x1=x+.5+radius,z0=z+.5-radius,z1=z+.5+radius;
             double corners[4][2]={{x0,z0},{x1,z0},{x1,z1},{x0,z1}};
-            t->begin();t->color(r,0,1,pass==0?.8f:.2f);
+            t->begin();t->color(r,0.f,1.f,pass==0?.8f:.2f);
             float v0=float(-time*.2),v1=v0+float(height*2);
             for(int side=0;side<4;++side) {
                 int next=(side+1)%4;
