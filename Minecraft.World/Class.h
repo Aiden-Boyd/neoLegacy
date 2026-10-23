@@ -296,6 +296,7 @@ enum eINSTANCEOF
 
 	//TU 31
 	eType_WAKEPARTICLE,
+	eType_ENDRODPARTICLE,
 
 	// === Tile Entities === //
 	
@@ -527,6 +528,7 @@ public:
 		classes->push_back( SUBCLASS(eType_FIREWORKSSTARTERPARTICLE)->addParent(eTYPE_ENTITY) );
 		classes->push_back( SUBCLASS(eType_FIREWORKSSPARKPARTICLE)->addParent(eTYPE_ENTITY) );
 		classes->push_back( SUBCLASS(eType_FIREWORKSOVERLAYPARTICLE)->addParent(eTYPE_ENTITY) );
+		classes->push_back( SUBCLASS(eType_ENDRODPARTICLE)->addParent(eTYPE_ENTITY) );
 		classes->push_back( SUBCLASS(eTYPE_TILEENTITY) );
 		classes->push_back( SUBCLASS(eTYPE_CHESTTILEENTITY				)->addParent( eTYPE_TILEENTITY			) );
 		classes->push_back( SUBCLASS(eTYPE_MOBSPAWNERTILEENTITY			)->addParent( eTYPE_TILEENTITY			) );

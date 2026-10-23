@@ -136,6 +136,30 @@ int main(){
  }
 }
 '''
+PARTICLE_STUBS=r'''
+#pragma once
+#include "../stdafx.h"
+using eINSTANCEOF=int;
+enum {eType_ENDRODPARTICLE=900};
+struct SharedConstants {static const int FULLBRIGHT_LIGHTVALUE=15728880;};
+struct Particle {
+ double x=0,y=0,z=0,xo=0,yo=0,zo=0,xd=0,yd=0,zd=0;
+ float size=1,alpha=1,rCol=1,gCol=1,bCol=1;int age=0,lifetime=1,texture=0;bool noPhysics=false,removed=false;Random rng,*random=&rng;
+ Particle(Level*,double a,double b,double c):x(a),y(b),z(c){}
+ virtual ~Particle()=default;virtual eINSTANCEOF GetType()=0;virtual void tick(){}
+ virtual int getLightColor(float){return 0;}virtual float getBrightness(float){return 0;}
+ void setColor(float r,float g,float b){rCol=r;gCol=g;bCol=b;}void setMiscTex(int i){texture=i;}
+ void setAlpha(float a){alpha=a;}void remove(){removed=true;}void move(double a,double b,double c,bool){x+=a;y+=b;z+=c;}
+};
+'''
+PARTICLE_TEST=r'''
+#include "Minecraft.Client/EndRodParticle.h"
+int main(){Level w;EndRodParticle p(&w,0,0,0,.005,.005,.005);
+ assert(p.GetType()==eType_ENDRODPARTICLE&&p.getBrightness(0)==1&&p.getLightColor(0)==SharedConstants::FULLBRIGHT_LIGHTVALUE);
+ for(int tick=0;tick<72&&!p.removed;++tick){p.tick();assert(p.texture>=160&&p.texture<=167);}
+ assert(p.removed&&p.alpha<1&&p.rCol>=.95f&&p.bCol>=.78f);
+}
+'''
 def main():
  spec=importlib.util.spec_from_file_location('base',ROOT/'tests/base_stability_regression.py');base=importlib.util.module_from_spec(spec);spec.loader.exec_module(base)
  with tempfile.TemporaryDirectory() as tmp:
@@ -147,5 +171,10 @@ def main():
   source=(ROOT/'Minecraft.Client/TileRenderer.cpp').read_text(encoding='utf-8')
   start=source.index('bool TileRenderer::tesselateEndPlant(');end=source.index('void TileRenderer::renderTile(',start)
   base.compile_and_run(folder,'chorus_geometry','#include "EndPlantTiles.cpp"\n'+RENDER_STUBS+source[start:end]+RENDER_TEST)
+  (folder/'Minecraft.Client').mkdir();(folder/'Minecraft.World').mkdir()
+  (folder/'Minecraft.Client/Particle.h').write_text(PARTICLE_STUBS,encoding='utf-8')
+  for name in ['Random.h','SharedConstants.h']:(folder/'Minecraft.World'/name).write_text('#include "../Minecraft.Client/Particle.h"\n',encoding='utf-8')
+  shutil.copyfile(ROOT/'Minecraft.Client/EndRodParticle.h',folder/'Minecraft.Client/EndRodParticle.h')
+  base.compile_and_run(folder,'end_rod_particle',PARTICLE_TEST)
  print('Fixture checks passed; in-game acceptance remains required.')
 if __name__=='__main__':main()
