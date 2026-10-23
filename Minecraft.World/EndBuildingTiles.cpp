@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "net.minecraft.h"
+#include "IconRegister.h"
 #include "EndBuildingTiles.h"
 
 PurpurPillarTile::PurpurPillarTile(int id) : RotatedPillarTile(id, Material::stone)

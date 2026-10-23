@@ -131,7 +131,7 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         folder = Path(tmp)
         (folder / "stdafx.h").write_text(STUBS, encoding="utf-8")
-        for name in ("Tile.h", "Facing.h", "net.minecraft.h", "net.minecraft.world.level.h", "net.minecraft.world.level.tile.h"):
+        for name in ("Tile.h", "Facing.h", "IconRegister.h", "net.minecraft.h", "net.minecraft.world.level.h", "net.minecraft.world.level.tile.h"):
             (folder / name).write_text('#include "stdafx.h"\n', encoding="utf-8")
         for name in ("EndBuildingTiles", "RotatedPillarTile", "HalfSlabTile"):
             for suffix in (".cpp", ".h"):
