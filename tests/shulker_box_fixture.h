@@ -11,8 +11,9 @@
 using namespace std;
 #define byte unsigned char
 using eINSTANCEOF=int;
-enum {eTYPE_SHULKERBOXENTITY=20,IDS_TILE_SHULKER_BOX=900,eSoundType_SHULKER_BOX_OPEN=1,eSoundType_SHULKER_BOX_CLOSE=2};
-struct App {wstring GetString(int){return L"Shulker Box";}};inline App app;
+enum {eTYPE_SHULKERBOXENTITY=20,IDS_TILE_SHULKER_BOX=900,IDS_SHULKER_BOX_MORE=901,eSoundType_SHULKER_BOX_OPEN=1,eSoundType_SHULKER_BOX_CLOSE=2};
+struct App {const wchar_t*GetString(int id){return id==IDS_SHULKER_BOX_MORE?L"... and %d more":L"Shulker Box";}};inline App app;
+#define swprintf_s swprintf
 struct Tag {enum{TAG_String=8,TAG_List=9,TAG_Compound=10};virtual ~Tag()=default;virtual Tag *copy()=0;virtual int getId(){return TAG_Compound;}};
 template<class T>struct ListTag:Tag {vector<T*> values;~ListTag(){for(auto p:values)delete p;}int getId()override{return TAG_List;}void add(T*p){values.push_back(p);}int size(){return int(values.size());}T*get(int i){return values.at(i);}Tag*copy()override{auto r=new ListTag;for(auto p:values)r->add(static_cast<T*>(p->copy()));return r;}};
 struct CompoundTag:Tag {
@@ -79,3 +80,5 @@ struct Tile {
 struct BaseEntityTile:Tile {BaseEntityTile(int i,Material*,bool):Tile(i){}void onRemove(Level*l,int x,int y,int z,int,int)override{l->removeTileEntity(x,y,z);}};
 struct ContainerOpenPacket {enum {SHULKER_BOX=18};};
 struct AbstractContainerMenu {static int getRedstoneSignalFromContainer(shared_ptr<Container>){return 0;}};
+struct HtmlString {wstring text;explicit HtmlString(wstring s):text(s){}};
+struct TileItem {explicit TileItem(int){}void setMaxStackSize(int){}virtual void appendHoverText(shared_ptr<ItemInstance>,shared_ptr<Player>,vector<HtmlString>*,bool){}};

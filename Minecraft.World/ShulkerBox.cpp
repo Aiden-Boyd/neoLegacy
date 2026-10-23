@@ -10,6 +10,7 @@
 #include "CompoundTag.h"
 #include "Facing.h"
 #include "SoundTypes.h"
+#include "IconRegister.h"
 
 namespace {
 int facing(int data) {return data>=0&&data<6?data:1;}

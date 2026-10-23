@@ -17,5 +17,5 @@ void ShulkerBoxItem::appendHoverText(shared_ptr<ItemInstance> item,shared_ptr<Pl
         if(total<5)lines->push_back(HtmlString(stored->getHoverName()+L" x"+std::to_wstring(stored->count)));
         ++total;
     }
-    if(total>5){wchar_t buffer[128];swprintf_s(buffer,128,app.GetString(IDS_SHULKER_BOX_MORE).c_str(),total-5);lines->push_back(HtmlString(wstring(buffer)));}
+    if(total>5){wchar_t buffer[128];swprintf_s(buffer,128,app.GetString(IDS_SHULKER_BOX_MORE),total-5);lines->push_back(HtmlString(wstring(buffer)));}
 }

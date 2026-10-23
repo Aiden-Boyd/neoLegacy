@@ -63,6 +63,9 @@ int main(){
  struct ClientBox:ChestTileEntity {int getContainerType()override{return ContainerOpenPacket::SHULKER_BOX;}};
  Slot clientSlot;clientSlot.container=make_shared<ClientBox>();assert(!clientSlot.mayPlace(nestedBox));
  inventory->setItem(0,make_shared<ItemInstance>(264,3,0));assert(menu.quickMoveStack(player,27)&&menu.moves==1);
+ ShulkerBoxItem tooltipItem(229-256);auto carried=make_shared<ItemInstance>(229,1,0);auto rootTag=new CompoundTag();auto previewTag=new CompoundTag();auto previewList=new ListTag<CompoundTag>();
+ for(int i=0;i<6;++i){auto e=new CompoundTag();e->putByte(L"Slot",i);auto stored=make_shared<ItemInstance>(264,3,0);stored->name=L"Diamonds";stored->save(e);previewList->add(e);}previewTag->put(L"Items",previewList);rootTag->put(L"BlockEntityTag",previewTag);carried->setTag(rootTag);
+ vector<HtmlString>lines;tooltipItem.appendHoverText(carried,player,&lines,false);assert(lines.size()==6&&lines[0].text==L"Diamonds x3"&&lines[5].text==L"... and 1 more");
  cout<<"shulker boxes: 16 colors, save/place/break lifecycle, NBT isolation, nested rejection, Creative/client guards and six facing clearances passed\n";
 }
 '''
@@ -70,10 +73,10 @@ def main():
  spec=importlib.util.spec_from_file_location('base',ROOT/'tests/base_stability_regression.py');base=importlib.util.module_from_spec(spec);spec.loader.exec_module(base)
  with tempfile.TemporaryDirectory() as temp:
   folder=Path(temp);shutil.copyfile(ROOT/'tests/shulker_box_fixture.h',folder/'stdafx.h')
-  for name in ['BaseEntityTile.h','ChestTileEntity.h','net.minecraft.world.level.h','net.minecraft.world.level.tile.h','net.minecraft.world.entity.player.h','net.minecraft.world.phys.h','ItemInstance.h','ContainerOpenPacket.h','AbstractContainerMenu.h','CompoundTag.h','Facing.h','SoundTypes.h']:(folder/name).write_text('#include "stdafx.h"\n')
-  for name in ['ShulkerBox.h','ShulkerBox.cpp']:shutil.copyfile(ROOT/'Minecraft.World'/name,folder/name)
+  for name in ['BaseEntityTile.h','ChestTileEntity.h','net.minecraft.world.level.h','net.minecraft.world.level.tile.h','net.minecraft.world.entity.player.h','net.minecraft.world.phys.h','ItemInstance.h','ContainerOpenPacket.h','AbstractContainerMenu.h','CompoundTag.h','Facing.h','SoundTypes.h','IconRegister.h','TileItem.h','HtmlString.h']:(folder/name).write_text('#include "stdafx.h"\n')
+  for name in ['ShulkerBox.h','ShulkerBox.cpp','ShulkerBoxItem.h','ShulkerBoxItem.cpp']:shutil.copyfile(ROOT/'Minecraft.World'/name,folder/name)
   slot=(ROOT/'Minecraft.World/Slot.cpp').read_text();menu=(ROOT/'Minecraft.World/ContainerMenu.cpp').read_text()
-  base.compile_and_run(folder,'shulker_boxes','#include "ShulkerBox.cpp"\n'+SLOTS+method(slot,'bool Slot::mayPlace(')+method(slot,'void Slot::swap(')+method(menu,'shared_ptr<ItemInstance> ContainerMenu::quickMoveStack(')+TEST)
+  base.compile_and_run(folder,'shulker_boxes','#include "ShulkerBox.cpp"\n#include "ShulkerBoxItem.cpp"\n'+SLOTS+method(slot,'bool Slot::mayPlace(')+method(slot,'void Slot::swap(')+method(menu,'shared_ptr<ItemInstance> ContainerMenu::quickMoveStack(')+TEST)
   shutil.copyfile(ROOT/'Minecraft.World/SoundTypes.h',folder/'SoundTypes-real.h')
   sounds=(ROOT/'Minecraft.Client/Common/Audio/SoundNames.cpp').read_text()
   start=sounds.index('const WCHAR *ConsoleSoundEngine::wchSoundNames');end=sounds.index('};',start)+2
