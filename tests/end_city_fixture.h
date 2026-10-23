@@ -10,6 +10,8 @@
 #include <tuple>
 #include <vector>
 #include <iostream>
+#include <fstream>
+#include <cstdlib>
 using namespace std;
 using fixture_byte=unsigned char;
 #define byte fixture_byte
@@ -89,14 +91,14 @@ struct DerivedLevelData:LevelData {LevelData *wrapped;explicit DerivedLevelData(
 struct Dimension {int id=1,width=256;int getXZSize(){return width;}};
 struct Level {
  static constexpr int genDepth=128,genDepthBits=7,genDepthBitsPlusFour=11,maxBuildHeight=256;
- bool isClientSide=false,loaded=true,liquid=false;int difficulty=2,particles=0;int64_t seed=42;Dimension dim,*dimension=&dim;LevelData meta;
+ bool isClientSide=false,loaded=true,liquid=false;int difficulty=2,particles=0;bool clipWrites=false;int clipX=0,clipZ=0;int64_t seed=42;Dimension dim,*dimension=&dim;LevelData meta;
  map<tuple<int,int,int>,int> blocks,data;map<tuple<int,int,int>,shared_ptr<TileEntity>> tileEntities;vector<shared_ptr<Entity>> entities,nearby;vector<AABB*> collisions;shared_ptr<Player> nearest;
  int getTile(int x,int y,int z){auto i=blocks.find({x,y,z});return i==blocks.end()?0:i->second;}bool isEmptyTile(int x,int y,int z){return getTile(x,y,z)==0;}bool hasChunksAt(int,int,int,int,int,int){return loaded;}
  vector<AABB*> *getCubes(shared_ptr<Entity>,AABB *box){collisions.clear();for(int x=int(floor(box->x0));x<int(ceil(box->x1));++x)for(int y=int(floor(box->y0));y<int(ceil(box->y1));++y)for(int z=int(floor(box->z0));z<int(ceil(box->z1));++z){int id=getTile(x,y,z);if(id&&id!=198&&id!=177)collisions.push_back(box);}return &collisions;}
  bool containsAnyLiquid(AABB*){return liquid;}vector<shared_ptr<Entity>> *getEntities(shared_ptr<Entity> except,AABB *box){nearby.clear();for(auto e:entities)if(e!=except&&e->x>=box->x0&&e->x<=box->x1&&e->y>=box->y0&&e->y<=box->y1&&e->z>=box->z0&&e->z<=box->z1)nearby.push_back(e);return &nearby;}
  shared_ptr<Player> getNearestAttackablePlayer(shared_ptr<Entity>,int){return nearest&&!nearest->creative?nearest:nullptr;}bool addEntity(shared_ptr<Entity> e){entities.push_back(e);return true;}void addParticle(int,double,double,double,double,double,double){++particles;}
  int64_t getSeed(){return seed;}LevelData *getLevelData(){return &meta;}shared_ptr<TileEntity> getTileEntity(int x,int y,int z){auto i=tileEntities.find({x,y,z});return i==tileEntities.end()?nullptr:i->second;}
- void setTileAndData(int x,int y,int z,int id,int d,int){auto key=make_tuple(x,y,z);int old=getTile(x,y,z);blocks[key]=id;data[key]=d;if(old!=id){tileEntities.erase(key);if(id==54)tileEntities[key]=make_shared<ChestTileEntity>();if(id==144)tileEntities[key]=make_shared<SkullTileEntity>();if(id==117)tileEntities[key]=make_shared<BrewingStandTileEntity>();}}
+ void setTileAndData(int x,int y,int z,int id,int d,int){if(clipWrites)assert(int(floor(x/16.))==clipX&&int(floor(z/16.))==clipZ);auto key=make_tuple(x,y,z);int old=getTile(x,y,z);blocks[key]=id;data[key]=d;if(old!=id){tileEntities.erase(key);if(id==54)tileEntities[key]=make_shared<ChestTileEntity>();if(id==144)tileEntities[key]=make_shared<SkullTileEntity>();if(id==117)tileEntities[key]=make_shared<BrewingStandTileEntity>();}}
 };
 struct Difficulty {static constexpr int PEACEFUL=0;};
 struct ItemFrame:Entity {shared_ptr<ItemInstance> item;int direction;ItemFrame(Level*l,int x,int y,int z,int d):Entity(l),direction(d){double dx[4]={0,-.5625,0,.5625},dz[4]={.5625,0,-.5625,0};setPos(x+.5+dx[d],y+.5,z+.5+dz[d]);}eINSTANCEOF GetType() override{return eTYPE_ITEM_FRAME;}void setItem(shared_ptr<ItemInstance> i,bool){item=i;}};

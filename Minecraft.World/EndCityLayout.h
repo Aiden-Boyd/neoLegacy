@@ -74,12 +74,12 @@ struct Plan {
             int r=(rotation+direction)&3,bridge=add("bridge_end",start,r),length=0,rise=0;
             int segments=2+random.nextInt(5);
             for(int n=0;n<segments;++n) {
-                int choice=random.nextInt(4);const char *piece=choice==0?"bridge_steep_stairs":choice==1?"bridge_gentle_stairs":"bridge_piece";
-                bridge=add(piece,Part{nullptr,start,r,false}.world({0,rise,length}),r);
-                length+=choice==1?8:4;if(choice<2) rise+=choice==0?4:4;
+                int choice=random.nextInt(4);if(choice<2&&start.y+rise-4<y+4) choice=2;const char *piece=choice==0?"bridge_steep_stairs":choice==1?"bridge_gentle_stairs":"bridge_piece";
+                bridge=add(piece,Part{nullptr,start,r,false}.world({0,rise-(choice<2?4:0),length}),r);
+                length+=choice==1?8:4;if(choice<2) rise-=4;
             }
             int end=add("bridge_end",Part{nullptr,start,r,false}.world({0,rise,length}),r);
-            Point housePos=parts[end].world({-3,1,2});int otherRoof=house(housePos,r,random);
+            Point housePos=parts[end].world({7,1,10});int otherRoof=house(housePos,(r+2)&3,random);
             tower(otherRoof,random,random.nextInt(3)==0);
             if(!hasShip&&random.nextInt(3)==0) {child(end,"ship",{-8,2,22});hasShip=true;}
         }
