@@ -84,9 +84,10 @@ int main(){
  if(failure>=5){auto original=w.blocks;for(auto b:original){if(failure==5)w.data[b.first]=1;if(failure==6){auto[x,y,z]=b.first;w.blocks[{x,y+1,z}]=1;}if(failure==7)w.blocks[b.first]=11;if(failure==8)w.blocks[b.first]=1;}}
  FrostWalkerEnchantment::freezeNearby(e,&w,0,64,0,2);assert(frozen(w)==0&&w.scheduled.empty());e->onGround=true;}
  // Height limits, zero levels, negative coordinates and floor-based movement.
- for(int y:{0,256}){Level w;lake(w,y-1);FrostWalkerEnchantment::freezeNearby(e,&w,0,y,0,2);assert(frozen(w)==0);}
+ for(int y:{0,257}){Level w;lake(w,y-1);FrostWalkerEnchantment::freezeNearby(e,&w,0,y,0,2);assert(frozen(w)==0);}
  {Level w;lake(w);FrostWalkerEnchantment::freezeNearby(e,&w,0,64,0,0);assert(frozen(w)==0);}
  {Level w;lake(w);e->x=-.1;e->z=-.1;FrostWalkerEnchantment::freezeNearby(e,&w,-1,64,-1,2);assert(frozen(w)>0);e->x=e->z=.5;}
+ {Level w;lake(w,255);e->box.y0=256;FrostWalkerEnchantment::freezeNearby(e,&w,0,256,0,2);assert(frozen(w)>0);e->box.y0=64;}
  // Movement hook uses boots, runs once per cell change, and never runs on clients.
  {Level w;lake(w);e->level=&w;e->equipment[0]=boots;e->frostPositionValid=false;EnchantmentHelper::frostCalls=0;e->updateFrostWalking();assert(frozen(w)==0);e->equipment[1]=boots;e->x=1.1;e->updateFrostWalking();assert(frozen(w)>0);int n=EnchantmentHelper::frostCalls;e->x=1.9;e->updateFrostWalking();assert(EnchantmentHelper::frostCalls==n);e->x=2.1;e->updateFrostWalking();assert(EnchantmentHelper::frostCalls==n+1);w.isClientSide=true;e->x=3.1;e->updateFrostWalking();assert(EnchantmentHelper::frostCalls==n+1);e->x=e->z=.5;}
  FrostedIceTile ice(212);Tile::lightBlock[212]=3;IconRegister icons;ice.registerIcons(&icons);assert(!ice.isSilkTouchable()&&ice.cloneTileId(nullptr,0,0,0)==0&&ice.getResourceCount(nullptr)==0);

@@ -21,7 +21,7 @@ bool FrostWalkerEnchantment::isCompatibleWith(Enchantment *other) const
 }
 void FrostWalkerEnchantment::freezeNearby(shared_ptr<LivingEntity> entity, Level *level, int x, int y, int z, int enchantmentLevel)
 {
-    if (level->isClientSide || !entity->onGround || enchantmentLevel <= 0 || y <= 0 || y >= Level::maxBuildHeight) return;
+    if (level->isClientSide || !entity->onGround || enchantmentLevel <= 0 || y <= 0 || y > Level::maxBuildHeight) return;
     const int radius = min(16, 2 + min(enchantmentLevel, 14));
     const int surface = y - 1;
     for (int xx = x - radius; xx <= x + radius; ++xx)
