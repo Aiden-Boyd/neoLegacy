@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "EndOuterFeatures.h"
 #include "EndIslandTerrain.h"
+#include "ChunkSource.h"
 #include "Facing.h"
 #include "Random.h"
 #include "net.minecraft.world.level.h"
@@ -56,6 +57,10 @@ void EndOuterFeatures::placeSmallIsland(Level *level,Random *random,int x,int y,
 }
 void EndOuterFeatures::decorate(Level *level,Random *random,int chunkX,int chunkZ,float islandHeight) {
     if(level->isClientSide||!EndIslandTerrain::isOuterChunk(chunkX,chunkZ)) return;
+    int half=END_LEVEL_MIN_WIDTH/2;
+    // The final population row/column has an empty neighbor outside the finite
+    // world. Do not place a feature whose footprint could cross that border.
+    if(chunkX< -half||chunkZ< -half||chunkX+1>=half||chunkZ+1>=half) return;
     int xo=chunkX*16,zo=chunkZ*16;
     // Population has the current chunk and its +X/+Z neighbors available.
     // All placement and neighbor reads stay within that 32x32 block area.

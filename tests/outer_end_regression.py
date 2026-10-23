@@ -132,6 +132,8 @@ int main(){
  }
  assert(smallIslands>0&&trees>0);
  Level center;center.flat=true;Random r(0);EndOuterFeatures::decorate(&center,&r,0,0,80);assert(center.writes.empty());
+ for(int x:{-129,127,128}){Level edge;edge.flat=true;EndOuterFeatures::decorate(&edge,&r,x,80,80);assert(edge.writes.empty());}
+ for(int z:{-129,127,128}){Level edge;edge.flat=true;EndOuterFeatures::decorate(&edge,&r,80,z,80);assert(edge.writes.empty());}
  cout<<"chorus support, bounds, blocked growth and deterministic outer decoration passed\n";
 }
 '''
@@ -178,6 +180,7 @@ def main():
   (folder/'Biome.h').write_text('#pragma once\n',encoding='utf-8')
   bounds=(ROOT/'Minecraft.World/ChunkSource.h').read_text(encoding='utf-8').split('class ChunkSource')[0]
   (folder/'EndBounds.h').write_text('#define _LARGE_WORLDS\n'+bounds,encoding='utf-8')
+  (folder/'ChunkSource.h').write_text('#pragma once\n#include "EndBounds.h"\n',encoding='utf-8')
   (folder/'Mth.h').write_text('#pragma once\nstruct Mth {static int64_t lfloor(double v){return int64_t(std::floor(v));}};\n',encoding='utf-8')
   for name in ['Random.h','Random.cpp','Synth.h','ImprovedNoise.h','ImprovedNoise.cpp','PerlinNoise.h','PerlinNoise.cpp','SimplexNoise.h','SimplexNoise.cpp','EndIslandTerrain.h','EndOuterFeatures.h','EndOuterFeatures.cpp']:shutil.copyfile(ROOT/'Minecraft.World'/name,folder/name)
   includes='#include "EndBounds.h"\n#include "Random.cpp"\n#include "ImprovedNoise.cpp"\n#include "PerlinNoise.cpp"\n#include "SimplexNoise.cpp"\n#include "EndIslandTerrain.h"\n'
