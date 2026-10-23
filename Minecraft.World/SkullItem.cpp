@@ -7,9 +7,9 @@
 #include "net.minecraft.world.h"
 #include "SkullItem.h"
 
-const unsigned int SkullItem::NAMES[SKULL_COUNT] = {IDS_ITEM_SKULL_SKELETON, IDS_ITEM_SKULL_WITHER, IDS_ITEM_SKULL_ZOMBIE, IDS_ITEM_SKULL_CHARACTER, IDS_ITEM_SKULL_CREEPER};
+const unsigned int SkullItem::NAMES[SKULL_COUNT] = {IDS_ITEM_SKULL_SKELETON, IDS_ITEM_SKULL_WITHER, IDS_ITEM_SKULL_ZOMBIE, IDS_ITEM_SKULL_CHARACTER, IDS_ITEM_SKULL_CREEPER, IDS_ITEM_SKULL_DRAGON};
 
-wstring SkullItem::ICON_NAMES[SKULL_COUNT] = {L"skeleton", L"wither", L"zombie", L"char", L"creeper"};
+wstring SkullItem::ICON_NAMES[SKULL_COUNT] = {L"skeleton", L"wither", L"zombie", L"char", L"creeper", L"dragon"};
 
 SkullItem::SkullItem(int id) : Item(id)
 {

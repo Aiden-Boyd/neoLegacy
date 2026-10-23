@@ -1612,7 +1612,12 @@ void LivingEntity::travel(float xa, float ya)
 
 		if (!level->isClientSide || (level->hasChunkAt(static_cast<int>(x), 0, static_cast<int>(z)) && level->getChunkAt(static_cast<int>(x), static_cast<int>(z))->loaded))
 		{
-			yd -= 0.08;
+			if (hasEffect(MobEffect::levitation))
+            {
+                yd += (0.05 * (getEffect(MobEffect::levitation)->getAmplifier()+1) - yd) * 0.2;
+                fallDistance = 0;
+            }
+            else yd -= 0.08;
 		}
 		else if (y > 0)
 		{

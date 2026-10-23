@@ -11,6 +11,7 @@
 #include "EndIslandTerrain.h"
 #include "EndOuterFeatures.h"
 #include "EndGateway.h"
+#include "EndCityFeature.h"
 
 TheEndLevelRandomLevelSource::TheEndLevelRandomLevelSource(Level *level, int64_t seed)
 {
@@ -367,6 +368,7 @@ void TheEndLevelRandomLevelSource::calcWaterDepths(ChunkSource *parent, int xt, 
 void TheEndLevelRandomLevelSource::postProcess(ChunkSource *parent, int xt, int zt)
 {
 	HeavyTile::instaFall = true;
+    EndCityFeature::postProcess(level,this,xt,zt);
 	int xo = xt * 16;
 	int zo = zt * 16;
 

@@ -228,3 +228,7 @@ int DerivedLevelData::getHellScale()
 
 int DerivedLevelData::getEndGatewaysGenerated() {return wrapped->getEndGatewaysGenerated();}
 void DerivedLevelData::setEndGatewaysGenerated(int count) {wrapped->setEndGatewaysGenerated(count);}
+
+const std::set<int> &DerivedLevelData::getEndCityChunks() {return wrapped->getEndCityChunks();}
+bool DerivedLevelData::hasEndCityChunk(int x,int z) {return wrapped->hasEndCityChunk(x,z);}
+void DerivedLevelData::markEndCityChunk(int x,int z) {wrapped->markEndCityChunk(x,z);}

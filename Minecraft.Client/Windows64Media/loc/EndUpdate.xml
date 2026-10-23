@@ -35,4 +35,9 @@
   <data name="IDS_DESC_POPPED_CHORUS_FRUIT"><value>Smelt chorus fruit to make this crafting ingredient for purpur and end rods.</value></data>
   <data name="IDS_TILE_END_GATEWAY"><value>End Gateway</value></data>
   <data name="IDS_DESC_END_GATEWAY"><value>A gateway between the central island and the outer End.</value></data>
+  <data name="IDS_SHULKER"><value>Shulker</value></data>
+  <data name="IDS_ITEM_SHULKER_SHELL"><value>Shulker Shell</value></data>
+  <data name="IDS_POTION_LEVITATION"><value>Levitation</value></data>
+  <data name="IDS_ITEM_SKULL_DRAGON"><value>Dragon Head</value></data>
+  <data name="IDS_TILE_END_CITY_BANNER"><value>End City Banner</value></data>
 </root>

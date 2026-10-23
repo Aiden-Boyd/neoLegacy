@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SkullTileRenderer.h"
 #include "SkeletonHeadModel.h"
+#include "ModelPart.h"
+#include "DragonHeadModel.h"
 #include "PlayerRenderer.h"
 #include "../Minecraft.World/SkullTileEntity.h"
 #include "../Minecraft.World/net.minecraft.h"
@@ -15,6 +17,7 @@ ResourceLocation SkullTileRenderer::CREEPER_LOCATION = ResourceLocation(TN_MOB_C
 
 SkullTileRenderer::SkullTileRenderer()
 {
+	dragonModel = new DragonHeadModel();
 	skeletonModel = new SkeletonHeadModel(0, 0, 64, 32);
 	zombieModel = new SkeletonHeadModel(0, 0, 64, 64);
 }
@@ -23,6 +26,7 @@ SkullTileRenderer::~SkullTileRenderer()
 {
 	delete skeletonModel;
 	delete zombieModel;
+	delete dragonModel;
 }
 
 void SkullTileRenderer::render(shared_ptr<TileEntity> _skull, double x, double y, double z, float a, bool setColor, float alpha, bool useCompiled)
@@ -43,6 +47,11 @@ void SkullTileRenderer::renderSkull(float x, float y, float z, int face, float r
 
 	switch (type)
 	{
+	case SkullTileEntity::TYPE_DRAGON:
+    {
+        static ResourceLocation dragon(TN_MOB_ENDERDRAGON);
+        bindTexture(&dragon);model=dragonModel;break;
+    }
 	case SkullTileEntity::TYPE_WITHER:
 		bindTexture(&WITHER_SKELETON_LOCATION);
 		break;

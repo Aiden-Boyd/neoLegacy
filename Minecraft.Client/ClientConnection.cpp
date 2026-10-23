@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../Minecraft.World/EndGateway.h"
+#include "../Minecraft.World/Shulker.h"
 #include "ClientConnection.h"
 #include "MultiPlayerLevel.h"
 #include "MultiPlayerLocalPlayer.h"
@@ -579,6 +580,9 @@ void ClientConnection::handleAddEntity(shared_ptr<AddEntityPacket> packet)
 		packet->data = 0;
 		setRot = false;
 		break;
+	case AddEntityPacket::SHULKER_BULLET:
+        e=std::make_shared<ShulkerBullet>(level);e->setPos(x,y,z);
+        break;
 	case AddEntityPacket::THROWN_ENDERPEARL:
 		e = std::make_shared<ThrownEnderpearl>(level, x, y, z);
 		break;

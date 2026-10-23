@@ -66,6 +66,7 @@ public:
 	static MobEffect *saturation;
 	static MobEffect *reserved_24;
 	static MobEffect *reserved_25;
+	static MobEffect *levitation;
 	static MobEffect *reserved_26;
 	static MobEffect *reserved_27;
 	static MobEffect *reserved_28;

@@ -555,6 +555,7 @@ public:
 	static Tile *endPortalFrameTile;
 	static Tile *endStone;
 	static Tile *endGateway;
+	static Tile *endCityBanner;
 	static Tile *endRod;
 	static Tile *chorusPlant;
 	static Tile *chorusFlower;

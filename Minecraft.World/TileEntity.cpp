@@ -5,6 +5,7 @@
 #include "net.minecraft.world.level.tile.entity.h"
 #include "TileEntity.h"
 #include "EndGateway.h"
+#include "EndCityBanner.h"
 #include "PistonPieceEntity.h"
 
 
@@ -14,6 +15,7 @@ TileEntity::classToIdMapType TileEntity::classIdMap = unordered_map<eINSTANCEOF,
 
 void TileEntity::staticCtor()
 {
+	TileEntity::setId(EndCityBannerEntity::create,eTYPE_ENDCITYBANNERENTITY,L"EndCityBanner");
 	TileEntity::setId(EndGatewayTileEntity::create,eTYPE_ENDGATEWAYTILEENTITY,L"EndGateway");
 	TileEntity::setId(FurnaceTileEntity::create, eTYPE_FURNACETILEENTITY, L"Furnace");
 	TileEntity::setId(ChestTileEntity::create, eTYPE_CHESTTILEENTITY, L"Chest");

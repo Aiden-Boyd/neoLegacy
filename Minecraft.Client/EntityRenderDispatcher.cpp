@@ -88,6 +88,7 @@
 #include "GuardianRenderer.h"
 #include "GuardianModel.h"
 #include "MobRenderer.h"
+#include "ShulkerRenderer.h"
 
 double EntityRenderDispatcher::xOff = 0.0;
 double EntityRenderDispatcher::yOff = 0.0;
@@ -103,6 +104,8 @@ void EntityRenderDispatcher::staticCtor()
 EntityRenderDispatcher::EntityRenderDispatcher()
 {
 	glEnable(GL_LIGHTING);
+	renderers[eTYPE_SHULKER]=new ShulkerRenderer();
+    renderers[eTYPE_SHULKER_BULLET]=new ShulkerBulletRenderer();
 	renderers[eTYPE_SPIDER] = new SpiderRenderer();
 	renderers[eTYPE_CAVESPIDER] = new CaveSpiderRenderer();
 	renderers[eTYPE_PIG] = new PigRenderer(new PigModel(), new PigModel(0.5f), 0.7f);

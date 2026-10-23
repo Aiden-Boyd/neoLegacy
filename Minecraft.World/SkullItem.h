@@ -5,7 +5,7 @@
 class SkullItem : public Item
 {
 private:
-	static const int SKULL_COUNT = 5;
+	static const int SKULL_COUNT = 6;
 
 	static const unsigned int NAMES[SKULL_COUNT];
 

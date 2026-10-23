@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Class.h"
+#include "Shulker.h"
 #include "Painting.h"
 #include "System.h"
 #include "Entity.h"
@@ -44,6 +45,8 @@ void EntityIO::setId(entityCreateFn createFn, eINSTANCEOF clas, const wstring &i
 
 void EntityIO::staticCtor()
 {
+	setId(Shulker::create,eTYPE_SHULKER,L"Shulker",69,eMinecraftColour_Mob_Endermite_Colour1,eMinecraftColour_Mob_Endermite_Colour2,IDS_SHULKER);
+	setId(ShulkerBullet::create,eTYPE_SHULKER_BULLET,L"ShulkerBullet",25);
 	setId(ItemEntity::create, eTYPE_ITEMENTITY,  L"Item", 1);
 	setId(ExperienceOrb::create, eTYPE_EXPERIENCEORB, L"XPOrb", 2);
 	setId(Guardian::create, eTYPE_ELDER_GUARDIAN, L"ElderGuardian", 4, eMinecraftColour_Mob_ElderGuardian_Colour1, eMinecraftColour_Mob_ElderGuardian_Colour2, IDS_ELDER_GUARDIAN);

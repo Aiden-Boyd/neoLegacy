@@ -11,6 +11,7 @@ on:
       - feature/chorus-end-rods
       - feature/outer-end-islands
       - feature/end-gateways
+      - feature/end-cities-shulkers
   workflow_dispatch:
 
 permissions:
@@ -22,7 +23,7 @@ concurrency:
 
 jobs:
   build-client:
-    name: Windows64 End gateway candidate
+    name: Windows64 End city and shulker candidate
     runs-on: windows-2022
     timeout-minutes: 45
     env:
@@ -168,7 +169,7 @@ jobs:
       - name: Upload client test artifact
         uses: actions/upload-artifact@v6
         with:
-          name: neoLegacy-end-gateways-windows64
+          name: neoLegacy-end-cities-shulkers-windows64
           path: staging/
           if-no-files-found: error
           retention-days: 14

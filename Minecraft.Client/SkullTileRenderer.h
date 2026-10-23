@@ -3,6 +3,7 @@
 #include "TileEntityRenderer.h"
 
 class SkeletonHeadModel;
+class DragonHeadModel;
 
 class SkullTileRenderer : public TileEntityRenderer
 {
@@ -18,6 +19,7 @@ private:
 	// note: this head fits most mobs, just change texture
 	SkeletonHeadModel *skeletonModel;
 	SkeletonHeadModel *zombieModel;
+	DragonHeadModel *dragonModel;
 
 public:
 	SkullTileRenderer();

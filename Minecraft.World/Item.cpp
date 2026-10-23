@@ -275,6 +275,7 @@ Item* Item::prismarine_shard = nullptr;
 
 Item* Item::chorusFruit = nullptr;
 Item* Item::poppedChorusFruit = nullptr;
+Item* Item::shulkerShell = nullptr;
 Item* Item::elytra = nullptr;
 
 
@@ -545,6 +546,7 @@ void Item::staticCtor()
 	Item::prismarine_shard = (new Item(153))->setIconName(L"prismarineShard")->setDescriptionId(IDS_ITEM_PRISMARINE_SHARD)->setUseDescriptionId(IDS_ITEM_PRISMARINE_SHARD_DESC);
 	Item::chorusFruit = (new ChorusFruitItem(chorusFruit_Id-256))->setIconName(L"chorus_fruit")->setDescriptionId(IDS_ITEM_CHORUS_FRUIT)->setUseDescriptionId(IDS_DESC_CHORUS_FRUIT);
 	Item::poppedChorusFruit = (new Item(poppedChorusFruit_Id-256))->setIconName(L"chorus_fruit_popped")->setDescriptionId(IDS_ITEM_POPPED_CHORUS_FRUIT)->setUseDescriptionId(IDS_DESC_POPPED_CHORUS_FRUIT);
+	Item::shulkerShell = (new Item(shulkerShell_Id-256))->setIconName(L"shulker_shell")->setDescriptionId(IDS_ITEM_SHULKER_SHELL)->setUseDescriptionId(IDS_ITEM_SHULKER_SHELL);
 	Item::elytra = (new ElytraItem())->setBaseItemTypeAndMaterial(eBaseItemType_chestplate, eMaterial_cloth)->setIconName(L"elytra")->setDescriptionId(IDS_ITEM_ELYTRA)->setUseDescriptionId(IDS_ITEM_ELYTRA);
 }
 
@@ -1202,3 +1204,5 @@ const int Item::enchantedBook_Id		;
 const int Item::netherQuartz_Id		;
 #endif
 
+
+const int Item::shulkerShell_Id;

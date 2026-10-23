@@ -14,6 +14,10 @@ LevelData::LevelData(CompoundTag *tag)
 {
 	seed = tag->getLong(L"RandomSeed");
 	setEndGatewaysGenerated(tag->getInt(L"EndGatewaysGenerated"));
+    if(tag->contains(L"EndCityChunks")) {
+        intArray chunks=tag->getIntArray(L"EndCityChunks");
+        for(unsigned i=0;i<chunks.length&&i<65536;++i) if(chunks[i]>=0&&chunks[i]<65536) endCityChunks.insert(chunks[i]);
+    }
 
 	// Allow server.properties to override the world seed for biome generation
 	// on existing worlds (e.g. to fix monotonous biomes after world expansion).
@@ -315,6 +319,7 @@ LevelData::LevelData(LevelData *copy)
 	zStrongholdEndPortal = copy->zStrongholdEndPortal;
 	bStrongholdEndPortal = copy->bStrongholdEndPortal;
 	endGatewaysGenerated = copy->getEndGatewaysGenerated();
+    endCityChunks = copy->getEndCityChunks();
 	m_xzSize = copy->m_xzSize;
 	m_hellScale = copy->m_hellScale;
 #ifdef _LARGE_WORLDS
@@ -380,6 +385,9 @@ void LevelData::setTagData(CompoundTag *tag)
 	tag->putInt(L"StrongholdEndPortalX", xStrongholdEndPortal);
 	tag->putInt(L"StrongholdEndPortalZ", zStrongholdEndPortal);
 	tag->putInt(L"EndGatewaysGenerated", endGatewaysGenerated);
+    intArray cityChunks(static_cast<unsigned>(endCityChunks.size()));unsigned cityIndex=0;
+    for(int key:endCityChunks) cityChunks[cityIndex++]=key;
+    tag->putIntArray(L"EndCityChunks",cityChunks);
 	tag->putInt(L"XZSize", m_xzSize);
 #ifdef _LARGE_WORLDS
 	tag->putInt(L"ClassicMoat", m_classicEdgeMoat);
@@ -756,3 +764,7 @@ int LevelData::getHellScale()
 
 int LevelData::getEndGatewaysGenerated() {return endGatewaysGenerated;}
 void LevelData::setEndGatewaysGenerated(int count) {endGatewaysGenerated=count<0?0:count>20?20:count;}
+
+const std::set<int> &LevelData::getEndCityChunks() {return endCityChunks;}
+bool LevelData::hasEndCityChunk(int x,int z) {return x>=-128&&x<128&&z>=-128&&z<128&&endCityChunks.count((x+128)*256+z+128)!=0;}
+void LevelData::markEndCityChunk(int x,int z) {if(x>=-128&&x<128&&z>=-128&&z<128) endCityChunks.insert((x+128)*256+z+128);}

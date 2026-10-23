@@ -18,6 +18,7 @@ public:
 	static const int SMALL_FIREBALL = 64;
 	static const int THROWN_ENDERPEARL = 65;
 	static const int WITHER_SKULL = 66;
+	static constexpr int SHULKER_BULLET = 67;
 	static const int FALLING = 70;
 	static const int ITEM_FRAME = 71;
 	static const int EYEOFENDERSIGNAL = 72;

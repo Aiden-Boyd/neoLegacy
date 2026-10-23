@@ -745,6 +745,10 @@ shared_ptr<Packet> TrackedEntity::getAddEntityPacket()
 		shared_ptr<Entity> owner = (dynamic_pointer_cast<Arrow>(e))->owner;
 		return std::make_shared<AddEntityPacket>(e, AddEntityPacket::ARROW, owner != nullptr ? owner->entityId : e->entityId, yRotp, xRotp, xp, yp, zp);
 	}
+	else if (e->instanceof(eTYPE_SHULKER_BULLET))
+    {
+        return std::make_shared<AddEntityPacket>(e, AddEntityPacket::SHULKER_BULLET, 1, yRotp, xRotp, xp, yp, zp);
+    }
 	else if (e->instanceof(eTYPE_SNOWBALL))
 	{
 		return std::make_shared<AddEntityPacket>(e, AddEntityPacket::SNOWBALL, yRotp, xRotp, xp, yp, zp);

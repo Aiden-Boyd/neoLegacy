@@ -438,6 +438,7 @@ public:
 	static Item* prismarine_shard;
 	static Item* chorusFruit;
 	static Item* poppedChorusFruit;
+	static Item* shulkerShell;
 	static Item* elytra;
 
 
@@ -673,6 +674,7 @@ public:
 
 	static const int chorusFruit_Id = 432;
 	static const int poppedChorusFruit_Id = 433;
+	static const int shulkerShell_Id = 450;
 	static const int elytra_Id = 443;
 	//TU31
 	

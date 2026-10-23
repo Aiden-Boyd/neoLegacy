@@ -13,6 +13,7 @@ public:
 	static const int TYPE_ZOMBIE = 2;
 	static const int TYPE_CHAR = 3;
 	static const int TYPE_CREEPER = 4;
+	static const int TYPE_DRAGON = 5;
 
 private:
 	int skullType;

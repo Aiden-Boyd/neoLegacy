@@ -61,6 +61,9 @@ public:
 	bool isInitialized();
 	void setInitialized(bool initialized);
 	GameRules *getGameRules();
+	const std::set<int> &getEndCityChunks() override;
+	bool hasEndCityChunk(int,int) override;
+	void markEndCityChunk(int,int) override;
 	int getEndGatewaysGenerated() override;
 	void setEndGatewaysGenerated(int) override;
 	int getXZSize(); // 4J Added

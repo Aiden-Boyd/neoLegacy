@@ -1,4 +1,5 @@
 #pragma once
+#include <set>
 using namespace std;
 
 #include "GameRules.h"
@@ -14,6 +15,7 @@ class LevelData
 	friend class DerivedLevelData;
 private:
 	int endGatewaysGenerated=0;
+	std::set<int> endCityChunks;
 	int64_t seed;
 	LevelType *m_pGenerator;// = LevelType.normal;
 	wstring generatorOptions;
@@ -148,6 +150,9 @@ public:
 	virtual bool isInitialized();
 	virtual void setInitialized(bool initialized);
 	virtual GameRules *getGameRules();
+	virtual const std::set<int> &getEndCityChunks();
+	virtual bool hasEndCityChunk(int,int);
+	virtual void markEndCityChunk(int,int);
 	virtual int getEndGatewaysGenerated();
 	virtual void setEndGatewaysGenerated(int);
 	virtual int getXZSize(); // 4J Added
