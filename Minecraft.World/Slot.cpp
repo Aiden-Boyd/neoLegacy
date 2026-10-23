@@ -45,7 +45,8 @@ void Slot::swap(Slot *other)
 {
 	shared_ptr<ItemInstance> item1 = container->getItem(slot);
 	shared_ptr<ItemInstance> item2 = other->container->getItem(other->slot);
-	if(!mayPlace(item2)||!other->mayPlace(item1)) return;
+	if((container->getContainerType()==ContainerOpenPacket::SHULKER_BOX&&!mayPlace(item2)) ||
+	   (other->container->getContainerType()==ContainerOpenPacket::SHULKER_BOX&&!other->mayPlace(item1))) return;
 
 	if (item1 != nullptr && item1->count > other->getMaxStackSize())
 	{
