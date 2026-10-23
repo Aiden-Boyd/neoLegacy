@@ -32,7 +32,9 @@ void Sponge::neighborChanged(Level* level, int x, int y, int z, int type)
 }
 
 void Sponge::tryAbsorb(Level* level, int x, int y, int z) {
-    if (level->getData(x, y, z) != 1)
+    // Water removal and wet metadata belong to the authoritative world.
+    // Client placement/neighbor callbacks wait for the host's block updates.
+    if (!level->isClientSide && level->getData(x, y, z) != 1)
         absorb(level, x, y, z);
 }
 

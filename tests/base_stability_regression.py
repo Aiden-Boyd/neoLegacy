@@ -49,7 +49,7 @@ using Position = tuple<int, int, int>;
 struct Level {
     map<Position, int> blocks, data;
     int particles = 0, removals = 0;
-    bool failWrites = false;
+    bool failWrites = false, isClientSide = false;
     function<void()> notify;
     int getData(int x, int y, int z) { return data[{x,y,z}]; }
     Material* getMaterial(int x, int y, int z) {
@@ -86,6 +86,16 @@ struct TestSponge : Sponge {
 };
 int main() {
     TestSponge sponge;
+    // Client callbacks must not predict destructive water or wetness changes.
+    Level client;
+    client.isClientSide = true;
+    client.sponge(0, 0); client.water(0, 0, 1);
+    sponge.onPlace(&client, 0, 0, 0);
+    sponge.neighborChanged(&client, 0, 0, 0, 9);
+    assert(client.getData(0,0,0) == 0);
+    assert(client.getMaterial(0,0,1) == Material::water);
+    assert(client.removals == 0);
+
     Level world;
     world.sponge(0, 0); world.water(0, 0, 1);
     sponge.onPlace(&world, 0, 0, 0);
