@@ -15,6 +15,7 @@ on:
       - feature/shulker-boxes
       - feature/shulker-box-polish
       - feature/mending
+      - feature/frost-walker
   workflow_dispatch:
 
 permissions:
@@ -26,7 +27,7 @@ concurrency:
 
 jobs:
   build-client:
-    name: Windows64 Mending candidate
+    name: Windows64 Frost Walker candidate
     runs-on: windows-2022
     timeout-minutes: 45
     env:
@@ -140,6 +141,12 @@ jobs:
           python tests/mending_regression.py 2>&1 | Tee-Object logs/mending.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run Frost Walker regressions
+        shell: pwsh
+        run: |
+          python tests/frost_walker_regression.py 2>&1 | Tee-Object logs/frost-walker.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Configure Windows64
         shell: pwsh
         run: |
@@ -186,11 +193,12 @@ jobs:
           Copy-Item END_CITY_TESTS.md "$stage/END_CITY_TESTS.md"
           Copy-Item SHULKER_BOX_TESTS.md "$stage/SHULKER_BOX_TESTS.md"
           Copy-Item MENDING_TESTS.md "$stage/MENDING_TESTS.md"
+          Copy-Item FROST_WALKER_TESTS.md "$stage/FROST_WALKER_TESTS.md"
           @(
             "Commit: ${{ github.sha }}",
             "Configuration: Windows64 Release",
             "Runtime: Windows executable; test through Steam/Proton on Bazzite.",
-            "Candidate: Mending XP repair and treasure enchantment support; includes previous End content and shulker box fixes.",
+            "Candidate: Frost Walker and temporary ice; includes Mending, End content and shulker box fixes.",
             "Compilation does not establish controller compatibility or CU59 parity."
           ) | Set-Content "$stage/BUILD_INFO.txt"
           Get-ChildItem $stage -Recurse -File |
@@ -203,7 +211,7 @@ jobs:
       - name: Upload client test artifact
         uses: actions/upload-artifact@v6
         with:
-          name: neoLegacy-mending-windows64
+          name: neoLegacy-frost-walker-windows64
           path: staging/
           if-no-files-found: error
           retention-days: 14

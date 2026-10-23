@@ -1010,6 +1010,10 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(25, 6, L"chorus_flower");
 		ADD_ICON(25, 7, L"chorus_flower_dead");
 		ADD_ICON(25, 8, L"end_city_banner");
+		ADD_ICON(25, 9, L"frosted_ice_0");
+		ADD_ICON(25, 10, L"frosted_ice_1");
+		ADD_ICON(25, 11, L"frosted_ice_2");
+		ADD_ICON(25, 12, L"frosted_ice_3");
 		ADD_ICON(25, 0, L"purpur_block");
 		ADD_ICON(25, 1, L"purpur_pillar");
 		ADD_ICON(25, 2, L"purpur_pillar_top");
@@ -1088,4 +1092,5 @@ void PreStitchedTextureMap::loadUVs()
 
 	}
 }
+
 

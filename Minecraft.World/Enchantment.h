@@ -52,6 +52,7 @@ public :
 	static Enchantment *lure;
 	static Enchantment *luckOfTheSea;
 	static Enchantment *mending;
+	static Enchantment *frostWalker;
 
 	const int id;
 

@@ -33,6 +33,7 @@
 #include "Dimension.h"
 #include "GenericStats.h"
 #include "ItemEntity.h"
+#include "FrostWalkerEnchantment.h"
 #if defined(_WINDOWS64) && defined(MINECRAFT_SERVER_BUILD)
 #include "../Minecraft.Server/FourKitBridge.h"
 #endif
@@ -43,6 +44,8 @@ AttributeModifier *LivingEntity::SPEED_MODIFIER_SPRINTING = (new AttributeModifi
 
 void LivingEntity::_init()
 {
+	frostPositionValid = false;
+	frostX = frostY = frostZ = 0;
 	attributes = nullptr;
 	combatTracker = new CombatTracker(this);
 	lastEquipment = ItemInstanceArray(5);
@@ -1716,6 +1719,20 @@ bool LivingEntity::isSleeping()
 	return false;
 }
 
+void LivingEntity::updateFrostWalking()
+{
+    if (!level->isClientSide)
+    {
+        const int fx = Mth::floor(x), fy = Mth::floor(bb->y0), fz = Mth::floor(z);
+        if (!frostPositionValid || fx != frostX || fy != frostY || fz != frostZ)
+        {
+            frostPositionValid = true; frostX = fx; frostY = fy; frostZ = fz;
+            const int frostLevel = EnchantmentHelper::getEnchantmentLevel(Enchantment::frostWalker->id, getCarried(SLOT_BOOTS));
+            if (frostLevel > 0) FrostWalkerEnchantment::freezeNearby(dynamic_pointer_cast<LivingEntity>(shared_from_this()), level, fx, fy, fz, frostLevel);
+        }
+    }
+}
+
 void LivingEntity::tick()
 {
 	Entity::tick();
@@ -1752,6 +1769,7 @@ void LivingEntity::tick()
 	}
 
 	aiStep();
+    updateFrostWalking();
 
 	double xd = x - xo;
 	double zd = z - zo;
@@ -2172,3 +2190,4 @@ HitResult *LivingEntity::rayTrace(double blockReachDistance, float partialTicks)
     
     return this->level->clip(vec3, vec32, false, false);
 }
+

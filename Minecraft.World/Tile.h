@@ -419,7 +419,7 @@ public:
 	//beetroots         207
 	//grass_path		208
 	static const int endGateway_Id = 209;
-	//frosted_ice		212
+	static const int frostedIce_Id = 212;
 	//magma				213
 	//nether_wart_block 214
 	//red_nether_brick  215
@@ -510,6 +510,7 @@ public:
 	static Tile *button;
 	static Tile *topSnow;
 	static Tile *ice;
+	static Tile *frostedIce;
 	static Tile *snow;
 	static Tile *cactus;
 	static Tile *clay;
@@ -839,4 +840,5 @@ public:
 };
 
 class stoneBrick : public Tile {};
+
 

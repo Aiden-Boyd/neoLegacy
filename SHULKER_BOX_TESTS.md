@@ -50,8 +50,9 @@ behavior. Every box color uses this placement behavior.
 ## Remaining work
 
 Cauldron washing, precise lid entity-push parity and all dedicated box sound/particle variations
-remain to audit. Breaking particles currently reuse purpur. This batch does not
-add Mending or certify the earlier End features as in-game accepted.
+remain to audit. Breaking particles currently reuse purpur. Subsequent cumulative candidates add Mending and Frost Walker; see
+MENDING_TESTS.md and FROST_WALKER_TESTS.md. Earlier End features remain pending
+in-game acceptance.
 
 ## Automated verification
 

@@ -10,4 +10,5 @@ public:
 	virtual int getMinCost(int level);
 	virtual int getMaxCost(int level);
 	virtual int getMaxLevel();
+	virtual bool isCompatibleWith(Enchantment *other) const;
 };

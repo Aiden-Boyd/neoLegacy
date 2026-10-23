@@ -56,6 +56,9 @@ private:
 protected:
 	BaseAttributeMap* attributes;
 	ItemInstanceArray lastEquipment;
+	void updateFrostWalking();
+	bool frostPositionValid;
+	int frostX, frostY, frostZ;
 
 public:
 	bool swinging;
@@ -334,3 +337,4 @@ public:
 	virtual HitResult* rayTrace(double blockReachDistance, float partialTicks);
 	
 };
+

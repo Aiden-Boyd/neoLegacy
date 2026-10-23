@@ -5,6 +5,11 @@ WaterWalkerEnchantment::WaterWalkerEnchantment(int id, int frequency) : Enchantm
     setDescriptionId(IDS_ENCHANTMENT_WATER_WALKER);
 }
 
+bool WaterWalkerEnchantment::isCompatibleWith(Enchantment *other) const
+{
+    return other != Enchantment::frostWalker && Enchantment::isCompatibleWith(other);
+}
+
 int WaterWalkerEnchantment::getMinCost(int level)
 {
     return 1 + (level - 1) * 10;
