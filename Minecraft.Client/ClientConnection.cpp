@@ -3103,6 +3103,7 @@ void ClientConnection::handleContainerOpen(shared_ptr<ContainerOpenPacket> packe
 		return;
 	switch(packet->type)
 	{
+	case ContainerOpenPacket::SHULKER_BOX:
 	case ContainerOpenPacket::BONUS_CHEST:
 	case ContainerOpenPacket::LARGE_CHEST:
 	case ContainerOpenPacket::ENDER_CHEST:
@@ -3116,11 +3117,14 @@ void ClientConnection::handleContainerOpen(shared_ptr<ContainerOpenPacket> packe
 			case ContainerOpenPacket::BONUS_CHEST:		chestString = IDS_BONUS_CHEST;		break;
 			case ContainerOpenPacket::LARGE_CHEST:		chestString = IDS_CHEST_LARGE;		break;
 			case ContainerOpenPacket::ENDER_CHEST:		chestString = IDS_TILE_ENDERCHEST;	break;
+			case ContainerOpenPacket::SHULKER_BOX: chestString = IDS_TILE_SHULKER_BOX; break;
 			case ContainerOpenPacket::CONTAINER:		chestString = IDS_CHEST;			break;
 			default: assert(false);						chestString = -1;					break;
 			}
 
-			if( player->openContainer(std::make_shared<SimpleContainer>(chestString, packet->title, packet->customName, packet->size)))
+			auto clientContainer=std::make_shared<SimpleContainer>(chestString,packet->title,packet->customName,packet->size);
+			clientContainer->containerType=packet->type;
+			if( player->openContainer(clientContainer))
 			{
 				player->containerMenu->containerId = packet->containerId;
 			}

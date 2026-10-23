@@ -22,6 +22,8 @@
 #include "EndPlantTiles.h"
 #include "EndGateway.h"
 #include "EndCityBanner.h"
+#include "ShulkerBox.h"
+#include "ShulkerBoxItem.h"
 
 
 
@@ -569,6 +571,8 @@ void Tile::staticCtor()
 	Tile::tallgrass2 = static_cast<TallGrass2*>((new TallGrass2(175))->setDestroyTime(0.0f)->setSoundType(Tile::SOUND_GRASS)->setIconName(L"tallgrass2_tall_grass_upper")->setDescriptionId(IDS_DESC_DOUBLE_TALL_GRASS)->setUseDescriptionId(IDS_DESC_TALL_GRASS)->disableMipmap()->sendTileData(0xFF));
 
 	// End building palette. Preserve the reserved 201-206 save IDs.
+	const unsigned int boxNames[]={IDS_TILE_SHULKER_BOX_WHITE,IDS_TILE_SHULKER_BOX_ORANGE,IDS_TILE_SHULKER_BOX_MAGENTA,IDS_TILE_SHULKER_BOX_LIGHT_BLUE,IDS_TILE_SHULKER_BOX_YELLOW,IDS_TILE_SHULKER_BOX_LIME,IDS_TILE_SHULKER_BOX_PINK,IDS_TILE_SHULKER_BOX_GRAY,IDS_TILE_SHULKER_BOX_LIGHT_GRAY,IDS_TILE_SHULKER_BOX_CYAN,IDS_TILE_SHULKER_BOX_PURPLE,IDS_TILE_SHULKER_BOX_BLUE,IDS_TILE_SHULKER_BOX_BROWN,IDS_TILE_SHULKER_BOX_GREEN,IDS_TILE_SHULKER_BOX_RED,IDS_TILE_SHULKER_BOX_BLACK};
+	for(int color=0;color<16;++color) (new ShulkerBoxTile(ShulkerBoxes::FIRST+color))->setDestroyTime(2)->setExplodeable(10)->setSoundType(SOUND_STONE)->setDescriptionId(boxNames[color])->setUseDescriptionId(IDS_DESC_SHULKER_BOX);
 	Tile::endCityBanner = (new EndCityBanner(177))->setDestroyTime(1)->setIconName(L"end_city_banner")->setDescriptionId(IDS_TILE_END_CITY_BANNER);
 	endGateway = (new EndGatewayTile(endGateway_Id))->setDestroyTime(-1.f)->setExplodeable(6000000.f)->setLightEmission(1.f)->setIconName(L"portal")->setDescriptionId(IDS_TILE_END_GATEWAY)->setUseDescriptionId(IDS_DESC_END_GATEWAY);
 	Tile::endRod = (new EndRodTile(endRod_Id))->setDestroyTime(0.f)->setSoundType(SOUND_WOOD)->setIconName(L"end_rod")->setDescriptionId(IDS_TILE_END_ROD)->setUseDescriptionId(IDS_DESC_END_ROD)->setLightEmission(14.f/15.f)->sendTileData();
@@ -641,8 +645,9 @@ void Tile::staticCtor()
 		{
 			if( Item::items[i] == nullptr)
 			{
-				Item::items[i] = new TileItem(i - 256);
+				Item::items[i] = ShulkerBoxes::isBox(i)?static_cast<Item*>(new ShulkerBoxItem(i-256)):static_cast<Item*>(new TileItem(i-256));
 				Tile::tiles[i]->init();
+				if(ShulkerBoxes::isBox(i)) Item::items[i]->setMaxStackSize(1);
 			}
 
 			bool propagate = false;
@@ -1883,4 +1888,5 @@ const int Tile::woolCarpet_Id;
 const int Tile::stairs_acaciawood_Id;
 const int Tile::stairs_darkwood_Id;
 #endif
+
 

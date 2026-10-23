@@ -13,6 +13,7 @@
 #include "TheEndPortalRenderer.h"
 #include "EndGatewayRenderer.h"
 #include "EndCityBannerRenderer.h"
+#include "ShulkerBoxRenderer.h"
 #include "SkullTileRenderer.h"
 #include "EnderChestRenderer.h"
 #include "BeaconRenderer.h"
@@ -45,6 +46,7 @@ TileEntityRenderDispatcher::TileEntityRenderDispatcher()
 	renderers[eTYPE_CHESTTILEENTITY] = new ChestRenderer();
 	renderers[eTYPE_ENDERCHESTTILEENTITY] = new EnderChestRenderer();
 	renderers[eTYPE_ENCHANTMENTTABLEENTITY] = new EnchantTableRenderer();
+	renderers[eTYPE_SHULKERBOXENTITY]=new ShulkerBoxRenderer();
 	renderers[eTYPE_ENDCITYBANNERENTITY]=new EndCityBannerRenderer();
 	renderers[eTYPE_ENDGATEWAYTILEENTITY] = new EndGatewayRenderer();
 	renderers[eTYPE_THEENDPORTALTILEENTITY] = new TheEndPortalRenderer();

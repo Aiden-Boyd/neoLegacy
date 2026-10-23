@@ -16,6 +16,8 @@ private:
 
 public:
 	SimpleContainer(int name, wstring stringName, bool customName, int size);
+	int containerType = -1;
+	int getContainerType() override {return containerType;}
 
 	virtual void addListener(net_minecraft_world::ContainerListener *listener);
 	virtual void removeListener(net_minecraft_world::ContainerListener *listener);

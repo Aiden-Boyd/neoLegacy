@@ -7,6 +7,8 @@
 #include "../Minecraft.Client/Minecraft.h"
 #include "../Minecraft.Client/LocalPlayer.h"
 #include "ContainerMenu.h"
+#include "ContainerOpenPacket.h"
+#include "ShulkerBox.h"
 
 ContainerMenu::ContainerMenu(shared_ptr<Container> inventory, shared_ptr<Container> container) : AbstractContainerMenu()
 {
@@ -45,10 +47,12 @@ bool ContainerMenu::stillValid(shared_ptr<Player> player)
 shared_ptr<ItemInstance> ContainerMenu::quickMoveStack(shared_ptr<Player> player, int slotIndex)
 {
 	shared_ptr<ItemInstance> clicked = nullptr;
+	if(slotIndex<0||slotIndex>=static_cast<int>(slots.size())) return nullptr;
 	Slot *slot = slots.at(slotIndex);
 	if (slot != nullptr && slot->hasItem())
 	{
 		shared_ptr<ItemInstance> stack = slot->getItem();
+		if(slotIndex>=containerRows*9&&container->getContainerType()==ContainerOpenPacket::SHULKER_BOX&&ShulkerBoxes::isBox(stack->id)) return nullptr;
 		clicked = stack->copy();
 
 		if (slotIndex < containerRows * 9)
@@ -121,3 +125,4 @@ shared_ptr<ItemInstance> ContainerMenu::clicked(int slotIndex, int buttonNum, in
 
 	return out;
 }
+

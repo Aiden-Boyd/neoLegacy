@@ -4,6 +4,8 @@
 #include "net.minecraft.world.item.h"
 #include "net.minecraft.world.item.crafting.h"
 #include "Slot.h"
+#include "ContainerOpenPacket.h"
+#include "ShulkerBox.h"
 
 Slot::Slot(shared_ptr<Container> container, int slot, int x, int y) : container( container ), slot( slot )
 {
@@ -43,6 +45,7 @@ void Slot::swap(Slot *other)
 {
 	shared_ptr<ItemInstance> item1 = container->getItem(slot);
 	shared_ptr<ItemInstance> item2 = other->container->getItem(other->slot);
+	if(!mayPlace(item2)||!other->mayPlace(item1)) return;
 
 	if (item1 != nullptr && item1->count > other->getMaxStackSize())
 	{
@@ -67,7 +70,7 @@ void Slot::onTake(shared_ptr<Player> player, shared_ptr<ItemInstance> carried)
 
 bool Slot::mayPlace(shared_ptr<ItemInstance> item)
 {
-	return true;
+	return container->getContainerType()!=ContainerOpenPacket::SHULKER_BOX || !item || !ShulkerBoxes::isBox(item->id);
 }
 
 shared_ptr<ItemInstance> Slot::getItem()
@@ -166,3 +169,4 @@ shared_ptr<ItemInstance> Slot::combine(shared_ptr<ItemInstance> item)
 	craftSlots->setItem(1, nullptr);
 	return result;
 }
+

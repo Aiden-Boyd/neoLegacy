@@ -40,4 +40,23 @@
   <data name="IDS_POTION_LEVITATION"><value>Levitation</value></data>
   <data name="IDS_ITEM_SKULL_DRAGON"><value>Dragon Head</value></data>
   <data name="IDS_TILE_END_CITY_BANNER"><value>End City Banner</value></data>
+  <data name="IDS_TILE_SHULKER_BOX"><value>Shulker Box</value></data>
+  <data name="IDS_DESC_SHULKER_BOX"><value>Stores items and keeps its contents when broken. Cannot contain other shulker boxes.</value></data>
+  <data name="IDS_TILE_SHULKER_BOX_WHITE"><value>White Shulker Box</value></data>
+  <data name="IDS_TILE_SHULKER_BOX_ORANGE"><value>Orange Shulker Box</value></data>
+  <data name="IDS_TILE_SHULKER_BOX_MAGENTA"><value>Magenta Shulker Box</value></data>
+  <data name="IDS_TILE_SHULKER_BOX_LIGHT_BLUE"><value>Light Blue Shulker Box</value></data>
+  <data name="IDS_TILE_SHULKER_BOX_YELLOW"><value>Yellow Shulker Box</value></data>
+  <data name="IDS_TILE_SHULKER_BOX_LIME"><value>Lime Shulker Box</value></data>
+  <data name="IDS_TILE_SHULKER_BOX_PINK"><value>Pink Shulker Box</value></data>
+  <data name="IDS_TILE_SHULKER_BOX_GRAY"><value>Gray Shulker Box</value></data>
+  <data name="IDS_TILE_SHULKER_BOX_LIGHT_GRAY"><value>Light Gray Shulker Box</value></data>
+  <data name="IDS_TILE_SHULKER_BOX_CYAN"><value>Cyan Shulker Box</value></data>
+  <data name="IDS_TILE_SHULKER_BOX_PURPLE"><value>Purple Shulker Box</value></data>
+  <data name="IDS_TILE_SHULKER_BOX_BLUE"><value>Blue Shulker Box</value></data>
+  <data name="IDS_TILE_SHULKER_BOX_BROWN"><value>Brown Shulker Box</value></data>
+  <data name="IDS_TILE_SHULKER_BOX_GREEN"><value>Green Shulker Box</value></data>
+  <data name="IDS_TILE_SHULKER_BOX_RED"><value>Red Shulker Box</value></data>
+  <data name="IDS_TILE_SHULKER_BOX_BLACK"><value>Black Shulker Box</value></data>
+  <data name="IDS_SHULKER_BOX_MORE"><value>... and %d more</value></data>
 </root>

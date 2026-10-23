@@ -287,7 +287,7 @@ const WCHAR *ConsoleSoundEngine::wchSoundNames[eSoundType_MAX]=
 	L"mob.guardian.curse",        
 	L"mob.guardian.elder_death",        
 	L"mob.guardian.elder_hit",         
-	L"mob.guardian.elder_idle"       
+	L"mob.guardian.elder_idle",       
 
 
 	L"entity.shulker.ambient",
@@ -298,6 +298,8 @@ const WCHAR *ConsoleSoundEngine::wchSoundNames[eSoundType_MAX]=
 	L"entity.shulker.open",
 	L"entity.shulker.shoot",
 	L"entity.shulker_bullet.hit",
+	L"block.shulker_box.open",
+	L"block.shulker_box.close",
 };
 
 

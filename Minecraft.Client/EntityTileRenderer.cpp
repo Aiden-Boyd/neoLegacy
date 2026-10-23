@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "EntityTileRenderer.h"
+#include "../Minecraft.World/ShulkerBox.h"
 #include "TileEntityRenderDispatcher.h"
 #include "../Minecraft.World/net.minecraft.world.level.tile.h"
 #include "../Minecraft.World/net.minecraft.world.level.tile.entity.h"
@@ -8,6 +9,7 @@ EntityTileRenderer *EntityTileRenderer::instance = new EntityTileRenderer;
 
 EntityTileRenderer::EntityTileRenderer()
 {
+	shulkerBox=std::make_shared<ShulkerBoxEntity>();
 	chest = std::make_shared<ChestTileEntity>();
 	trappedChest = std::make_shared<ChestTileEntity>(ChestTile::TYPE_TRAP);
 	enderChest = std::make_shared<EnderChestTileEntity>();
@@ -15,6 +17,7 @@ EntityTileRenderer::EntityTileRenderer()
 
 void EntityTileRenderer::render(Tile *tile, int data, float brightness, float alpha, bool setColor, bool useCompiled)
 {
+	if(ShulkerBoxes::isBox(tile->id)) {shulkerBox->data=tile->id-ShulkerBoxes::FIRST;TileEntityRenderDispatcher::instance->render(shulkerBox,0,0,0,0,setColor,alpha,useCompiled);return;}
 	if (tile->id == Tile::enderChest_Id)
 	{
 		TileEntityRenderDispatcher::instance->render(enderChest, 0, 0, 0, 0, setColor, alpha, useCompiled);
@@ -28,3 +31,4 @@ void EntityTileRenderer::render(Tile *tile, int data, float brightness, float al
 		TileEntityRenderDispatcher::instance->render(chest, 0, 0, 0, 0, setColor, alpha, useCompiled);
 	}
 }
+

@@ -23,6 +23,7 @@ public:
 	static const int LARGE_CHEST = 14; // 4J Added
 	static const int ENDER_CHEST = 15; // 4J Added
 	static const int MINECART_CHEST = 16; // 4J Added
+	static const int SHULKER_BOX = 18;
 	static const int MINECART_HOPPER = 17; // 4J Added
 
 	int containerId;
@@ -49,5 +50,6 @@ public:
 	static shared_ptr<Packet> create() { return std::make_shared<ContainerOpenPacket>(); }
 	virtual int getId() { return 100; }
 };
+
 
 

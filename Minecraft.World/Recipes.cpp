@@ -48,6 +48,7 @@ void Recipes::_init()
 
 void Recipes::_compileRecipes()
 {
+	addShapedRecipy(new ItemInstance(229,1,0),L"ssscictg",L"S",L"C",L"S",L'S',Item::shulkerShell,L'C',Tile::chest,L'M');
 	addShapedRecipy(new ItemInstance(Tile::purpurBlock, 4),
 		L"sscig", L"##", L"##", L'#', Item::poppedChorusFruit, L'S');
 	addShapedRecipy(new ItemInstance(Tile::endRod, 4),
@@ -1638,4 +1639,5 @@ std::shared_ptr<CustomPayloadPacket> Recipes::createUpdatePacket()
 
 	return std::make_shared<CustomPayloadPacket>(CustomPayloadPacket::UPDATE_RECIPE_REGISTRY, baos.toByteArray());
 }
+
 

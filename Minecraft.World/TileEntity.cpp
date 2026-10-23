@@ -6,6 +6,7 @@
 #include "TileEntity.h"
 #include "EndGateway.h"
 #include "EndCityBanner.h"
+#include "ShulkerBox.h"
 #include "PistonPieceEntity.h"
 
 
@@ -15,6 +16,7 @@ TileEntity::classToIdMapType TileEntity::classIdMap = unordered_map<eINSTANCEOF,
 
 void TileEntity::staticCtor()
 {
+	TileEntity::setId(ShulkerBoxEntity::create,eTYPE_SHULKERBOXENTITY,L"ShulkerBox");
 	TileEntity::setId(EndCityBannerEntity::create,eTYPE_ENDCITYBANNERENTITY,L"EndCityBanner");
 	TileEntity::setId(EndGatewayTileEntity::create,eTYPE_ENDGATEWAYTILEENTITY,L"EndGateway");
 	TileEntity::setId(FurnaceTileEntity::create, eTYPE_FURNACETILEENTITY, L"Furnace");

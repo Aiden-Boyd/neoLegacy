@@ -284,6 +284,8 @@ enum eSOUND_TYPE
 	eSoundType_SHULKER_OPEN,
 	eSoundType_SHULKER_SHOOT,
 	eSoundType_SHULKER_BULLET_HIT,
+	eSoundType_SHULKER_BOX_OPEN,
+	eSoundType_SHULKER_BOX_CLOSE,
 	eSoundType_MAX
 };
 

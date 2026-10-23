@@ -1669,6 +1669,7 @@ const wchar_t *TUImagePaths[] =
 
 bool Textures::IsTUImage(TEXTURE_NAME texId, const wstring& name)
 {
+    if(name.find(L"mob/shulker_box_")==0) return true;
     if(name==L"mob/shulker.png"||name==L"mob/shulker_spark.png"||name==L"mob/end_city_banner.png") return true;
 	int i = 0;
 	if(texId < TN_COUNT)
