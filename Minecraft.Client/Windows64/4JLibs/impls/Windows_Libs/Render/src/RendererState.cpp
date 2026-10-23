@@ -479,7 +479,9 @@ void Renderer::StateSetTexGenCol(int col, float x, float y, float z, float w, bo
 
         DirectX::XMVECTOR determinant = DirectX::XMVectorZero();
         const DirectX::XMMATRIX inverse = DirectX::XMMatrixInverse(&determinant, DirectX::XMLoadFloat4x4(&modelView));
-        plane = DirectX::XMVector4Transform(plane, inverse);
+        // Plane equations are covectors. Preserve dot(viewPosition, eyePlane)
+        // under the row-vector model-view transform, including camera rotation.
+        plane = DirectX::XMVector4Transform(plane, DirectX::XMMatrixTranspose(inverse));
     }
 
     DirectX::XMFLOAT4 transformed;
@@ -679,9 +681,10 @@ void Renderer::UpdateTexGenState()
     Context &c = getContext();
 
     D3D11_MAPPED_SUBRESOURCE mapped = {};
-    c.m_pDeviceContext->Map(c.m_texGenMatricesBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-    c.m_pDeviceContext->Unmap(c.m_texGenMatricesBuffer, 0);
+    if (FAILED(c.m_pDeviceContext->Map(c.m_texGenMatricesBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped)))
+        return;
     std::memcpy(mapped.pData, c.texGenMatrices, sizeof(c.texGenMatrices));
+    c.m_pDeviceContext->Unmap(c.m_texGenMatricesBuffer, 0);
 }
 
 

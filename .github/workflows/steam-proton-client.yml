@@ -7,6 +7,7 @@ on:
       - fix/base-stability
       - feature/end-palette
       - fix/flight-head-inventory
+      - fix/end-portal-projection
   workflow_dispatch:
 
 permissions:
@@ -18,7 +19,7 @@ concurrency:
 
 jobs:
   build-client:
-    name: Windows64 flight and inventory candidate
+    name: Windows64 End portal projection candidate
     runs-on: windows-2022
     timeout-minutes: 45
     env:
@@ -80,6 +81,12 @@ jobs:
           python tests/flight_inventory_regression.py 2>&1 | Tee-Object logs/flight-inventory-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run portal projection regression
+        shell: pwsh
+        run: |
+          python tests/portal_projection_regression.py 2>&1 | Tee-Object logs/portal-projection-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Configure Windows64
         shell: pwsh
         run: |
@@ -119,11 +126,12 @@ jobs:
           Copy-Item BASE_STABILITY_TESTS.md "$stage/BASE_STABILITY_TESTS.md"
           Copy-Item END_UPDATE_TESTS.md "$stage/END_UPDATE_TESTS.md"
           Copy-Item FLIGHT_INVENTORY_TESTS.md "$stage/FLIGHT_INVENTORY_TESTS.md"
+          Copy-Item PORTAL_RENDER_TESTS.md "$stage/PORTAL_RENDER_TESTS.md"
           @(
             "Commit: ${{ github.sha }}",
             "Configuration: Windows64 Release",
             "Runtime: Windows executable; test through Steam/Proton on Bazzite.",
-            "Candidate: flight, heads, Creative inventory and furnace fixes, with End building palette.",
+            "Candidate: End portal projection fixes, including earlier flight, heads, inventory, furnace and End palette changes.",
             "Compilation does not establish controller compatibility or CU59 parity."
           ) | Set-Content "$stage/BUILD_INFO.txt"
           Get-ChildItem $stage -Recurse -File |
@@ -136,7 +144,7 @@ jobs:
       - name: Upload client test artifact
         uses: actions/upload-artifact@v6
         with:
-          name: neoLegacy-flight-inventory-windows64
+          name: neoLegacy-portal-projection-windows64
           path: staging/
           if-no-files-found: error
           retention-days: 14
@@ -149,6 +157,7 @@ jobs:
           path: logs/
           if-no-files-found: ignore
           retention-days: 14
+
 
 
 
