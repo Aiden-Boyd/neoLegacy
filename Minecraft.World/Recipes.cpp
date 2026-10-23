@@ -48,6 +48,16 @@ void Recipes::_init()
 
 void Recipes::_compileRecipes()
 {
+	// End palette recipes use the existing console and classic recipe registry.
+	addShapedRecipy(new ItemInstance(Tile::endStoneBricks, 4),
+		L"ssctg", L"##", L"##", L'#', Tile::endStone, L'S');
+	addShapedRecipy(new ItemInstance(Tile::purpurStairs, 4),
+		L"sssctg", L"#  ", L"## ", L"###", L'#', Tile::purpurBlock, L'S');
+	addShapedRecipy(new ItemInstance(Tile::purpurSlab, 6),
+		L"sctg", L"###", L'#', Tile::purpurBlock, L'S');
+	addShapedRecipy(new ItemInstance(Tile::purpurPillar, 2),
+		L"ssctg", L"#", L"#", L'#', Tile::purpurSlab, L'S');
+
 	addShapedRecipy(new ItemInstance(Tile::wood, 4, 0), //
 		L"sczg",
 		L"#", //
@@ -1624,3 +1634,4 @@ std::shared_ptr<CustomPayloadPacket> Recipes::createUpdatePacket()
 
 	return std::make_shared<CustomPayloadPacket>(CustomPayloadPacket::UPDATE_RECIPE_REGISTRY, baos.toByteArray());
 }
+

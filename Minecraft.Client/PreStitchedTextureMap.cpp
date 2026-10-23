@@ -1000,6 +1000,12 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(19,	15,	L"glass_pane_top_yellow");
 
 		
+		// Unused row 25 in the default terrain atlas: original End textures.
+		ADD_ICON(25, 0, L"purpur_block");
+		ADD_ICON(25, 1, L"purpur_pillar");
+		ADD_ICON(25, 2, L"purpur_pillar_top");
+		ADD_ICON(25, 3, L"end_bricks");
+
 		ADD_ICON(20, 5, L"flower_tulip_orange");
 
 		ADD_ICON(20, 8, L"log_acacia");
@@ -1073,3 +1079,4 @@ void PreStitchedTextureMap::loadUVs()
 
 	}
 }
+

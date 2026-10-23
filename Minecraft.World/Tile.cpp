@@ -18,6 +18,7 @@
 #include "Tile.h"
 
 #include "Facing.h"
+#include "EndBuildingTiles.h"
 
 
 
@@ -177,6 +178,12 @@ CauldronTile *Tile::cauldron = nullptr;
 Tile *Tile::endPortalTile = nullptr;
 Tile *Tile::endPortalFrameTile = nullptr;
 Tile *Tile::endStone = nullptr;
+Tile *Tile::purpurBlock = nullptr;
+Tile *Tile::purpurPillar = nullptr;
+Tile *Tile::purpurStairs = nullptr;
+HalfSlabTile *Tile::purpurDoubleSlab = nullptr;
+HalfSlabTile *Tile::purpurSlab = nullptr;
+Tile *Tile::endStoneBricks = nullptr;
 Tile *Tile::dragonEgg = nullptr;
 Tile *Tile::redstoneLight = nullptr;
 Tile *Tile::redstoneLight_lit = nullptr;
@@ -553,6 +560,14 @@ void Tile::staticCtor()
 
 	Tile::tallgrass2 = static_cast<TallGrass2*>((new TallGrass2(175))->setDestroyTime(0.0f)->setSoundType(Tile::SOUND_GRASS)->setIconName(L"tallgrass2_tall_grass_upper")->setDescriptionId(IDS_DESC_DOUBLE_TALL_GRASS)->setUseDescriptionId(IDS_DESC_TALL_GRASS)->disableMipmap()->sendTileData(0xFF));
 
+	// End building palette. Preserve the reserved 201-206 save IDs.
+	Tile::purpurBlock = (new Tile(purpurBlock_Id, Material::stone))->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock, Item::eMaterial_stone)->setDestroyTime(1.5f)->setExplodeable(10)->setSoundType(SOUND_STONE)->setIconName(L"purpur_block")->setDescriptionId(IDS_TILE_PURPUR_BLOCK)->setUseDescriptionId(IDS_DESC_PURPUR_BLOCK);
+	Tile::purpurPillar = (new PurpurPillarTile(purpurPillar_Id))->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock, Item::eMaterial_stone)->setDestroyTime(1.5f)->setExplodeable(10)->setSoundType(SOUND_STONE)->setIconName(L"purpur_pillar")->setDescriptionId(IDS_TILE_PURPUR_PILLAR)->setUseDescriptionId(IDS_DESC_PURPUR_PILLAR)->sendTileData();
+	Tile::purpurStairs = (new StairTile(purpurStairs_Id, Tile::purpurBlock, 0))->setBaseItemTypeAndMaterial(Item::eBaseItemType_stairs, Item::eMaterial_stone)->setIconName(L"purpur_block")->setDescriptionId(IDS_TILE_PURPUR_STAIRS)->setUseDescriptionId(IDS_DESC_STAIRS)->sendTileData();
+	Tile::purpurDoubleSlab = static_cast<HalfSlabTile *>((new PurpurSlabTile(purpurDoubleSlab_Id, true))->setBaseItemTypeAndMaterial(Item::eBaseItemType_slab, Item::eMaterial_stone)->setDestroyTime(2.0f)->setExplodeable(10)->setSoundType(SOUND_STONE)->setIconName(L"purpur_block")->setDescriptionId(IDS_TILE_PURPUR_SLAB)->setUseDescriptionId(IDS_DESC_SLAB)->sendTileData());
+	Tile::purpurSlab = static_cast<HalfSlabTile *>((new PurpurSlabTile(purpurSlab_Id, false))->setBaseItemTypeAndMaterial(Item::eBaseItemType_halfslab, Item::eMaterial_stone)->setDestroyTime(2.0f)->setExplodeable(10)->setSoundType(SOUND_STONE)->setIconName(L"purpur_block")->setDescriptionId(IDS_TILE_PURPUR_SLAB)->setUseDescriptionId(IDS_DESC_HALFSLAB)->sendTileData());
+	Tile::endStoneBricks = (new Tile(endStoneBricks_Id, Material::stone))->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock, Item::eMaterial_stone)->setDestroyTime(0.8f)->setExplodeable(0.8f)->setSoundType(SOUND_STONE)->setIconName(L"end_bricks")->setDescriptionId(IDS_TILE_END_STONE_BRICKS)->setUseDescriptionId(IDS_DESC_END_STONE_BRICKS);
+
 	// Special cases for certain items since they can have different icons
 	Item::items[wool_Id]				= ( new WoolTileItem(Tile::wool_Id- 256) )->setIconName(L"cloth")->setDescriptionId(IDS_TILE_CLOTH)->setUseDescriptionId(IDS_DESC_WOOL);
 	Item::items[clayHardened_colored_Id]= ( new WoolTileItem(Tile::clayHardened_colored_Id - 256))->setIconName(L"clayHardenedStained")->setDescriptionId(IDS_TILE_STAINED_CLAY)->setUseDescriptionId(IDS_DESC_STAINED_CLAY);
@@ -592,6 +607,8 @@ void Tile::staticCtor()
 	Item::items[stone_slab2_Id] = (new StoneSlabTileItem(Tile::stone_slab2_Id - 256, Tile::stoneSlab2Half, Tile::stoneSlab2, false))->setIconName(L"red_sandstone")->setDescriptionId(IDS_TILE_RED_SANDSTONE)->setUseDescriptionId(IDS_DESC_HALFSLAB);
 	Item::items[double_stone_slab2_Id] = (new StoneSlabTileItem(Tile::double_stone_slab2_Id - 256, Tile::stoneSlab2Half, Tile::stoneSlab2, true))->setIconName(L"red_sandstone")->setDescriptionId(IDS_TILE_RED_SANDSTONE)->setUseDescriptionId(IDS_DESC_SLAB);
 	Item::items[tree2Trunk_Id] = (new MultiTextureTileItem(Tile::tree2Trunk_Id - 256, tree2Trunk, (int*)TreeTile2::TREE_NAMES, TreeTile2::TREE_NAMES_LENGTH))->setIconName(L"log")->setDescriptionId(IDS_TILE_LOG)->setUseDescriptionId(IDS_DESC_LOG);
+	Item::items[purpurSlab_Id] = (new StoneSlabTileItem(purpurSlab_Id - 256, purpurSlab, purpurDoubleSlab, false))->setDescriptionId(IDS_TILE_PURPUR_SLAB)->setUseDescriptionId(IDS_DESC_HALFSLAB);
+	Item::items[purpurDoubleSlab_Id] = (new StoneSlabTileItem(purpurDoubleSlab_Id - 256, purpurSlab, purpurDoubleSlab, true))->setDescriptionId(IDS_TILE_PURPUR_SLAB)->setUseDescriptionId(IDS_DESC_SLAB);
 	Item::items[sponge_Id] = (new MultiTextureTileItem(Tile::sponge_Id - 256, sponge, (int*)Sponge::SPONGE_NAMES, Sponge::SPONGE_NAMES_LENGTH))->setIconName(L"sponge")->setDescriptionId(IDS_TILE_SPONGE)->setUseDescriptionId(IDS_DESC_SPONGE);
 
 	int tallgrass2IdsData[TallGrass2::VARIANT_COUNT] = {
@@ -1818,6 +1835,12 @@ const int Tile::cauldron_Id;
 const int Tile::endPortalTile_Id;
 const int Tile::endPortalFrameTile_Id;
 const int Tile::endStone_Id;
+const int Tile::purpurBlock_Id;
+const int Tile::purpurPillar_Id;
+const int Tile::purpurStairs_Id;
+const int Tile::purpurDoubleSlab_Id;
+const int Tile::purpurSlab_Id;
+const int Tile::endStoneBricks_Id;
 const int Tile::dragonEgg_Id;
 const int Tile::redstoneLight_Id;
 const int Tile::redstoneLight_lit_Id;
@@ -1847,3 +1870,4 @@ const int Tile::woolCarpet_Id;
 const int Tile::stairs_acaciawood_Id;
 const int Tile::stairs_darkwood_Id;
 #endif
+

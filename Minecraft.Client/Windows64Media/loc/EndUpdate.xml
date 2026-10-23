@@ -1,0 +1,26 @@
+<root>
+  <data name="IDS_TILE_PURPUR_BLOCK">
+    <value>Purpur Block</value>
+  </data>
+  <data name="IDS_TILE_PURPUR_PILLAR">
+    <value>Purpur Pillar</value>
+  </data>
+  <data name="IDS_TILE_PURPUR_STAIRS">
+    <value>Purpur Stairs</value>
+  </data>
+  <data name="IDS_TILE_PURPUR_SLAB">
+    <value>Purpur Slab</value>
+  </data>
+  <data name="IDS_TILE_END_STONE_BRICKS">
+    <value>End Stone Bricks</value>
+  </data>
+  <data name="IDS_DESC_PURPUR_BLOCK">
+    <value>A decorative block made from popped chorus fruit.</value>
+  </data>
+  <data name="IDS_DESC_PURPUR_PILLAR">
+    <value>A decorative purpur pillar. Place it against a block to choose its direction.</value>
+  </data>
+  <data name="IDS_DESC_END_STONE_BRICKS">
+    <value>Decorative bricks crafted from End Stone.</value>
+  </data>
+</root>

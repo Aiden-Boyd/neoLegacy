@@ -5,6 +5,7 @@ on:
     branches:
       - steam-proton-base
       - fix/base-stability
+      - feature/end-palette
   workflow_dispatch:
 
 permissions:
@@ -16,7 +17,7 @@ concurrency:
 
 jobs:
   build-client:
-    name: Windows64 client baseline
+    name: Windows64 End palette candidate
     runs-on: windows-2022
     timeout-minutes: 45
     env:
@@ -66,6 +67,12 @@ jobs:
           python tests/base_stability_regression.py 2>&1 | Tee-Object logs/base-stability-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run End palette regression checks
+        shell: pwsh
+        run: |
+          python tests/end_palette_regression.py 2>&1 | Tee-Object logs/end-palette-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Configure Windows64
         shell: pwsh
         run: |
@@ -103,10 +110,12 @@ jobs:
           New-Item -ItemType Directory -Force "$stage/Windows64/GameHDD" | Out-Null
           Copy-Item STEAM_PROTON.md "$stage/STEAM_PROTON.md"
           Copy-Item BASE_STABILITY_TESTS.md "$stage/BASE_STABILITY_TESTS.md"
+          Copy-Item END_UPDATE_TESTS.md "$stage/END_UPDATE_TESTS.md"
           @(
             "Commit: ${{ github.sha }}",
             "Configuration: Windows64 Release",
             "Runtime: Windows executable; test through Steam/Proton on Bazzite.",
+            "Milestone: End building palette; expanded islands, cities and boss update are pending.",
             "Compilation does not establish controller compatibility or CU59 parity."
           ) | Set-Content "$stage/BUILD_INFO.txt"
           Get-ChildItem $stage -Recurse -File |
@@ -119,7 +128,7 @@ jobs:
       - name: Upload client test artifact
         uses: actions/upload-artifact@v6
         with:
-          name: neoLegacy-steam-proton-windows64
+          name: neoLegacy-end-palette-windows64
           path: staging/
           if-no-files-found: error
           retention-days: 14
@@ -132,4 +141,5 @@ jobs:
           path: logs/
           if-no-files-found: ignore
           retention-days: 14
+
 

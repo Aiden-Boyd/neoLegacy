@@ -409,12 +409,12 @@ public:
 	//end_rod 			198
 	//chorus_plant 		199
 	//chorus_flower 	200
-	//purpur_block      201
-	//purpur_pillar		202
-	//purpur_stairs     203
-	//purpur_double_slab 204
-	//purpur_slab		205
-	//end_bricks		206
+	static const int purpurBlock_Id = 201;
+	static const int purpurPillar_Id = 202;
+	static const int purpurStairs_Id = 203;
+	static const int purpurDoubleSlab_Id = 204;
+	static const int purpurSlab_Id = 205;
+	static const int endStoneBricks_Id = 206;
 	//beetroots         207
 	//grass_path		208
 	//end_gateway		209
@@ -553,6 +553,12 @@ public:
 	static Tile *endPortalTile;
 	static Tile *endPortalFrameTile;
 	static Tile *endStone;
+	static Tile *purpurBlock;
+	static Tile *purpurPillar;
+	static Tile *purpurStairs;
+	static HalfSlabTile *purpurDoubleSlab;
+	static HalfSlabTile *purpurSlab;
+	static Tile *endStoneBricks;
 	static Tile *dragonEgg;
 	static Tile *redstoneLight;
 	static Tile *redstoneLight_lit;
@@ -827,3 +833,4 @@ public:
 };
 
 class stoneBrick : public Tile {};
+
