@@ -7,11 +7,17 @@ ROOT=Path(__file__).resolve().parents[1]
 FIXTURE=r'''
 #pragma once
 #include <cassert>
+#include <cstdlib>
+#include <new>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
 using namespace std;
+inline int liveArrays=0;
+void* operator new[](size_t n){++liveArrays;auto p=malloc(n);if(!p)throw bad_alloc();return p;}
+void operator delete[](void*p)noexcept{if(p)--liveArrays;free(p);}
+void operator delete[](void*p,size_t)noexcept{::operator delete[](p);}
 using DWORD=unsigned;using eINSTANCEOF=int;
 struct Tile;struct ItemInstance;struct Entity;
 enum eTutorial_State{e_Tutorial_State_Any=-2,e_Tutorial_State_None=-1,e_Tutorial_State_Gameplay=0,e_Tutorial_State_Test=1};enum eTutorial_Hint{e_Tutorial_Hint_Always_On=2};
@@ -30,6 +36,7 @@ int main(){
  {unique_ptr<TutorialHint>h(hint());mc.localplayers[1].reset();assert(h->tick()==-1);mc.localplayers[1]=make_shared<LocalPlayer>();assert(h->tick()==123);}
  {unique_ptr<TutorialHint>h(hint());t.state=e_Tutorial_State_Test;assert(h->tick()==-1);t.state=e_Tutorial_State_Gameplay;mc.localplayers[1]->pos={0,1,1};assert(h->tick()==-1);mc.localplayers[1]->pos={1,1,1};assert(h->tick()==123);}
  {unique_ptr<TutorialHint>h(hint(e_Tutorial_State_Test));t.completed=true;assert(h->tick()==-1);}
+ {int ids[]={1,2};unique_ptr<TutorialHint>a(new LookAtTileHint(e_Tutorial_Hint_Always_On,&t,ids,2));unique_ptr<TutorialHint>b(new TakeItemHint(e_Tutorial_Hint_Always_On,&t,ids,2));unique_ptr<TutorialHint>c(new LookAtEntityHint(e_Tutorial_Hint_Always_On,&t,123,456,7));assert(liveArrays==2);}assert(liveArrays==0);
  assert(AABB::alive==0);LevelGenerationOptions ordinary{0},other{46},marked{0x54553436};assert(!ordinary.isImportedTutorial()&&!other.isImportedTutorial()&&marked.isImportedTutorial());
 }
 '''
@@ -40,13 +47,18 @@ def native():
   p=Path(d);(p/'stdafx.h').write_text(FIXTURE)
   for name in ['TutorialEnum.h','Tutorial.h']:(p/name).write_text('#include "stdafx.h"\n')
   (p/'TutorialHint.h').write_bytes((base/'TutorialHint.h').read_bytes());(p/'AreaHint.h').write_bytes((base/'AreaHint.h').read_bytes())
+  extra=''
+  for name in ['LookAtEntityHint','LookAtTileHint','TakeItemHint']:
+   header=(base/(name+'.h')).read_text();header='\n'.join(l for l in header.splitlines()if 'Class.h'not in l);(p/(name+'.h')).write_text(header)
+   source=(base/(name+'.cpp')).read_text();extra+=method(source,name+'::'+name+'(')+method(source,name+'::~'+name+'(')
+  extra+='bool LookAtEntityHint::onLookAtEntity(eINSTANCEOF){return false;}bool LookAtTileHint::onLookAt(int,int){return false;}bool TakeItemHint::onTake(shared_ptr<ItemInstance>){return false;}\n'
   cpp=(base/'AreaHint.cpp').read_text();cpp='\n'.join(l for l in cpp.splitlines()if not l.startswith('#include'))
   marker=method((ROOT/'Minecraft.Client/Common/GameRules/LevelGenerationOptions.h').read_text(),'bool isImportedTutorial()')
-  code='#include "stdafx.h"\n#include "AreaHint.h"\nstruct LevelGenerationOptions{int m_4JDataValue;'+marker+'};\n'
+  code='#include "stdafx.h"\n#include "AreaHint.h"\n#include "LookAtEntityHint.h"\n#include "LookAtTileHint.h"\n#include "TakeItemHint.h"\nstruct LevelGenerationOptions{int m_4JDataValue;'+marker+'};\n'
   code+='TutorialHint::TutorialHint(eTutorial_Hint id,Tutorial*t,int description,eHintType type,bool fade):m_id(id),m_tutorial(t),m_descriptionId(description),m_type(type),m_hintNeeded(true),m_allowFade(fade){}\n'
   # Unused native hint methods still participate in the vtable; define fixture no-ops.
   code+='int TutorialHint::startDestroyBlock(shared_ptr<ItemInstance>,Tile*){return -1;}int TutorialHint::destroyBlock(Tile*){return -1;}int TutorialHint::attack(shared_ptr<ItemInstance>,shared_ptr<Entity>){return -1;}int TutorialHint::createItemSelected(shared_ptr<ItemInstance>,bool){return -1;}int TutorialHint::itemDamaged(shared_ptr<ItemInstance>){return -1;}bool TutorialHint::onTake(shared_ptr<ItemInstance>){return false;}bool TutorialHint::onLookAt(int,int){return false;}bool TutorialHint::onLookAtEntity(eINSTANCEOF){return false;}int TutorialHint::tick(){return -1;}\n'
-  compile_and_run(p,'native_tutorial_area_hints',code+cpp+NATIVE_TEST)
+  compile_and_run(p,'native_tutorial_area_hints',code+cpp+extra+NATIVE_TEST)
 
 def activation():
  spec=importlib.util.spec_from_file_location('activation',ROOT/'tools/activate_imported_tutorial.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)

@@ -23,3 +23,8 @@ bool LookAtEntityHint::onLookAtEntity(eINSTANCEOF type)
 	}
 	return false;
 }
+
+LookAtEntityHint::~LookAtEntityHint()
+{
+    
+}

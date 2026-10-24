@@ -62,3 +62,8 @@ bool LookAtTileHint::onLookAt(int id,int iData)
 	}
 	return false;
 }
+
+LookAtTileHint::~LookAtTileHint()
+{
+    delete [] m_iTiles;
+}

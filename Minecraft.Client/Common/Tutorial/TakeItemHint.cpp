@@ -43,3 +43,8 @@ bool TakeItemHint::onTake(shared_ptr<ItemInstance> item)
 	}
 	return false;
 }
+
+TakeItemHint::~TakeItemHint()
+{
+    delete [] m_iItems;
+}
