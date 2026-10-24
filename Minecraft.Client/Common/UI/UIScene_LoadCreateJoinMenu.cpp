@@ -1,7 +1,5 @@
 #include "stdafx.h"
-#ifdef _WINDOWS64
 #include "../Network/JoinCode.h"
-#endif
 
 #include "UI.h"
 

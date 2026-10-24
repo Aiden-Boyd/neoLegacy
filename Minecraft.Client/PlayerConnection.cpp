@@ -518,7 +518,7 @@ void PlayerConnection::teleport(double x, double y, double z, float yRot, float 
 
 void PlayerConnection::handlePlayerAction(shared_ptr<PlayerActionPacket> packet)
 {
-    if(server->getTumble()->enabled()&&(packet->action==PlayerActionPacket::DROP_ITEM||packet->action==PlayerActionPacket::DROP_ALL_ITEMS))return;
+    if(server->getTumble()->enabled()&&(packet->action==PlayerActionPacket::DROP_ITEM||packet->action==PlayerActionPacket::DROP_ALL_ITEMS)){player->refreshContainer(player->inventoryMenu);return;}
 	ServerLevel *level = server->getLevel(player->dimension);
 	player->resetLastActionTime();
 

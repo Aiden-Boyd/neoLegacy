@@ -1,7 +1,5 @@
 #include "stdafx.h"
-#ifdef _WINDOWS64
 #include "../Network/JoinCode.h"
-#endif
 #include "UI.h"
 #include "UIScene_JoinMenu.h"
 
@@ -375,12 +373,14 @@ void UIScene_JoinMenu::updateServerDescription() {
 			args[0].number = 0; // 0 is the what's new page on howtoplay don't change it
 
 			wstring testText = L"Server details";
+            #ifdef _WINDOWS64
             if(m_selectedSession != nullptr){
                 std::string address=m_selectedSession->data.hostIP;std::wstring host(address.begin(),address.end());
                 auto code=JoinCode::encode(host,m_selectedSession->data.hostPort);
                 testText=L"Address: "+host+L":"+std::to_wstring(m_selectedSession->data.hostPort);
                 if(!code.empty())testText+=L"\n\nJoin code: "+code+L"\n\nPaste this code into Add Server. The host must be reachable from your network.";
             }
+            #endif
 			IggyStringUTF16 iggyStr;
 			wstring formattedText = app.EscapeHTMLString(testText);
 			formattedText = app.FormatChatMessage(formattedText);

@@ -20,7 +20,7 @@ void TumbleSession::move(std::shared_ptr<ServerPlayer>p,int role,int index){
  if(p->dimension!=0)server->getPlayers()->toggleDimension(p,0);
  p->inventory->clearInventory(-1,-1);p->inventory->selected=0;p->setGameMode(role==1?GameType::SURVIVAL:GameType::ADVENTURE);
  p->abilities.invulnerable=true;p->abilities.flying=false;p->abilities.mayfly=false;p->abilities.instabuild=false;p->onUpdateAbilities();
- p->setHealth(p->getMaxHealth());p->foodData.setFoodLevel(20);p->foodData.setSaturation(5);p->foodData.setExhaustion(0);p->removeAllEffects();p->fallDistance=0;p->xd=p->yd=p->zd=0;
+ p->setHealth(p->getMaxHealth());p->getFoodData()->setFoodLevel(20);p->getFoodData()->setSaturation(5);p->getFoodData()->setExhaustion(0);p->removeAllEffects();p->fallDistance=0;p->xd=p->yd=p->zd=0;
  if(role==1){
   static const int dx[]={-7,7,-7,7,0,0,-7,7},dz[]={-7,7,7,-7,-7,7,0,0};index%=8;
   p->inventory->setItem(0,std::make_shared<ItemInstance>(277,1,0));p->connection->teleport(centerX+dx[index]+.5,201,centerZ+dz[index]+.5,0,0);
@@ -33,7 +33,7 @@ bool TumbleSession::prepare(){
  // Explicitly opted-in lobby copies reserve this sky volume. Never erase scenery.
  for(int x=(centerX-13)>>4;x<=(centerX+20)>>4;++x)for(int z=(centerZ-13)>>4;z<=(centerZ+13)>>4;++z)level->getChunk(x,z);
  if(!layoutReady){
-  for(int x=centerX-13;x<=centerX+20;++x)for(int z=centerZ-13;z<=centerZ+13;++z)for(int y=179;y<=208;++y){int id=level->getTile(x,y,z);if(id!=0&&id!=80&&id!=20&&id!=49&&id!=11)return false;}
+  for(int x=centerX-13;x<=centerX+20;++x)for(int z=centerZ-13;z<=centerZ+13;++z)for(int y=179;y<=208;++y){int id=level->getTile(x,y,z);if(id!=0&&id!=80&&id!=20&&id!=49&&id!=10&&id!=11)return false;}
   layoutReady=true;
  }
  build.clear();buildAt=0;
@@ -54,7 +54,7 @@ void TumbleSession::tick(){
   if(round.phase!=Tumble::Phase::Playing&&round.phase!=Tumble::Phase::Results&&(p->dimension!=0||p->y<1))move(p,0);
   // Host-option changes cannot grant flight or Creative destruction during a round.
   if(p->abilities.mayfly||p->abilities.flying||p->abilities.instabuild||!p->abilities.invulnerable){p->abilities.mayfly=p->abilities.flying=p->abilities.instabuild=false;p->abilities.invulnerable=true;p->onUpdateAbilities();}
-  p->fallDistance=0;p->foodData.setFoodLevel(20);p->foodData.setExhaustion(0);
+  p->fallDistance=0;p->getFoodData()->setFoodLevel(20);p->getFoodData()->setExhaustion(0);
  }
  for(auto it=known.begin();it!=known.end();)if(!present.count(*it))it=known.erase(it);else ++it;
  auto before=round.phase;auto oldAlive=round.alive;
