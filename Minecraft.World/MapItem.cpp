@@ -13,6 +13,7 @@
 #include "MapItem.h"
 #include "net.minecraft.world.inventory.h"
 #include "JavaMath.h"
+#include "MapPalette.h"
 
 MapItem::MapItem(int id) : ComplexItem(id)
 {
@@ -145,8 +146,8 @@ void MapItem::update(Level *level, shared_ptr<Entity> player, shared_ptr<MapItem
 			{
 				int ss = xx + zz * 231871;
 				ss = ss * ss * 31287121 + ss * 11;
-				if (((ss >> 20) & 1) == 0) count[Tile::dirt_Id] += 10;
-				else count[Tile::stone_Id] += 10;
+				if (((ss >> 20) & 1) == 0) count[MaterialColor::dirt->id] += 10;
+				else count[MaterialColor::stone->id] += 10;
 				hh = 100;
 			}
 			else
@@ -192,7 +193,8 @@ void MapItem::update(Level *level, shared_ptr<Entity> player, shared_ptr<MapItem
 						}
 						hh += yy / static_cast<double>(scale * scale);
 
-						count[t]++;
+						int color=t>0?MapPalette::block(t,(yy>0?lc->getData(xs+xso,yy-1,zs+zso):0),Tile::tiles[t]->material->color->id):0;
+                        count[color]++;
 					}
 				}
 			}
@@ -217,15 +219,15 @@ void MapItem::update(Level *level, shared_ptr<Entity> player, shared_ptr<MapItem
 			int col = 0;
 			if (tBest > 0)
 			{
-				MaterialColor *mc = Tile::tiles[tBest]->material->color;
-				if (mc == MaterialColor::water)
+				int mapColor=tBest;
+				if (mapColor == MaterialColor::water->id)
 				{
 					diff = (liquidDepth * 0.1) + ((x + z) & 1) * 0.2;
 					br = 1;
 					if (diff < 0.5) br = 2;
 					if (diff > 0.9) br = 0;
 				}
-				col = mc->id;
+				col = mapColor;
 			}
 
 			ho = hh;
@@ -354,3 +356,4 @@ void appendHoverText(ItemInstance itemInstance, Player player, List<String> line
 	}
 }
 */
+

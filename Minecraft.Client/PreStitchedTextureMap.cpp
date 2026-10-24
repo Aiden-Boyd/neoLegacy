@@ -15,6 +15,8 @@
 #include "TexturePack.h"
 #include "TexturePackRepository.h"
 #include "PreStitchedTextureMap.h"
+#include "BufferedImage.h"
+#include "AddedTerrainFallback.h"
 #include "SimpleIcon.h"
 #include "CompassTexture.h"
 #include "ClockTexture.h"
@@ -117,6 +119,12 @@ void PreStitchedTextureMap::stitch()
 
 	//BufferedImage *image = new BufferedImage(texturePack->getResource(L"/" + filename),false,true,drive); //ImageIO::read(texturePack->getResource(L"/" + filename));
 	BufferedImage *image = texturePack->getImageResource(filename, false, true, drive);
+    // Whole-file fallback above stays native. Fill only missing added terrain cells.
+    if(name==L"terrain" && texturePack!=Minecraft::GetInstance()->skins->getDefault() && AddedTerrainFallback::needed(image)) {
+        auto defaults=Minecraft::GetInstance()->skins->getDefault();
+        auto fallback=defaults->getImageResource(filename,false,true,defaults->getPath(true));
+        AddedTerrainFallback::apply(image,fallback);delete fallback;
+    }
 	MemSect(0);
 	int height = image->getHeight();
 	int width = image->getWidth();

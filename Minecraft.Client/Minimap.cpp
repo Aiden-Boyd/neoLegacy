@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Minecraft.h"
 #include "Minimap.h"
+#include "../Minecraft.World/MapPalette.h"
 #include "Font.h"
 #include "Options.h"
 #include "Textures.h"
@@ -58,7 +59,7 @@ void Minimap::reloadColours()
 
 	ColourTable *colourTable = Minecraft::GetInstance()->getColourTable();
 	// 4J note that this code has been extracted pretty much as it was in Minimap::render, although with some byte order changes
-	for( int i = 0; i < (14 * 4); i++ )	// 14 material colours currently, 4 brightnesses of each
+	for( int i = 0; i < 256; i++ ) // Four shades, with safe initialization of unused IDs
 	{
 		if (i / 4 == 0)
 		{
@@ -72,12 +73,10 @@ void Minimap::reloadColours()
 		}
 		else
 		{
-			int color = colourTable->getColor( MaterialColor::colors[i / 4]->col );
+			int color = i/4<14?colourTable->getColor(MaterialColor::colors[i/4]->col):MapPalette::rgb(i/4);
 			int brightness = i & 3;
 
-			int br = 220;
-			if (brightness == 2) br = 255;
-			if (brightness == 0) br = 180;
+			int br = MapPalette::brightness(brightness);
 
 			int r = ((color >> 16) & 0xff) * br / 255;
 			int g = ((color >> 8) & 0xff) * br / 255;
@@ -113,7 +112,7 @@ void Minimap::render(shared_ptr<Player> player, Textures *textures, shared_ptr<M
 	{
 		for (int i = 0; i < w * h; i++)
 		{
-			int val = data->colors[i];
+			int val = static_cast<unsigned char>(data->colors[i]);
 			// 4J - moved the code that used to run here into a LUT that is generated once in the ctor above
 			pixels[i] = LUT[val];
 		}
@@ -262,3 +261,4 @@ void Minimap::render(shared_ptr<Player> player, Textures *textures, shared_ptr<M
 #endif
 
 }
+
