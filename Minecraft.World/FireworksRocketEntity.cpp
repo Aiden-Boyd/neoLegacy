@@ -21,7 +21,7 @@ FireworksRocketEntity::FireworksRocketEntity(Level *level) : Entity(level)
 void FireworksRocketEntity::defineSynchedData()
 {
 	entityData->defineNULL(DATA_ID_FIREWORKS_ITEM, nullptr);
-	entityData->define(DATA_ID_BOOSTED_ENTITY,0);
+	entityData->define(DATA_ID_BOOSTED_ENTITY,-1); // LCE entity ID zero is valid.
 }
 
 bool FireworksRocketEntity::shouldRenderAtSqrDistance(double distance)
@@ -79,7 +79,7 @@ void FireworksRocketEntity::tick()
 	zOld = z;
 	Entity::tick();
 
-    if(attached || entityData->getInteger(DATA_ID_BOOSTED_ENTITY)>0) {
+    if(attached || entityData->getInteger(DATA_ID_BOOSTED_ENTITY)>=0) {
         auto player=resolveBoostedPlayer();
         if(!player) {if(!level->isClientSide && ++missingOwnerTicks>20)remove();return;}
         missingOwnerTicks=0;
@@ -169,7 +169,7 @@ void FireworksRocketEntity::readAdditionalSaveData(CompoundTag *tag)
     lifetime=(std::max)(0,(std::min)(51,tag->getInt(L"LifeTime")));
     attached=tag->getBoolean(L"AttachedToGlider");boostedUUID=tag->getString(L"BoostedUUID");
     if(boostedUUID.size()>64)boostedUUID.clear();boostedPlayer.reset();missingOwnerTicks=0;
-    entityData->set(DATA_ID_BOOSTED_ENTITY,0);
+    entityData->set(DATA_ID_BOOSTED_ENTITY,-1);
 
 	CompoundTag *itemTag = tag->getCompound(L"FireworksItem");
 	if (itemTag != nullptr)
