@@ -49,6 +49,24 @@ int main(){
  for(int repeat=0;repeat<2;++repeat)for(bool loot:{false,true}){Level l;player(l);l.rules.loot=loot;l.data.fight.initialized=true;l.data.fight.previouslyKilled=repeat;auto dragon=make_shared<EnderDragon>(&l);l.addEntity(dragon);for(int t=0;t<200;++t){dragon->tickDeath();if(t==172){auto saved=dragon->save();auto copy=make_shared<EnderDragon>(&l);copy->load(&saved);copy->setPos(dragon->x,dragon->y,dragon->z);dragon->remove();l.addEntity(copy);dragon=copy;}}assert(dragon->removed&&l.xp==(loot?(repeat?500:12000):0)&&l.eggs==(repeat?0:1));assert(l.data.gateways==1&&l.data.fight.dragonKilled&&l.data.fight.previouslyKilled);assert(!EndFight::dragonDefeated(&l,dragon.get()));}
  {Level l;player(l);auto dragon=make_shared<EnderDragon>(&l);l.addEntity(dragon);l.data.fight.initialized=true;l.data.fight.previouslyKilled=true;l.data.fight.dragonKilled=true;l.data.fight.dragonId=dragon->getUUID();dragon->dragonDeathTime=190;dragon->deathXpReward=12000;for(int t=0;t<10;++t)dragon->tickDeath();assert(dragon->removed&&l.xp==0&&l.eggs==0&&l.data.gateways==0);}
  {Level l;arena(l);auto dragon=make_shared<EnderDragon>(&l);l.addEntity(dragon);EndFight::tick(&l);assert(l.data.fight.previouslyKilled&&!l.data.fight.dragonKilled);assert(EndFight::deathReward(&l,dragon.get())==500);}
+ // Native cache unload tick rotates pinned entries and releases them naturally.
+ {Level l;player(l);ServerChunkCache cache;cache.level=&l;LevelChunk pinned(0,0),remote(10,10);cache.m_loadedChunkList={&pinned,&remote};cache.m_toDrop={&pinned,&remote};cache.tick();assert(!pinned.unloaded&&remote.unloaded&&cache.saves==1);l.players.clear();cache.tick();assert(pinned.unloaded&&cache.saves==2&&cache.m_toDrop.empty());}
+ {Level l;player(l);l.data.gateways=1;tick(l,1300);assert(livingCount(l)==0&&l.data.fight.dragonKilled);}
+ // Recovery waits for loaded chunks and 1200 observed missing ticks. No-player
+ // and chunk gaps restart the observation window; save/reload restarts it too.
+ {Level l;player(l);tick(l,1199);assert(livingCount(l)==0);tick(l);assert(livingCount(l)==1&&!l.data.fight.dragonId.empty());tick(l,1300);assert(livingCount(l)==1);}
+ {Level l;player(l);tick(l,600);reload(l);tick(l,600);assert(livingCount(l)==0);l.players.clear();tick(l);player(l);tick(l,1199);assert(livingCount(l)==0);tick(l);assert(livingCount(l)==1);}
+ {Level l;player(l);auto &s=l.data.fight;s.initialized=true;s.dragonId=L"old-save-without-position";tick(l,1300);assert(livingCount(l)==0);auto d=make_shared<EnderDragon>(&l);d->setUUID(s.dragonId);l.addEntity(d);tick(l);assert(s.dragonChunkKnown&&s.dragonId==d->getUUID());}
+ {Level l;player(l);auto &s=l.data.fight;s.initialized=true;s.dragonId=L"tracked";s.dragonChunkKnown=true;s.dragonChunkX=12;s.dragonChunkZ=-11;l.missingChunks.insert({12,-11});tick(l);assert(l.chunkRequests==1&&s.missingTicks==0);auto old=make_shared<EnderDragon>(&l);old->setUUID(L"tracked");old->setPos(200,80,-170);l.addEntity(old);tick(l,1300);assert(livingCount(l)==1&&s.dragonId==L"tracked");assert(EndFight::keepChunkLoaded(&l,12,-11));l.players.clear();assert(!EndFight::keepChunkLoaded(&l,12,-11));}
+ {Level l;player(l);auto &s=l.data.fight;s.initialized=true;s.previouslyKilled=true;s.dragonKilled=true;tick(l,1300);assert(livingCount(l)==0&&l.explosions.empty());}
+ {Level l;player(l);l.failAdd=true;tick(l,1200);assert(livingCount(l)==0&&l.data.fight.dragonId.empty());l.failAdd=false;tick(l,1200);assert(livingCount(l)==1);}
+ // Central chunks are requested in batches of at most four; ritual work pauses.
+ {Level l;arena(l);four(l);EndFight::tryRespawn(&l);for(int x=-8;x<8;++x)for(int z=-8;z<8;++z)l.missingChunks.insert({x,z});int phase=l.data.fight.phase;for(int i=0;i<64;++i){int n=l.chunkRequests;tick(l);assert(l.chunkRequests-n<=4&&l.data.fight.phase==phase&&l.data.fight.ticks==0);}tick(l);assert(l.data.fight.phase==1);}
+ // Crystal destruction during missing arena chunks persists as a deferred abort.
+ {Level l;arena(l);four(l);EndFight::tryRespawn(&l);l.loaded=false;auto c=crystalById(&l,l.data.fight.crystals[0]);EndFight::crystalDestroyed(&l,c.get());c->remove();assert(l.data.fight.pendingAbort);int writes=l.writes;tick(l);assert(l.writes==writes);reload(l);assert(l.data.fight.pendingAbort);l.loaded=true;tick(l);assert(!l.data.fight.pendingAbort&&l.data.fight.phase==-1&&l.getTile(1,64,0)==119);}
+ // Chunk readiness interruptions in every saved phase never advance or spawn.
+ for(int phase=0;phase<=4;++phase){Level l;arena(l);four(l);EndFight::tryRespawn(&l);for(int t=0;t<700&&l.data.fight.phase!=phase;++t)tick(l);int t=l.data.fight.ticks;l.loaded=false;reload(l);tick(l,20);assert(l.data.fight.phase==phase&&l.data.fight.ticks==t&&livingCount(l)==0);l.loaded=true;tick(l);}
+
 }
 '''
 def main():
@@ -57,6 +75,9 @@ def main():
  source+='\n'+ENGINE
  for name in ('EndFightState.cpp','EnderCrystal.cpp','EndCrystalItem.cpp','SpikeFeature.cpp','EndFight.cpp'):source+='\n'+clean(name)
  for signature in ('void EnderDragon::tickDeath()','void EnderDragon::spawnExitPortal(','void EnderDragon::addAdditonalSaveData(','void EnderDragon::readAdditionalSaveData('):source+='\n'+method('EnderDragon.cpp',signature)
- with tempfile.TemporaryDirectory()as d:compile_and_run(Path(d),'end_fight_production',source+TEST)
+ source+='\n'+(ROOT/'tests/end_chunk_cache_fixture.h').read_text()
+ cache=(ROOT/'Minecraft.Client/ServerChunkCache.cpp').read_text();start=cache.index('bool ServerChunkCache::tick()');end=cache.index('bool ServerChunkCache::shouldSave()',start)
+ source+='\n'+cache[start:end]
+ with tempfile.TemporaryDirectory()as d:compile_and_run(Path(d),'end_fight_production','#define _LARGE_WORLDS\n#include <deque>\n'+source+TEST)
  print('Production ritual, save/load, item, crystal, native pillars and dragon death checks: passed')
 if __name__=='__main__':main()

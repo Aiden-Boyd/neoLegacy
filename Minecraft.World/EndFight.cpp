@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "EndFight.h"
+#include "ChunkSource.h"
+#include "Mth.h"
 #include "EndFightState.h"
 #include "EnderDragon.h"
 #include "EnderCrystal.h"
@@ -19,6 +21,27 @@ const int pillarZ[8]={0,28,40,28,0,-28,-40,-28};
 const int pillarRadius[8]={2,2,2,3,3,3,4,4};
 bool hostEnd(Level *l) {return !l->isClientSide && l->dimension->id==1;}
 bool arenaLoaded(Level *l) {return l->hasChunksAt(-52,0,-52,52,0,52);}
+bool playersNear(Level *l) {
+    for(auto &p:l->players)if(p&&!p->removed&&std::abs(p->x)<192&&std::abs(p->z)<192)return true;
+    return false;
+}
+void trackDragon(EndFightState &s,shared_ptr<EnderDragon> dragon) {
+    s.dragonId=dragon->getUUID();s.dragonChunkKnown=true;
+    s.dragonChunkX=Mth::floor(dragon->x)>>4;s.dragonChunkZ=Mth::floor(dragon->z)>>4;s.missingTicks=0;
+}
+bool prepareChunks(Level *l,EndFightState &s) {
+    int requests=0;bool ready=true;
+    // Bounded synchronous cache requests. Do not progress on the request tick:
+    // native entity load callbacks must settle before absence is meaningful.
+    auto request=[&](int x,int z) {
+        if(l->hasChunksAt(x*16,0,z*16,x*16+15,0,z*16+15))return;
+        ready=false;if(requests<4){l->getChunkSource()->create(x,z);++requests;}
+    };
+    for(int x=-8;x<8;++x)for(int z=-8;z<8;++z)request(x,z);
+    if(s.dragonChunkKnown&&!s.dragonKilled)for(int dx=-1;dx<=1;++dx)for(int dz=-1;dz<=1;++dz)
+        request(s.dragonChunkX+dx,s.dragonChunkZ+dz);
+    return ready;
+}
 shared_ptr<EnderDragon> livingDragon(Level *l)
 {
     for(auto &entity:l->getAllEntities()) {
@@ -46,8 +69,8 @@ void initialize(Level *l,EndFightState &s)
     if(s.initialized)return;
     bool portal=portalActive(l,s.portalY);
     s.previouslyKilled=portal || l->getLevelData()->getEndGatewaysGenerated()>0;
-    auto dragon=livingDragon(l);s.dragonKilled=portal && !dragon;
-    if(dragon)s.dragonId=dragon->getUUID();
+    auto dragon=livingDragon(l);s.dragonKilled=s.previouslyKilled && !dragon;
+    if(dragon)trackDragon(s,dragon);
     s.initialized=true;
 }
 void portal(Level *l,EndFightState &s,bool active)
@@ -70,7 +93,7 @@ void resetCrystals(Level *l,const EndFightState &s)
 }
 void abortRespawn(Level *l,EndFightState &s)
 {
-    resetCrystals(l,s);portal(l,s,true);s.setPhase(EndFightState::IDLE);s.crystals.fill(L"");s.dragonKilled=true;
+    s.pendingAbort=false;s.missingTicks=0;resetCrystals(l,s);portal(l,s,true);s.setPhase(EndFightState::IDLE);s.crystals.fill(L"");s.dragonKilled=true;
 }
 bool getRitualCrystals(Level *l,EndFightState &s,std::array<shared_ptr<EnderCrystal>,4> &out)
 {
@@ -139,12 +162,27 @@ bool EndFight::tryRespawn(Level *l)
 }
 void EndFight::tick(Level *l)
 {
-    if(!hostEnd(l) || !arenaLoaded(l))return;
-    // Keep rituals frozen when every player has left the central arena.
-    bool nearby=false;for(auto &p:l->players)if(p && std::abs(p->x)<192 && std::abs(p->z)<192){nearby=true;break;}
-    if(!nearby)return;
-    auto &s=l->getLevelData()->getEndFight();initialize(l,s);
-    if(s.phase==EndFightState::IDLE){if(l->getGameTime()%20==0)tryRespawn(l);return;}
+    if(!hostEnd(l))return;
+    if(!playersNear(l)){l->getLevelData()->getEndFight().missingTicks=0;return;}
+    auto &s=l->getLevelData()->getEndFight();
+    if(!prepareChunks(l,s)) {s.missingTicks=0;return;}
+    initialize(l,s);
+    if(s.pendingAbort){abortRespawn(l,s);return;}
+    if(s.phase==EndFightState::IDLE) {
+        auto dragon=livingDragon(l);
+        if(dragon){trackDragon(s,dragon);s.dragonKilled=false;return;}
+        if(!s.dragonKilled) {
+            // Old records with a UUID but no last position cannot prove the
+            // tracked dragon is absent; adopt it when its chunk loads naturally.
+            if(!s.dragonId.empty()&&!s.dragonChunkKnown)return;
+            if(++s.missingTicks<1200)return;
+            s.missingTicks=0;
+            dragon=std::make_shared<EnderDragon>(l);dragon->AddParts();dragon->moveTo(0,128,0,0,0);
+            if(l->addEntity(dragon))trackDragon(s,dragon);
+            return;
+        }
+        s.missingTicks=0;if(l->getGameTime()%20==0)tryRespawn(l);return;
+    }
     if(s.phase==EndFightState::FINISHING) {
         auto dragon=livingDragon(l);
         if(!dragon) {
@@ -153,7 +191,7 @@ void EndFight::tick(Level *l)
             dragon=std::make_shared<EnderDragon>(l);dragon->AddParts();dragon->moveTo(0,128,0,0,0);
             if(!l->addEntity(dragon))return; // Retry without consuming crystals or claiming success.
         }
-        s.dragonId=dragon->getUUID();s.dragonKilled=false;
+        trackDragon(s,dragon);s.dragonKilled=false;
         resetCrystals(l,s);
         std::vector<shared_ptr<EnderCrystal> > consumed;
         for(auto &id:s.crystals)if(auto c=crystalById(l,id))consumed.push_back(c);
@@ -163,7 +201,7 @@ void EndFight::tick(Level *l)
         s.crystals.fill(L"");s.setPhase(EndFightState::IDLE);return;
     }
     // An externally created/live dragon blocks a second spawn and restores a usable fountain.
-    if(livingDragon(l)){abortRespawn(l,s);s.dragonKilled=false;return;}
+    if(auto dragon=livingDragon(l)){abortRespawn(l,s);trackDragon(s,dragon);s.dragonKilled=false;return;}
     std::array<shared_ptr<EnderCrystal>,4> crystals;
     if(!getRitualCrystals(l,s,crystals)){abortRespawn(l,s);return;}
     switch(s.phase) {
@@ -193,7 +231,7 @@ void EndFight::crystalDestroyed(Level *l,EnderCrystal *crystal)
     if(!hostEnd(l))return;
     auto &s=l->getLevelData()->getEndFight();
     if(s.phase==EndFightState::IDLE || (s.phase==EndFightState::FINISHING && livingDragon(l)))return;
-    for(auto &id:s.crystals)if(id==crystal->getUUID()) {abortRespawn(l,s);return;}
+    for(auto &id:s.crystals)if(id==crystal->getUUID()) {if(arenaLoaded(l))abortRespawn(l,s);else s.pendingAbort=true;return;}
 }
 int EndFight::deathReward(Level *l,EnderDragon *dragon)
 {
@@ -210,4 +248,11 @@ bool EndFight::dragonDefeated(Level *l,EnderDragon *dragon)
     if(s.dragonKilled || (!s.dragonId.empty() && s.dragonId!=dragon->getUUID()))return false;
     s.dragonId=dragon->getUUID();s.previouslyKilled=true;s.dragonKilled=true;
     s.setPhase(EndFightState::IDLE);return true;
+}
+
+bool EndFight::keepChunkLoaded(Level *l,int x,int z) {
+    if(!hostEnd(l)||!playersNear(l))return false;
+    if(x>=-8&&x<8&&z>=-8&&z<8)return true;
+    auto &s=l->getLevelData()->getEndFight();
+    return s.dragonChunkKnown&&!s.dragonKilled&&std::abs(x-s.dragonChunkX)<=1&&std::abs(z-s.dragonChunkZ)<=1;
 }

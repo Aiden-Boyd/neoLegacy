@@ -10,6 +10,10 @@ void EndFightState::load(CompoundTag *root)
     phase=tag->getInt(L"Phase");if(phase<IDLE || phase>FINISHING)phase=IDLE;
     ticks=tag->getInt(L"Ticks");if(ticks<0 || ticks>1200)ticks=0;
     portalY=tag->getInt(L"PortalY");if(portalY<1 || portalY>250)portalY=-1;
+    pendingAbort=tag->getBoolean(L"PendingAbort");
+    dragonChunkKnown=tag->getBoolean(L"DragonChunkKnown");
+    dragonChunkX=tag->getInt(L"DragonChunkX");dragonChunkZ=tag->getInt(L"DragonChunkZ");
+    if(dragonChunkX<-128||dragonChunkX>127||dragonChunkZ<-128||dragonChunkZ>127)dragonChunkKnown=false;
     dragonId=tag->getString(L"DragonUUID");if(dragonId.size()>64)dragonId.clear();
     for(int i=0;i<4;++i){crystals[i]=tag->getString(L"Crystal"+std::to_wstring(i));if(crystals[i].size()>64)crystals[i].clear();}
     for(int i=0;i<8;++i){int h=tag->getInt(L"Pillar"+std::to_wstring(i));pillarHeights[i]=h>=20&&h<=250?h:0;}
@@ -22,5 +26,7 @@ void EndFightState::save(CompoundTag *root) const
     tag->putInt(L"Phase",phase);tag->putInt(L"Ticks",ticks);tag->putInt(L"PortalY",portalY);tag->putString(L"DragonUUID",dragonId);
     for(int i=0;i<4;++i)tag->putString(L"Crystal"+std::to_wstring(i),crystals[i]);
     for(int i=0;i<8;++i)tag->putInt(L"Pillar"+std::to_wstring(i),pillarHeights[i]);
+    tag->putBoolean(L"DragonChunkKnown",dragonChunkKnown);tag->putInt(L"DragonChunkX",dragonChunkX);tag->putInt(L"DragonChunkZ",dragonChunkZ);
+    tag->putBoolean(L"PendingAbort",pendingAbort);
     root->putCompound(L"EndFight",tag);
 }

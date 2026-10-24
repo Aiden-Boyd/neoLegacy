@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../Minecraft.World/EndFight.h"
 #include "ServerChunkCache.h"
 #include "ServerLevel.h"
 #include "MinecraftServer.h"
@@ -949,7 +950,11 @@ bool ServerChunkCache::tick()
 			{
 				LevelChunk *chunk = m_toDrop.front();
 				if(!chunk->isUnloaded())
-				{
+                {
+                    if(EndFight::keepChunkLoaded(level,chunk->x,chunk->z)) {
+                        // Rotate pinned entries so they cannot block unrelated unloads.
+                        m_toDrop.pop_front();m_toDrop.push_back(chunk);continue;
+                    }
 					// Don't unload a chunk that contains a player, as this will cause their entity to be removed from the level itself and they will never tick again.
 					// This can happen if a player moves a long distance in one tick, for example when the server thread has locked up doing something for a while whilst a player
 					// kept moving. In this case, the player is moved in the player chunk map (driven by the network packets being processed for their new position) before the
@@ -1074,3 +1079,4 @@ int ServerChunkCache::runSaveThreadProc(LPVOID lpParam)
 
 	return 0;
 }
+

@@ -7,6 +7,8 @@ struct EndFightState
 {
     enum Phase {IDLE=-1,START=0,PREPARING=1,PILLARS=2,SUMMONING=3,FINISHING=4};
     bool initialized=false,previouslyKilled=false,dragonKilled=false;
+    bool dragonChunkKnown=false,pendingAbort=false;
+    int dragonChunkX=0,dragonChunkZ=0,missingTicks=0; // missingTicks deliberately restarts on load
     int phase=IDLE,ticks=0,portalY=-1;
     std::wstring dragonId;
     std::array<std::wstring,4> crystals;

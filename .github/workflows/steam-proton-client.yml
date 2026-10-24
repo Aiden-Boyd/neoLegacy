@@ -24,6 +24,7 @@ on:
       - feature/shulker-lid-collision
       - feature/villager-food
       - feature/map-texture-compat
+      - feature/end-reliability
   workflow_dispatch:
 
 permissions:
@@ -35,7 +36,7 @@ concurrency:
 
 jobs:
   build-client:
-    name: Windows64 Map colors and texture fallback
+    name: Windows64 End recovery and chunk safety
     runs-on: windows-2022
     timeout-minutes: 45
     env:
@@ -260,6 +261,7 @@ jobs:
           Copy-Item OVERWORLD_TESTS.md "$stage/OVERWORLD_TESTS.md"
           Copy-Item END_RESPAWN_TESTS.md "$stage/END_RESPAWN_TESTS.md"
           Copy-Item INVENTORY_EQUIP_FIX_TESTS.md "$stage/INVENTORY_EQUIP_FIX_TESTS.md"
+          Copy-Item END_RELIABILITY_TESTS.md "$stage/END_RELIABILITY_TESTS.md"
           Copy-Item MAP_TEXTURE_TESTS.md "$stage/MAP_TEXTURE_TESTS.md"
           Copy-Item VILLAGER_FOOD_TESTS.md "$stage/VILLAGER_FOOD_TESTS.md"
           Copy-Item SHULKER_LID_TESTS.md "$stage/SHULKER_LID_TESTS.md"
@@ -269,7 +271,7 @@ jobs:
             "Commit: ${{ github.sha }}",
             "Configuration: Windows64 Release",
             "Runtime: Windows executable; test through Steam/Proton on Bazzite.",
-            "Candidate: Metadata-aware map colors and missing added terrain-cell fallback; includes all previous features and fixes.",
+            "Candidate: End dragon recovery and chunk-safe rituals; includes all previous features and fixes.",
             "Compilation does not establish controller compatibility or CU59 parity."
           ) | Set-Content "$stage/BUILD_INFO.txt"
           Get-ChildItem $stage -Recurse -File |
@@ -282,7 +284,7 @@ jobs:
       - name: Upload client test artifact
         uses: actions/upload-artifact@v6
         with:
-          name: neoLegacy-map-texture-compat-windows64
+          name: neoLegacy-end-reliability-windows64
           path: staging/
           if-no-files-found: error
           retention-days: 14

@@ -5,6 +5,7 @@ class EnderCrystal;
 class EndFight
 {
 public:
+    static bool keepChunkLoaded(Level *level,int chunkX,int chunkZ);
     static void tick(Level *level);
     static bool tryRespawn(Level *level);
     static void crystalDestroyed(Level *level,EnderCrystal *crystal);
