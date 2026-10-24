@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#ifdef _WINDOWS64
+#include "../Network/JoinCode.h"
+#endif
 #include "UI.h"
 #include "UIScene_LoadOrJoinMenu.h"
 
@@ -4188,7 +4191,7 @@ void UIScene_LoadOrJoinMenu::BeginAddServer()
     m_addServerPort.clear();
 
     UIKeyboardInitData kbData;
-    kbData.title       = L"Server Address";
+    kbData.title       = L"Server Address or Join Code";
     kbData.defaultText = L"";
     kbData.maxChars    = 128;
     kbData.callback    = &UIScene_LoadOrJoinMenu::AddServerKeyboardCallback;
@@ -4227,6 +4230,18 @@ int UIScene_LoadOrJoinMenu::AddServerKeyboardCallback(LPVOID lpParam, bool bRes)
     {
     case eAddServer_IP:
     {
+        std::wstring decodedHost;int decodedPort=0;
+        if(JoinCode::looksLikeCode(wBuf)) {
+            UIKeyboardInitData codeKeyboard;
+            codeKeyboard.callback=&UIScene_LoadOrJoinMenu::AddServerKeyboardCallback;codeKeyboard.lpParam=pClass;codeKeyboard.pcMode=g_KBMInput.IsKBMActive();
+            if(!JoinCode::decode(wBuf,decodedHost,decodedPort)) {
+                codeKeyboard.title=L"Invalid code - enter address or join code";codeKeyboard.defaultText=wBuf;codeKeyboard.maxChars=128;
+                ui.NavigateToScene(pClass->m_iPad,eUIScene_Keyboard,&codeKeyboard);return 0;
+            }
+            pClass->m_addServerIP=decodedHost;pClass->m_addServerPort=std::to_wstring(decodedPort);pClass->m_addServerPhase=eAddServer_Name;
+            codeKeyboard.title=L"Server Name";codeKeyboard.defaultText=L"Minecraft Server";codeKeyboard.maxChars=64;
+            ui.NavigateToScene(pClass->m_iPad,eUIScene_Keyboard,&codeKeyboard);return 0;
+        }
         pClass->m_addServerIP = wBuf;
         pClass->m_addServerPhase = eAddServer_Port;
 

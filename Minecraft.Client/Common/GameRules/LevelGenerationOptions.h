@@ -114,6 +114,7 @@ public:
 	bool isTutorial();
     // Explicit marker in the existing MapOptions dataTag; survives native rule saves.
     bool isImportedTutorial() const { return m_4JDataValue == 0x54553436; }
+    bool isTumbleLobby() const { return m_4JDataValue == 0x544D4231; }
 	bool isFromSave();
 	bool isFromDLC();
 

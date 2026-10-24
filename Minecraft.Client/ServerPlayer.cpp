@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Common/MiniGames/TumbleSession.h"
 #include "ServerPlayer.h"
 #include "ServerPlayerGameMode.h"
 #include "ServerLevel.h"
@@ -858,6 +859,7 @@ void ServerPlayer::die(DamageSource *source)
 
 bool ServerPlayer::hurt(DamageSource *dmgSource, float dmg)
 {
+    if(server->getTumble()->enabled())return false;
 	if (isInvulnerable() && dmgSource != DamageSource::outOfWorld) return false;
 	if (gameMode == nullptr || gameMode->isCreative()) {
 		if (dmgSource != DamageSource::outOfWorld) return false;

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "LegacyItemNames.h"
 #include "com.mojang.nbt.h"
 #include "net.minecraft.locale.h"
 #include "net.minecraft.stats.h"
@@ -155,7 +156,11 @@ CompoundTag *ItemInstance::save(CompoundTag *compoundTag)
 void ItemInstance::load(CompoundTag *compoundTag)
 {
 	popTime = 0;
-	id = compoundTag->getShort(L"id");
+	if(compoundTag->contains(L"id",Tag::TAG_String))id=LegacyItemNames::id(compoundTag->getString(L"id"));
+    else if(compoundTag->contains(L"id",Tag::TAG_Short))id=compoundTag->getShort(L"id");
+    else if(compoundTag->contains(L"id",Tag::TAG_Int))id=compoundTag->getInt(L"id");
+    else id=0;
+    if(id<0||id>=Item::items.length)id=0;
 	count = compoundTag->getByte(L"Count");
 	auxValue = compoundTag->getShort(L"Damage");
 	if (auxValue < 0)

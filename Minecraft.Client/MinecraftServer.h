@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include "ConsoleInputSource.h"
 #include "../Minecraft.World/ArrayWithLength.h"
 #include "../Minecraft.World/SharedConstants.h"
@@ -68,6 +69,8 @@ typedef struct _NetworkGameInitData
 using namespace std;
 
 // 4J Stu - 1.0.1 updates the server to implement the ServerInterface class, but I don't think we will use any of the functions that defines so not implementing here
+class TumbleSession;
+
 class MinecraftServer : public ConsoleInputSource
 {
 public:
@@ -91,6 +94,10 @@ public:
 
 private:
     PlayerList *players;
+    std::unique_ptr<TumbleSession> tumble;
+public:
+    TumbleSession *getTumble() { return tumble.get(); }
+private:
 
 	// 4J Stu - Added 1.0.1, Not needed
 	//long[] tickTimes = new long[TICK_STATS_SPAN];
@@ -295,3 +302,4 @@ public:
 
 	// 4J Stu - A load of functions were all added in 1.0.1 in the ServerInterface, but I don't think we need any of them
 };
+

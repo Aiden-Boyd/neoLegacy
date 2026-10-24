@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "LegacyEntityNames.h"
 #include "net.minecraft.network.packet.h"
 #include "net.minecraft.world.level.h"
 #include "net.minecraft.world.level.tile.h"
@@ -105,7 +106,7 @@ void TileEntity::tick()
 shared_ptr<TileEntity> TileEntity::loadStatic(CompoundTag *tag)
 {
 	shared_ptr<TileEntity> entity = nullptr;
-    auto it = idCreateMap.find(tag->getString(L"id"));
+    auto it = idCreateMap.find(LegacyEntityNames::tile(tag->getString(L"id")));
     if (it != idCreateMap.end())
         entity = shared_ptr<TileEntity>(it->second());
 	if (entity != nullptr)

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "LegacyEntityNames.h"
 #include "Class.h"
 #include "Shulker.h"
 #include "Painting.h"
@@ -192,7 +193,7 @@ shared_ptr<Entity> EntityIO::loadStatic(CompoundTag *tag, Level *level)
 		tag->remove(L"Type");
 	}
 
-	auto it = idCreateMap->find(tag->getString(L"id"));
+	auto it = idCreateMap->find(LegacyEntityNames::entity(tag->getString(L"id")));
 	if(it != idCreateMap->end() )
 	{
 		entityCreateFn create = it->second;
@@ -350,3 +351,4 @@ int EntityIO::eTypeToIoid(eINSTANCEOF eType)
 		return it->second;
 	return -1;
 }
+

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Common/MiniGames/TumbleSession.h"
 //#include "Minecraft.h"
 
 #include <ctime>
@@ -554,6 +555,7 @@ static bool ExecuteConsoleCommand(MinecraftServer *server, const wstring &rawCom
 
 MinecraftServer::MinecraftServer()
 {
+    tumble.reset(new TumbleSession(this));
 	// 4J - added initialisers
 	connection = nullptr;
 	settings = nullptr;
@@ -1103,7 +1105,10 @@ bool MinecraftServer::loadLevel(LevelStorageSource *storageSource, const wstring
 		csf->closeHandle(fe);
 	}
 
-	int64_t lastTime = System::currentTimeMillis();
+	auto miniOptions=app.m_gameRules.getLevelGenerationOptions();
+    tumble->enable(miniOptions != nullptr && miniOptions->isTumbleLobby());
+
+    int64_t lastTime = System::currentTimeMillis();
 #ifdef _LARGE_WORLDS
 	if(app.GetGameNewWorldSize() > levels[0]->getLevelData()->getXZSizeOld())
 	{
@@ -2382,7 +2387,7 @@ void MinecraftServer::tick()
 #if DEBUG_SERVER_DONT_SPAWN_MOBS
 			level->setSpawnSettings(false, false);
 #else
-			level->setSpawnSettings(level->difficulty > 0 && !Minecraft::GetInstance()->isTutorial(), animals);
+			level->setSpawnSettings(!tumble->enabled() && level->difficulty > 0 && !Minecraft::GetInstance()->isTutorial(), !tumble->enabled() && animals);
 #endif
 
 			if (tickCount % 20 == 0)
@@ -2451,6 +2456,7 @@ void MinecraftServer::tick()
 	// LoginPacket is processed.
 	PIXBeginNamedEvent(0,"Players tick");
 	players->tick();
+    tumble->tick();
 	PIXEndNamedEvent();
 	int64_t afterPlayers = System::currentTimeMillis();
 	PIXBeginNamedEvent(0,"Connection tick");

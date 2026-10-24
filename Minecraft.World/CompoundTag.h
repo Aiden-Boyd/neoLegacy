@@ -191,17 +191,20 @@ public:
 		return ((LongTag *) tags[name])->data;
 	}
 
-	float getFloat(const wstring &name)
-	{
-		if (tags.find(name) == tags.end()) return static_cast<float>(0);
-		return static_cast<FloatTag *>(tags[name])->data;
-	}
-
-	double getDouble(const wstring &name)
-	{
-		if (tags.find(name) == tags.end()) return (double)0;
-		return static_cast<DoubleTag *>(tags[name])->data;
-	}
+    float getFloat(const wstring &name) { return static_cast<float>(getDouble(name)); }
+    double getDouble(const wstring &name) {
+        auto it=tags.find(name);if(it==tags.end())return 0;
+        Tag *tag=it->second;
+        switch(tag->getId()) {
+        case Tag::TAG_Byte:return static_cast<ByteTag*>(tag)->data;
+        case Tag::TAG_Short:return static_cast<ShortTag*>(tag)->data;
+        case Tag::TAG_Int:return static_cast<IntTag*>(tag)->data;
+        case Tag::TAG_Long:return static_cast<double>(static_cast<LongTag*>(tag)->data);
+        case Tag::TAG_Float:return static_cast<FloatTag*>(tag)->data;
+        case Tag::TAG_Double:return static_cast<DoubleTag*>(tag)->data;
+        default:return 0;
+        }
+    }
 
 	wstring getString(const wstring &name)
 	{
@@ -325,6 +328,7 @@ public:
 	}
 
 };
+
 
 
 

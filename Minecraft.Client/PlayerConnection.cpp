@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "Common/MiniGames/TumbleSession.h"
+#include "Common/Network/JoinCode.h"
 #include "../Minecraft.World/ShulkerBoxRecolor.h"
 #include "PlayerConnection.h"
 #include "ServerPlayer.h"
@@ -516,6 +518,7 @@ void PlayerConnection::teleport(double x, double y, double z, float yRot, float 
 
 void PlayerConnection::handlePlayerAction(shared_ptr<PlayerActionPacket> packet)
 {
+    if(server->getTumble()->enabled()&&(packet->action==PlayerActionPacket::DROP_ITEM||packet->action==PlayerActionPacket::DROP_ALL_ITEMS))return;
 	ServerLevel *level = server->getLevel(player->dimension);
 	player->resetLastActionTime();
 
@@ -1027,6 +1030,12 @@ void PlayerConnection::handleChat(shared_ptr<ChatPacket> packet)
 
 void PlayerConnection::handleCommand(const wstring& message)
 {
+    if(message==L"/joincode"||message.compare(0,10,L"/joincode ")==0){
+        std::wistringstream input(message.substr(9));std::wstring host;int port=25565;input>>host;if(!(input>>port))port=25565;
+        auto code=JoinCode::encode(host,port);player->sendMessage(code.empty()?L"Usage: /joincode <reachable IPv4> [port]":L"Join code: "+code);return;
+    }
+    if(server->getTumble()->command(player,message))return;
+    if(server->getTumble()->enabled()){player->sendMessage(L"Use /tumble for mini-game commands.");return;}
 #if defined(_WINDOWS64) && defined(MINECRAFT_SERVER_BUILD)
 	std::wstring commandLine = message;
 	if (FourKitBridge::FireCommandPreprocess(player->entityId, commandLine, commandLine))
@@ -1517,6 +1526,7 @@ wstring PlayerConnection::getConsoleName()
 
 void PlayerConnection::handleInteract(shared_ptr<InteractPacket> packet)
 {
+    if(server->getTumble()->enabled())return;
 	ServerLevel *level = server->getLevel(player->dimension);
 	shared_ptr<Entity> target = level->getEntity(packet->target);
 	player->resetLastActionTime();
@@ -2016,6 +2026,11 @@ void PlayerConnection::handleContainerSetSlot(shared_ptr<ContainerSetSlotPacket>
 
 void PlayerConnection::handleContainerClick(shared_ptr<ContainerClickPacket> packet)
 {
+    if(server->getTumble()->enabled()) {
+        expectedAcks[player->containerMenu->containerId]=packet->uid;
+        send(std::make_shared<ContainerAckPacket>(packet->containerId,packet->uid,false));
+        player->containerMenu->setSynched(player,false);player->refreshContainer(player->containerMenu);player->broadcastCarriedItem();return;
+    }
 	player->resetLastActionTime();
 	if (player->containerMenu->containerId == packet->containerId && player->containerMenu->isSynched(player))
 	{
@@ -2085,6 +2100,7 @@ void PlayerConnection::handleContainerButtonClick(shared_ptr<ContainerButtonClic
 
 void PlayerConnection::handleSetCreativeModeSlot(shared_ptr<SetCreativeModeSlotPacket> packet)
 {
+    if(server->getTumble()->enabled()){player->refreshContainer(player->inventoryMenu);return;}
 	if (player->gameMode->isCreative())
 	{
 		bool drop = packet->slotNum < 0;
@@ -2846,5 +2862,6 @@ bool PlayerConnection::isGuest()
 		return isGuest;
 	}
 }
+
 
 

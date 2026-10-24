@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#ifdef _WINDOWS64
+#include "../Network/JoinCode.h"
+#endif
 #include "UI.h"
 #include "UIScene_JoinMenu.h"
 
@@ -371,7 +374,13 @@ void UIScene_JoinMenu::updateServerDescription() {
 			args[0].type = IGGY_DATATYPE_number;
 			args[0].number = 0; // 0 is the what's new page on howtoplay don't change it
 
-			wstring testText = L"\nNothing yet...";
+			wstring testText = L"Server details";
+            if(m_selectedSession != nullptr){
+                std::string address=m_selectedSession->data.hostIP;std::wstring host(address.begin(),address.end());
+                auto code=JoinCode::encode(host,m_selectedSession->data.hostPort);
+                testText=L"Address: "+host+L":"+std::to_wstring(m_selectedSession->data.hostPort);
+                if(!code.empty())testText+=L"\n\nJoin code: "+code+L"\n\nPaste this code into Add Server. The host must be reachable from your network.";
+            }
 			IggyStringUTF16 iggyStr;
 			wstring formattedText = app.EscapeHTMLString(testText);
 			formattedText = app.FormatChatMessage(formattedText);
@@ -953,7 +962,7 @@ void UIScene_JoinMenu::BeginEditServer()
 	mbstowcs(wDefaultIP, m_selectedSession->data.hostIP, 63);
 
 	UIKeyboardInitData kbData;
-	kbData.title       = L"Server Address";
+	kbData.title       = L"Server Address or Join Code";
 	kbData.defaultText = wDefaultIP;
 	kbData.maxChars    = 128;
 	kbData.callback    = &UIScene_JoinMenu::EditServerKeyboardCallback;
@@ -992,7 +1001,19 @@ int UIScene_JoinMenu::EditServerKeyboardCallback(LPVOID lpParam, bool bRes)
 	{
 	case eEditServer_IP:
 	{
-		pClass->m_editServerIP = wBuf;
+		std::wstring decodedHost;int decodedPort=0;
+        if(JoinCode::looksLikeCode(wBuf)) {
+            UIKeyboardInitData codeKeyboard;
+            codeKeyboard.callback=&UIScene_JoinMenu::EditServerKeyboardCallback;codeKeyboard.lpParam=pClass;codeKeyboard.pcMode=g_KBMInput.IsKBMActive();
+            if(!JoinCode::decode(wBuf,decodedHost,decodedPort)) {
+                codeKeyboard.title=L"Invalid code - enter address or join code";codeKeyboard.defaultText=wBuf;codeKeyboard.maxChars=128;
+                ui.NavigateToScene(pClass->m_iPad,eUIScene_Keyboard,&codeKeyboard);return 0;
+            }
+            pClass->m_editServerIP=decodedHost;pClass->m_editServerPort=std::to_wstring(decodedPort);pClass->m_editServerPhase=eEditServer_Name;
+            codeKeyboard.title=L"Server Name";codeKeyboard.defaultText=L"Minecraft Server";codeKeyboard.maxChars=64;
+            ui.NavigateToScene(pClass->m_iPad,eUIScene_Keyboard,&codeKeyboard);return 0;
+        }
+        pClass->m_editServerIP = wBuf;
 		pClass->m_editServerPhase = eEditServer_Port;
 
 		wchar_t wDefaultPort[16] = {};
