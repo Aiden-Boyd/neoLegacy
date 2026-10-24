@@ -155,9 +155,11 @@ void EndFight::tick(Level *l)
         }
         s.dragonId=dragon->getUUID();s.dragonKilled=false;
         resetCrystals(l,s);
-        for(auto &id:s.crystals)if(auto c=crystalById(l,id)) {
-            c->clearBeamTarget();c->remove();l->explode(c,c->x,c->y,c->z,6.0f,false);
-        }
+        std::vector<shared_ptr<EnderCrystal> > consumed;
+        for(auto &id:s.crystals)if(auto c=crystalById(l,id))consumed.push_back(c);
+        // Remove all four before any blast can kill another ritual crystal.
+        for(auto &c:consumed){c->clearBeamTarget();c->remove();}
+        for(auto &c:consumed)l->explode(c,c->x,c->y,c->z,6.0f,false);
         s.crystals.fill(L"");s.setPhase(EndFightState::IDLE);return;
     }
     // An externally created/live dragon blocks a second spawn and restores a usable fountain.

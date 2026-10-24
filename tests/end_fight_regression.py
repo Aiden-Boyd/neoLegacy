@@ -6,6 +6,10 @@ from mending_regression import method
 ROOT=Path(__file__).resolve().parents[1];W=ROOT/'Minecraft.World'
 def clean(name):return '\n'.join(l for l in (W/name).read_text().splitlines()if not l.startswith('#include')and not l.startswith('#pragma'))
 ENGINE=r'''
+void Level::explode(shared_ptr<Entity> source,double x,double y,double z,float r,bool blocks){
+ explosions.emplace_back(x,y,z,r,blocks);DamageSource damage;damage.source=source;damage.explosion=true;
+ auto copy=entities;for(auto e:copy)if(auto c=dynamic_pointer_cast<EnderCrystal>(e);c&&!c->removed){double dx=c->x-x,dy=c->y-y,dz=c->z-z;if(dx*dx+dy*dy+dz*dz<4*r*r)c->hurt(&damage,1);}
+}
 bool Level::addEntity(shared_ptr<Entity> e){if(failAdd)return false;entities.push_back(e);if(auto orb=dynamic_pointer_cast<ExperienceOrb>(e))xp+=orb->value;return true;}
 vector<shared_ptr<Entity>>*Level::getEntitiesOfClass(const type_info&,AABB*b){auto out=new vector<shared_ptr<Entity>>;for(auto e:entities)if(dynamic_pointer_cast<EnderCrystal>(e)&&!e->removed&&e->bb->intersects(b))out->push_back(e);return out;}
 '''

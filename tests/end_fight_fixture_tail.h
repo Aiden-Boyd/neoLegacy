@@ -12,7 +12,7 @@ struct Level {
  vector<shared_ptr<Entity>>*getEntities(shared_ptr<Entity>except,AABB*b){auto out=new vector<shared_ptr<Entity>>;for(auto e:entities)if(!e->removed&&e!=except&&e->bb->intersects(b))out->push_back(e);return out;}
  vector<shared_ptr<Entity>>*getEntitiesOfClass(const type_info&,AABB*b);
  LevelData*getLevelData(){return &data;}int64_t getSeed(){return 42;}int64_t getGameTime(){return time;}int GetHighestY(){return 64;}GameRules*getGameRules(){return &rules;}
- void explode(shared_ptr<Entity>,double x,double y,double z,float r,bool blocks){explosions.emplace_back(x,y,z,r,blocks);}void playSound(double,double,double,int,float,float){++sounds;}
+ void explode(shared_ptr<Entity> source,double x,double y,double z,float r,bool blocks);void playSound(double,double,double,int,float,float){++sounds;}
  void globalLevelEvent(int,int,int,int,int){}void addParticle(int,double,double,double,double,double,double){}
 };
 struct DamageSource {shared_ptr<Entity> source;bool explosion=false;shared_ptr<Entity>getEntity(){return source;}bool isExplosion(){return explosion;}};
