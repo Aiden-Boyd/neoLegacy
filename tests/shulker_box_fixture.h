@@ -41,7 +41,7 @@ struct ItemInstance {
  shared_ptr<ItemInstance>remove(int n){auto result=copy();result->count=n;count-=n;return result;}
 };
 struct AABB {double x0,y0,z0,x1,y1,z1;static AABB*newTemp(double a,double b,double c,double d,double e,double f){static AABB v;v={a,b,c,d,e,f};return &v;}};
-struct Entity {double xd=0,yd=0,zd=0;virtual ~Entity()=default;bool isPushable(){return true;}void move(double x,double y,double z){xd+=x;yd+=y;zd+=z;}};
+struct Entity {bool removed=false,noPhysics=false;AABB bounds{0,0,0,1,1,1};AABB *bb=&bounds;double xd=0,yd=0,zd=0;virtual ~Entity()=default;bool isPushable(){return true;}void move(double x,double y,double z){xd+=x;yd+=y;zd+=z;}};
 struct LivingEntity:Entity{};
 struct Container;struct Player:LivingEntity {struct {bool instabuild=false;}abilities;int opened=0;void openContainer(shared_ptr<Container>){++opened;}};
 struct Facing {enum{DOWN=0,UP=1};inline static int STEP_X[6]={0,0,0,0,-1,1},STEP_Y[6]={-1,1,0,0,0,0},STEP_Z[6]={0,0,-1,1,0,0};};

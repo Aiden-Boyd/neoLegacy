@@ -49,6 +49,27 @@ int main(){
   box->startOpen();for(int n=0;n<10;++n)box->tick();assert(box->openness==1);auto b=tile.getAABB(&level,0,0,0);assert(abs((b->x1-b->x0)*(b->y1-b->y0)*(b->z1-b->z0)-1.5)<.001);
   box->startOpen();box->stopOpen();assert(box->openCount==1);box->stopOpen();for(int n=0;n<10;++n)box->tick();assert(box->openness<.001&&box->openCount==0);
  }
+ // Exact lid overlap displacement in every direction, including dropped items
+ // (whose native isPushable is false), side/base exclusions and physics guards.
+ for(int face=0;face<6;++face){
+  box=fresh();level.data=face;box->openCount=1;
+  int dx=Facing::STEP_X[face],dy=Facing::STEP_Y[face],dz=Facing::STEP_Z[face];
+  auto hit=make_shared<Entity>(),base=make_shared<Entity>(),ghost=make_shared<Entity>();
+  hit->bounds={.2,.2,.2,.8,.8,.8};
+  if(dx) {hit->bounds.x0=dx>0?1.02:-.08;hit->bounds.x1=dx>0?1.08:-.02;}
+  if(dy) {hit->bounds.y0=dy>0?1.02:-.08;hit->bounds.y1=dy>0?1.08:-.02;}
+  if(dz) {hit->bounds.z0=dz>0?1.02:-.08;hit->bounds.z1=dz>0?1.08:-.02;}
+  ghost->bounds=hit->bounds;ghost->noPhysics=true;
+  level.entities={hit,base,ghost};box->tick();
+  assert(abs(hit->xd-dx*.04)<.00001&&abs(hit->yd-dy*.04)<.00001&&abs(hit->zd-dz*.04)<.00001);
+  assert(base->xd==0&&base->yd==0&&base->zd==0&&ghost->xd==0&&ghost->yd==0&&ghost->zd==0);
+  hit->xd=hit->yd=hit->zd=0;hit->removed=true;box->tick();assert(hit->xd==0&&hit->yd==0&&hit->zd==0);
+  hit->removed=false;box->openness=.2f;box->openCount=0;box->tick();assert(abs(hit->xd-dx*.04)<.00001&&abs(hit->yd-dy*.04)<.00001&&abs(hit->zd-dz*.04)<.00001);
+  hit->xd=hit->yd=hit->zd=0;level.isClientSide=true;box->openCount=1;box->tick();assert(hit->xd==0&&hit->yd==0&&hit->zd==0);level.isClientSide=false;
+  level.entities.clear();
+ }
+ box=fresh();box->setCustomName(L"Named empty box");player->abilities.instabuild=true;
+ size_t before=level.drops.size();tile.playerWillDestroy(&level,0,0,0,1,player);tile.onRemove(&level,0,0,0,229,1);assert(level.drops.size()==before+1&&level.drops.back()->getHoverName()==L"Named empty box");
  // Invalid saves cannot insert nested boxes, duplicate slots or overstack tools.
  CompoundTag bad;auto list=new ListTag<CompoundTag>();auto nested=new CompoundTag();nested->putByte(L"Slot",0);ItemInstance(229,1,0).save(nested);list->add(nested);
  for(int count:{99,5}){auto item=new CompoundTag();item->putByte(L"Slot",26);ItemInstance(1,count,0).save(item);list->add(item);}bad.put(L"Items",list);box->loadContents(&bad);assert(!box->getItem(0)&&box->getItem(26)->count==64);

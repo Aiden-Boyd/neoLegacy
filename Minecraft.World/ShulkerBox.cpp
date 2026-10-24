@@ -64,9 +64,27 @@ bool ShulkerBoxEntity::triggerEvent(int event,int count) {if(event!=1)return Til
 void ShulkerBoxEntity::tick() {
     oOpenness=openness;
     openness=openCount>0?(std::min)(1.f,openness+.1f):(std::max)(0.f,openness-.1f);
-    if(level&&!level->isClientSide&&openness>oOpenness) {
-        int face=facing(getData());auto entities=*level->getEntities(nullptr,boxBounds(x,y,z,face,openness*.5));
-        for(auto entity:entities) if(entity->isPushable())entity->move(Facing::STEP_X[face]*.05,Facing::STEP_Y[face]*.05,Facing::STEP_Z[face]*.05);
+    if(level&&!level->isClientSide&&openness!=oOpenness&&openness>0) {
+        int face=facing(getData());
+        int dx=Facing::STEP_X[face],dy=Facing::STEP_Y[face],dz=Facing::STEP_Z[face];
+        // Only the part of the lid outside the closed cube can displace entities.
+        auto lid=boxBounds(x,y,z,face,openness*.5);
+        if(dx<0)lid->x1=x;if(dx>0)lid->x0=x+1;
+        if(dy<0)lid->y1=y;if(dy>0)lid->y0=y+1;
+        if(dz<0)lid->z1=z;if(dz>0)lid->z0=z+1;
+        // Movement may allocate pooled boxes or query entities again. Keep values
+        // and the entity list independent of those native scratch buffers.
+        const double x0=lid->x0,y0=lid->y0,z0=lid->z0,x1=lid->x1,y1=lid->y1,z1=lid->z1;
+        auto entities=*level->getEntities(nullptr,lid);
+        for(auto entity:entities) {
+            if(!entity||entity->removed||entity->noPhysics||!entity->bb)continue;
+            auto bb=entity->bb;
+            if(bb->x1<=x0||bb->x0>=x1||bb->y1<=y0||bb->y0>=y1||bb->z1<=z0||bb->z0>=z1)continue;
+            double distance=dx?(dx>0?x1-bb->x0:bb->x1-x0):
+                dy?(dy>0?y1-bb->y0:bb->y1-y0):(dz>0?z1-bb->z0:bb->z1-z0);
+            distance+=.01;
+            entity->move(dx*distance,dy*distance,dz*distance);
+        }
     }
 }
 shared_ptr<TileEntity> ShulkerBoxEntity::clone() {
@@ -104,7 +122,7 @@ void ShulkerBoxTile::onRemove(Level *level,int x,int y,int z,int oldId,int data)
     auto box=dynamic_pointer_cast<ShulkerBoxEntity>(level->getTileEntity(x,y,z));
     if(!level->isClientSide&&box&&!box->dropHandled) {
         box->dropHandled=true;
-        if(!box->creativeBreak||!box->empty()) {
+        if(!box->creativeBreak||!box->empty()||box->hasCustomName()) {
             auto item=std::make_shared<ItemInstance>(id,1,0);auto tag=new CompoundTag();auto contents=new CompoundTag();
             box->saveContents(contents);tag->put(L"BlockEntityTag",contents);item->setTag(tag);
             if(box->hasCustomName())item->setHoverName(box->getCustomName());
