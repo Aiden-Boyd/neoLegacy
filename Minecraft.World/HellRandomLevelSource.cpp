@@ -505,6 +505,12 @@ void HellRandomLevelSource::postProcess(ChunkSource *parent, int xt, int zt)
 		hellSpringFeature.place(level, random, x, y, z);
 	}
 
+    Random magmaRandom(level->getSeed() ^ int64_t(xt)*341873128712LL ^ int64_t(zt)*132897987541LL ^ 0x4d41474d41LL);
+    OreFeature magmaFeature(Tile::magma_Id,0,33,Tile::netherRack_Id);
+    for(int i=0;i<4;++i) {
+        int mx=xo+magmaRandom.nextInt(16),my=27+magmaRandom.nextInt(10),mz=zo+magmaRandom.nextInt(16);
+        magmaFeature.place(level,&magmaRandom,mx,my,mz);
+    }
 	HeavyTile::instaFall = false;
 
 	app.processSchematics(parent->getChunk(xt,zt));

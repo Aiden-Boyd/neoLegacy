@@ -34,11 +34,10 @@ int siteHeight(TheEndLevelRandomLevelSource *source,int cx,int cz,int rotation) 
 }
 struct Treasure {int id,weight,low,high;bool enchanted;};
 void fillChest(shared_ptr<ChestTileEntity> chest,Random &random) {
-    // Reference end_city_treasure weights/counts. Agriculture is a later milestone;
-    // unsupported beetroot seeds are omitted rather than exposing an unusable item.
+    // Reference end_city_treasure weights/counts, including plantable beetroot seeds.
     const Treasure entries[]={
         {264,5,2,7,false},{265,10,4,8,false},{266,15,2,7,false},{388,2,2,6,false},
-        {329,3,1,1,false},{417,1,1,1,false},{418,1,1,1,false},{419,1,1,1,false},
+        {435,5,1,10,false},{329,3,1,1,false},{417,1,1,1,false},{418,1,1,1,false},{419,1,1,1,false},
         {276,3,1,1,true},{313,3,1,1,true},{311,3,1,1,true},{312,3,1,1,true},{310,3,1,1,true},{278,3,1,1,true},{277,3,1,1,true},
         {267,3,1,1,true},{309,3,1,1,true},{307,3,1,1,true},{308,3,1,1,true},{306,3,1,1,true},{257,3,1,1,true},{256,3,1,1,true}
     };

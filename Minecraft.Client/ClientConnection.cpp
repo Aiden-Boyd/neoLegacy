@@ -1687,6 +1687,10 @@ void ClientConnection::handleChat(shared_ptr<ChatPacket> packet)
 		displayOnGui = false;
 		app.SetGlobalXuiAction(eAppAction_DisplayLavaMessage);
 		break;
+	case ChatPacket::e_ChatDeathHotFloor:
+		message=app.GetString(IDS_DEATH_HOT_FLOOR);replacePlayer=true;break;
+	case ChatPacket::e_ChatDeathHotFloorPlayer:
+		message=app.GetString(IDS_DEATH_HOT_FLOOR_PLAYER);replacePlayer=true;replaceEntitySource=true;break;
 	case ChatPacket::e_ChatDeathInFire:
 		message=app.GetString(IDS_DEATH_INFIRE);
 		replacePlayer = true;
@@ -4432,3 +4436,4 @@ ClientConnection::DeferredEntityLinkPacket::DeferredEntityLinkPacket(shared_ptr<
 	m_recievedTick = GetTickCount();
 	m_packet = packet;
 }
+

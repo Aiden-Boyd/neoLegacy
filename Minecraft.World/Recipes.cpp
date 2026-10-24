@@ -49,6 +49,13 @@ void Recipes::_init()
 
 void Recipes::_compileRecipes()
 {
+    addShapedRecipy(new ItemInstance(Tile::magma,1),L"sscig",L"##",L"##",L'#',Item::magmaCream,L'S');
+    addShapedRecipy(new ItemInstance(Tile::netherWartBlock,1),L"ssscig",L"###",L"###",L"###",L'#',Item::netherwart_seeds,L'S');
+    addShapedRecipy(new ItemInstance(Tile::redNetherBrick,1),L"sscicig",L"WB",L"BW",L'W',Item::netherwart_seeds,L'B',Item::netherbrick,L'S');
+    addShapedRecipy(new ItemInstance(Tile::boneBlock,1),L"sssczg",L"###",L"###",L"###",L'#',new ItemInstance(Item::dye_powder,1,15),L'S');
+    addShapelessRecipy(new ItemInstance(Item::dye_powder,9,15),L"tg",Tile::boneBlock,L'M');
+    addShapelessRecipy(new ItemInstance(Item::dye_powder,1,1),L"ig",Item::beetroot,L'M');
+    addShapelessRecipy(new ItemInstance(Item::beetrootSoup,1),L"iiiiiiig",Item::beetroot,Item::beetroot,Item::beetroot,Item::beetroot,Item::beetroot,Item::beetroot,Item::bowl,L'F');
 	// Ordinary shapeless records preserve console/registry synchronization.
 	for(int source=ShulkerBoxes::FIRST;source<=ShulkerBoxes::LAST;++source) for(int dye=0;dye<16;++dye) {
 		ItemInstance input(source,1,ANY_AUX_VALUE),pigment(Item::dye_powder_Id,1,dye);
@@ -1371,7 +1378,7 @@ ShapedRecipy *Recipes::addShapedRecipy(ItemInstance *result, ...)
 
 			break;
 		case L'c':
-			wchFrom=va_arg(vl,wchar_t);
+			wchFrom=static_cast<wchar_t>(va_arg(vl,int));
 			break;
 		case L'z':
 			pItemInstance=va_arg(vl,ItemInstance *);
@@ -1388,7 +1395,7 @@ ShapedRecipy *Recipes::addShapedRecipy(ItemInstance *result, ...)
 			mappings->insert(myMap::value_type(wchFrom,pItemInstance));
 			break;
 		case L'g':
-			wchFrom=va_arg(vl,wchar_t);
+			wchFrom=static_cast<wchar_t>(va_arg(vl,int));
 			switch(wchFrom)
 			{
 // 			case L'W':
@@ -1486,7 +1493,7 @@ void Recipes::addShapelessRecipy(ItemInstance *result,... )
 			ingredients->push_back(new ItemInstance(pTile));
 			break;
 		case L'g':
-			wchFrom=va_arg(vl,wchar_t);
+			wchFrom=static_cast<wchar_t>(va_arg(vl,int));
 			switch(wchFrom)
 			{
 
@@ -1645,5 +1652,6 @@ std::shared_ptr<CustomPayloadPacket> Recipes::createUpdatePacket()
 
 	return std::make_shared<CustomPayloadPacket>(CustomPayloadPacket::UPDATE_RECIPE_REGISTRY, baos.toByteArray());
 }
+
 
 

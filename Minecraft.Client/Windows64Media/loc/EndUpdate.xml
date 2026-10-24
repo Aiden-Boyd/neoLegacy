@@ -62,4 +62,14 @@
   <data name="IDS_ENCHANTMENT_MENDING"><value>Mending</value></data>
   <data name="IDS_ENCHANTMENT_FROST_WALKER"><value>Frost Walker</value></data>
   <data name="IDS_TILE_FROSTED_ICE"><value>Frosted Ice</value></data>
+  <data name="IDS_TILE_MAGMA"><value>Magma Block</value></data>
+  <data name="IDS_TILE_NETHER_WART_BLOCK"><value>Nether Wart Block</value></data>
+  <data name="IDS_TILE_RED_NETHER_BRICKS"><value>Red Nether Bricks</value></data>
+  <data name="IDS_TILE_BONE_BLOCK"><value>Bone Block</value></data>
+  <data name="IDS_TILE_BEETROOTS"><value>Beetroots</value></data>
+  <data name="IDS_ITEM_BEETROOT"><value>Beetroot</value></data>
+  <data name="IDS_ITEM_BEETROOT_SEEDS"><value>Beetroot Seeds</value></data>
+  <data name="IDS_ITEM_BEETROOT_SOUP"><value>Beetroot Soup</value></data>
+  <data name="IDS_DEATH_HOT_FLOOR"><value>{*PLAYER*} discovered the floor was lava</value></data>
+  <data name="IDS_DEATH_HOT_FLOOR_PLAYER"><value>{*PLAYER*} walked into the danger zone due to {*SOURCE*}</value></data>
 </root>

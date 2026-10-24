@@ -10,7 +10,7 @@ This Windows64 candidate adds Frost Walker and frosted ice to the Mending candid
 - Frosted ice block ID 212, ordinary ice friction/translucency, four original crack textures and synchronized age metadata. It starts scheduled thaw checks after 60–120 ticks. Subsequent checks run after 20–40 ticks and use light, age, neighboring ice and the 1-in-3 dense-patch roll. Darkness can preserve the patch until light increases.
 - Melting advances direct neighboring ice once rather than recursing through the whole patch. Loss of neighboring ice can melt isolated cells. Melting produces source water, or air in ultra-warm dimensions. The block has no resource drop, Silk Touch recovery or pick-block result, and is not added to Creative.
 
-Magma blocks and their Frost Walker damage immunity are a separate remaining content gap. This candidate does not add them or certify complete CU59 behavior.
+The subsequent cumulative Nether/beetroot candidate adds magma blocks and Frost Walker hot-floor immunity; see CONTENT_UPDATE_TESTS.md. Complete CU59 parity remains unverified.
 
 ## Automated checks
 

@@ -21,6 +21,10 @@ public:
 	virtual void updateDefaultShape();
 	virtual void tick(Level *level, int x, int y, int z, Random *random);
 	virtual void growCrops(Level *level, int x, int y, int z);
+	virtual int getMaxAge();
+protected:
+	virtual int getBonemealAgeIncrease(Level *level);
+public:
 private:
 	float getGrowthSpeed(Level *level, int x, int y, int z);
 public:

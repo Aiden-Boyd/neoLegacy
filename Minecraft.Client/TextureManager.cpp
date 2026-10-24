@@ -176,6 +176,7 @@ wstring TextureManager::getTextureNameFromPath(const wstring &filename)
 
 bool TextureManager::isAnimation(const wstring &filename, TexturePack *texturePack)
 {
+    if(filename==L"textures/blocks/magma.png") return true;
 	wstring dataFileName = L"/" + filename.substr(0, filename.find_last_of(L'.')) + L".txt";
 	bool hasOriginalImage = texturePack->hasFile(L"/" + filename, false);
 	return Minecraft::GetInstance()->skins->getSelected()->hasFile(dataFileName, !hasOriginalImage);

@@ -15,6 +15,7 @@ class DamageSource
 public:
    
     static DamageSource *inFire;
+    static DamageSource *hotFloor;
     static DamageSource *onFire;
     static DamageSource *lava;
     static DamageSource *inWall;

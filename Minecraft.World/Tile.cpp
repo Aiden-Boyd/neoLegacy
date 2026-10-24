@@ -25,6 +25,8 @@
 #include "ShulkerBox.h"
 #include "ShulkerBoxItem.h"
 #include "FrostedIceTile.h"
+#include "ContentUpdateTiles.h"
+#include "BeetrootTile.h"
 
 
 
@@ -141,6 +143,7 @@ Tile *Tile::button = nullptr;
 Tile *Tile::topSnow = nullptr;
 Tile *Tile::ice = nullptr;
 Tile *Tile::frostedIce = nullptr;
+Tile *Tile::magma=nullptr,*Tile::netherWartBlock=nullptr,*Tile::redNetherBrick=nullptr,*Tile::boneBlock=nullptr,*Tile::beetroots=nullptr;
 Tile *Tile::snow = nullptr;
 Tile *Tile::cactus = nullptr;
 Tile *Tile::clay = nullptr;
@@ -435,6 +438,11 @@ void Tile::staticCtor()
 	Tile::redstoneTorch_on = (new NotGateTile(76, true))		->setDestroyTime(0.0f)->setLightEmission(8 / 16.0f)->setSoundType(Tile::SOUND_WOOD)->setIconName(L"redstone_torch_on")->setDescriptionId(IDS_TILE_NOT_GATE)->sendTileData()->setUseDescriptionId(IDS_DESC_REDSTONETORCH)->disableMipmap();
 	Tile::button = (new StoneButtonTile(77))					->setBaseItemTypeAndMaterial(Item::eBaseItemType_button,	Item::eMaterial_stone)->setDestroyTime(0.5f)->setSoundType(Tile::SOUND_STONE)->setIconName(L"button")->setDescriptionId(IDS_TILE_BUTTON)->sendTileData()->setUseDescriptionId(IDS_DESC_BUTTON);
 	Tile::topSnow = (new TopSnowTile(78))						->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock,	Item::eMaterial_snow)->setDestroyTime(0.1f)->setSoundType(Tile::SOUND_SNOW)->setIconName(L"snow")->setDescriptionId(IDS_TILE_SNOW)->setUseDescriptionId(IDS_DESC_TOP_SNOW)->sendTileData()->setLightBlock(0);
+    Tile::magma=(new MagmaTile(magma_Id))->setDestroyTime(0.5f)->setSoundType(SOUND_STONE)->setIconName(L"magma")->setDescriptionId(IDS_TILE_MAGMA);
+    Tile::netherWartBlock=(new Tile(netherWartBlock_Id,Material::vegetable))->setDestroyTime(1.0f)->setSoundType(SOUND_WOOD)->setIconName(L"nether_wart_block")->setDescriptionId(IDS_TILE_NETHER_WART_BLOCK);
+    Tile::redNetherBrick=(new Tile(redNetherBrick_Id,Material::stone))->setDestroyTime(2.0f)->setExplodeable(10.0f)->setSoundType(SOUND_STONE)->setIconName(L"red_nether_brick")->setDescriptionId(IDS_TILE_RED_NETHER_BRICKS);
+    Tile::boneBlock=(new BoneBlockTile(boneBlock_Id))->setDestroyTime(2.0f)->setSoundType(SOUND_STONE)->setDescriptionId(IDS_TILE_BONE_BLOCK);
+    Tile::beetroots=(new BeetrootTile(beetroots_Id))->setIconName(L"beetroots")->setDescriptionId(IDS_TILE_BEETROOTS);
 	Tile::frostedIce = (new FrostedIceTile(frostedIce_Id))->setDestroyTime(0.5f)->setLightBlock(3)->setSoundType(Tile::SOUND_GLASS)->setDescriptionId(IDS_TILE_FROSTED_ICE)->sendTileData(3);
 	Tile::ice = (new IceTile(79))								->setDestroyTime(0.5f)->setLightBlock(3)->setSoundType(Tile::SOUND_GLASS)->setIconName(L"ice")->setDescriptionId(IDS_TILE_ICE)->setUseDescriptionId(IDS_DESC_ICE);
 	Tile::snow = (new SnowTile(80))								->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock,	Item::eMaterial_snow)->setDestroyTime(0.2f)->setSoundType(Tile::SOUND_CLOTH)->setIconName(L"snow")->setDescriptionId(IDS_TILE_SNOW)->setUseDescriptionId(IDS_DESC_SNOW);
@@ -1815,6 +1823,7 @@ const int Tile::button_stone_Id;
 const int Tile::topSnow_Id;
 const int Tile::ice_Id;
 const int Tile::frostedIce_Id;
+const int Tile::magma_Id;const int Tile::netherWartBlock_Id;const int Tile::redNetherBrick_Id;const int Tile::boneBlock_Id;const int Tile::beetroots_Id;
 const int Tile::snow_Id;
 const int Tile::cactus_Id;
 const int Tile::clay_Id;

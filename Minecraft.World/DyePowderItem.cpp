@@ -221,9 +221,9 @@ bool DyePowderItem::growCrop(shared_ptr<ItemInstance> itemInstance, Level *level
 		}
 		return true;
 	} 
-	else if (tile == Tile::carrots_Id || tile == Tile::potatoes_Id)
+	else if (tile == Tile::carrots_Id || tile == Tile::potatoes_Id || tile == Tile::beetroots_Id)
 	{
-		if (level->getData(x, y, z) == 7) return false;
+		if (level->getData(x, y, z) >= static_cast<CropTile *>(Tile::tiles[tile])->getMaxAge()) return false;
 		if(!bTestUseOnOnly)
 		{
 			if (!level->isClientSide) 

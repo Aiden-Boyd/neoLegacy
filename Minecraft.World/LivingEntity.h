@@ -57,6 +57,7 @@ protected:
 	BaseAttributeMap* attributes;
 	ItemInstanceArray lastEquipment;
 	void updateFrostWalking();
+	void updateHotFloor();
 	bool frostPositionValid;
 	int frostX, frostY, frostZ;
 

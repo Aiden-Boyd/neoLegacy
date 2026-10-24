@@ -416,14 +416,14 @@ public:
 	static const int purpurDoubleSlab_Id = 204;
 	static const int purpurSlab_Id = 205;
 	static const int endStoneBricks_Id = 206;
-	//beetroots         207
+	static const int beetroots_Id = 207;
 	//grass_path		208
 	static const int endGateway_Id = 209;
 	static const int frostedIce_Id = 212;
-	//magma				213
-	//nether_wart_block 214
-	//red_nether_brick  215
-	//bone_block		216
+	static const int magma_Id = 213;
+	static const int netherWartBlock_Id = 214;
+	static const int redNetherBrick_Id = 215;
+	static const int boneBlock_Id = 216;
 	//structure_void    217
 	// 
 	//
@@ -511,6 +511,7 @@ public:
 	static Tile *topSnow;
 	static Tile *ice;
 	static Tile *frostedIce;
+	static Tile *magma, *netherWartBlock, *redNetherBrick, *boneBlock, *beetroots;
 	static Tile *snow;
 	static Tile *cactus;
 	static Tile *clay;

@@ -1,6 +1,6 @@
 {
   "terrain.png": {
-    "outside_sha256": "c5e8d7421e803a505fca92c0ea1dd905a87051d1362fb75cbdaf317b28853f63",
+    "outside_sha256": "a8b354d023c3da6b3c1fee246c6cdba05d621aaa6c6cb6bfb76efe5194daada1",
     "stages_sha256": [
       "db4a1cf0d62f889ceec6d742ffe498b74d7dec6790247a934fd651bde23694f7",
       "e68571342b4cfe34bc0cecf68273bb3e4a1b82fe350bb3c45dc52768b8258350",
@@ -9,7 +9,7 @@
     ]
   },
   "terrainMipMapLevel2.png": {
-    "outside_sha256": "107d802653d227b10ee8bd793e65836425f776051eb7913550c8260a8b9ba3b7",
+    "outside_sha256": "9fbec6091059c0d3a4193836946342a8168aca2f27a8147935a98ffd48755c52",
     "stages_sha256": [
       "56e6210265f2c955c8d2e1e98bbec3961a454b92f759411b8ee90c54e300dced",
       "08779f715a975371d198d4e1d80d7c247f332bf5bb90e22729151ceec3528225",
@@ -18,7 +18,7 @@
     ]
   },
   "terrainMipMapLevel3.png": {
-    "outside_sha256": "9e952d84b39cc824f981fcfde27f3dc57c6cb30c1065a3864312e80b3f06e3fa",
+    "outside_sha256": "e9ddb9192e13b2194e3cfef54851d856b45ddcf76fbba2a8ac60d4fe927877d8",
     "stages_sha256": [
       "814283c85a7c3de1ffc597d04eea0ae9d8bb9a05c03c1b5a5c46ee82d8f4a3c5",
       "7a6c28cbdc0273e8e7fda83683ccc4a6914a287c8e3f84ca282f147c44b67bd3",

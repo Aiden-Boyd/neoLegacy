@@ -63,17 +63,14 @@ bool ShapelessRecipy::matches(shared_ptr<CraftingContainer> craftSlots, Level *l
 			{
 				bool found = false;
 
-				auto citEnd = ingredients->end();
-				for ( ItemInstance *ingredient : *ingredients )
-				{
-					if (item->id == ingredient->id && (ingredient->getAuxValue() == Recipes::ANY_AUX_VALUE || item->getAuxValue() == ingredient->getAuxValue())) 
-					{
-						found = true;
-						auto it = find(tempList.begin(), tempList.end(), ingredient);
-						if(it != tempList.end() ) tempList.erase(it);
-						break;
-					}
-				}
+                for (auto it=tempList.begin();it!=tempList.end();++it)
+                {
+                    ItemInstance *ingredient=*it;
+                    if(item->id==ingredient->id && (ingredient->getAuxValue()==Recipes::ANY_AUX_VALUE || item->getAuxValue()==ingredient->getAuxValue()))
+                    {
+                        found=true;tempList.erase(it);break;
+                    }
+                }
 
 				if (!found) 
 				{

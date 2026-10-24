@@ -209,6 +209,7 @@ void PreStitchedTextureMap::makeTextureAnimated(TexturePack *texturePack, Stitch
 	wstring textureFileName = tex->m_fileName;
 
 	wstring animString = texturePack->getAnimationString(textureFileName, path, true);
+    if(animString.empty() && textureFileName==L"magma") animString=L"0*8,1*8,2*8";
 
 	if(!animString.empty())
 	{
@@ -535,9 +536,9 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(11,	15,	L"dyePowder_white")
 
 		ADD_ICON(12,	0,	L"bootsCloth_overlay")
-		//ADD_ICON(12,	1,	L"unused")
-		//ADD_ICON(12,	2,	L"unused")
-		//ADD_ICON(12,	3,	L"unused")
+		ADD_ICON(12,1,L"beetroot");
+		ADD_ICON(12,2,L"beetroot_seeds");
+		ADD_ICON(12,3,L"beetroot_soup");
 		ADD_ICON(12,	4,	L"muttonCooked")
 		ADD_ICON(12,	5,	L"rabbitCooked")
 		ADD_ICON(12,	6,	L"salmonRaw")
@@ -1014,6 +1015,16 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(25, 10, L"frosted_ice_1");
 		ADD_ICON(25, 11, L"frosted_ice_2");
 		ADD_ICON(25, 12, L"frosted_ice_3");
+		ADD_ICON(26, 0, L"magma");
+		ADD_ICON(26, 1, L"nether_wart_block");
+		ADD_ICON(26, 2, L"red_nether_brick");
+		ADD_ICON(26, 3, L"bone_block_side");
+		ADD_ICON(26, 4, L"bone_block_top");
+		ADD_ICON(26, 5, L"beetroots_stage_0");
+		ADD_ICON(26, 6, L"beetroots_stage_1");
+		ADD_ICON(26, 7, L"beetroots_stage_2");
+		ADD_ICON(26, 8, L"beetroots_stage_3");
+
 		ADD_ICON(25, 0, L"purpur_block");
 		ADD_ICON(25, 1, L"purpur_pillar");
 		ADD_ICON(25, 2, L"purpur_pillar_top");

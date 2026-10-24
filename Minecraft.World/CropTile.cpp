@@ -40,7 +40,7 @@ void CropTile::tick(Level *level, int x, int y, int z, Random *random)
 	{
 
 		int age = level->getData(x, y, z);
-		if (age < 7)
+		if (age < getMaxAge())
 		{
 			float growthSpeed = getGrowthSpeed(level, x, y, z);
 
@@ -57,10 +57,13 @@ void CropTile::tick(Level *level, int x, int y, int z, Random *random)
 	}
 }
 
+int CropTile::getMaxAge() { return 7; }
+int CropTile::getBonemealAgeIncrease(Level *level) { return Mth::nextInt(level->random,2,5); }
+
 void CropTile::growCrops(Level *level, int x, int y, int z)
 {
-	int stage = level->getData(x, y, z) + Mth::nextInt(level->random, 2, 5);
-	if (stage > 7) stage = 7;
+	int stage = level->getData(x, y, z) + getBonemealAgeIncrease(level);
+	if (stage > getMaxAge()) stage = getMaxAge();
 	level->setData(x, y, z, stage, Tile::UPDATE_CLIENTS);
 }
 
@@ -151,7 +154,7 @@ void CropTile::spawnResources(Level *level, int x, int y, int z, int data, float
 
 int CropTile::getResource(int data, Random *random, int playerBonusLevel)
 {
-	if (data == 7)
+	if (data == getMaxAge())
 	{
 		return getBasePlantId();
 	}

@@ -146,7 +146,7 @@ bool OreFeature::place(Level *level, Random *random, int x, int y, int z)
                                 
                                if ( level->hasChunkAt(x2, y2, z2) && level->getTile(x2, y2, z2) == targetTile)
                                 {
-                                    level->setTileAndData(x2, y2, z2, tile, data, Tile::UPDATE_INVISIBLE_NO_LIGHT);
+                                    level->setTileAndData(x2, y2, z2, tile, data, tile==Tile::magma_Id?Tile::UPDATE_CLIENTS:Tile::UPDATE_INVISIBLE_NO_LIGHT);
                                 }
                             }
                         }

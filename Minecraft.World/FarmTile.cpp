@@ -105,7 +105,7 @@ bool FarmTile::isUnderCrops(Level *level, int x, int y, int z)
 		for (int zz = z - r; zz <= z + r; zz++)
 		{
 			int tile = level->getTile(xx, y + 1, zz);
-			if (tile == Tile::wheat_Id || tile == Tile::melonStem_Id || tile == Tile::pumpkinStem_Id || tile == Tile::potatoes_Id || tile == Tile::carrots_Id)
+			if (tile == Tile::wheat_Id || tile == Tile::melonStem_Id || tile == Tile::pumpkinStem_Id || tile == Tile::potatoes_Id || tile == Tile::carrots_Id || tile == Tile::beetroots_Id)
 			{
 				return true;
 			}
@@ -157,3 +157,4 @@ void FarmTile::registerIcons(IconRegister *iconRegister)
 	iconWet = iconRegister->registerIcon(L"farmland_wet");
 	iconDry = iconRegister->registerIcon(L"farmland_dry");
 }
+

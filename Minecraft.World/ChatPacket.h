@@ -99,6 +99,8 @@ public:
 		e_ChatCommandTeleportToMe,
 
 		e_ChatActionBar,
+		e_ChatDeathHotFloor,
+		e_ChatDeathHotFloorPlayer,
 	};
 
 public:
@@ -123,4 +125,5 @@ public:
 	static shared_ptr<Packet> create() { return std::make_shared<ChatPacket>(); }
 	virtual int getId() { return 3; }
 };
+
 

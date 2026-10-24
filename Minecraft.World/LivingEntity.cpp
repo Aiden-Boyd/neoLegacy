@@ -1733,6 +1733,15 @@ void LivingEntity::updateFrostWalking()
     }
 }
 
+void LivingEntity::updateHotFloor()
+{
+    if (!level->isClientSide && onGround)
+    {
+        const int hx=Mth::floor(x),hy=Mth::floor(bb->y0-0.01),hz=Mth::floor(z);
+        if(level->getTile(hx,hy,hz)==Tile::magma_Id) Tile::magma->stepOn(level,hx,hy,hz,shared_from_this());
+    }
+}
+
 void LivingEntity::tick()
 {
 	Entity::tick();
@@ -1770,6 +1779,7 @@ void LivingEntity::tick()
 
 	aiStep();
     updateFrostWalking();
+    updateHotFloor();
 
 	double xd = x - xo;
 	double zd = z - zo;

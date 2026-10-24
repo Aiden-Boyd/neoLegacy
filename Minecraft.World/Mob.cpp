@@ -637,6 +637,7 @@ float Mob::rotlerp(float a, float b, float max)
 
 bool Mob::canSpawn()
 {
+    if(!isFireImmune() && level->getTile(Mth::floor(x),Mth::floor(bb->y0)-1,Mth::floor(z))==Tile::magma_Id) return false;
 	// 4J - altered to use special containsAnyLiquid variant
 	return level->isUnobstructed(bb) && level->getCubes(shared_from_this(), bb)->empty() && !level->containsAnyLiquid_NoLoad(bb);
 }

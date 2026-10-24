@@ -14,7 +14,7 @@ Shulkers have 30 health, armor while closed, closed-shell arrow immunity, six at
 
 This is a playable feature candidate, not certification of complete Xbox One CU59 parity. Room geometry uses the Java 1.12.2 reference assets; the bounded layout planner and site selection are this fork's implementation, so city layouts/locations are not guaranteed to match an original Xbox or Java seed. Cities only appear through new population; existing populated terrain is preserved.
 
-Loot uses the reference weights and count/level ranges for supported items. Beetroot seeds are omitted because agriculture is not implemented in this base. The cumulative candidate now includes treasure-aware Mending/Frost Walker loot and functional shulker boxes. See MENDING_TESTS.md, FROST_WALKER_TESTS.md and SHULKER_BOX_TESTS.md. Levitation displays its name/duration in the existing effects UI; its dedicated Iggy effect icon remains absent. Natural banners have the fixed city pattern. Dragon-head redstone jaw animation is not included.
+Loot uses the reference weights and count/level ranges for supported items. The cumulative Nether/beetroot candidate adds functional beetroot farming and seeds to new End-city chests; see CONTENT_UPDATE_TESTS.md. The cumulative candidate now includes treasure-aware Mending/Frost Walker loot and functional shulker boxes. See MENDING_TESTS.md, FROST_WALKER_TESTS.md and SHULKER_BOX_TESTS.md. Levitation displays its name/duration in the existing effects UI; its dedicated Iggy effect icon remains absent. Natural banners have the fixed city pattern. Dragon-head redstone jaw animation is not included.
 
 ## Automated checks
 

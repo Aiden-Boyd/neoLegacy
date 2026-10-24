@@ -276,6 +276,7 @@ Item* Item::prismarine_shard = nullptr;
 Item* Item::chorusFruit = nullptr;
 Item* Item::poppedChorusFruit = nullptr;
 Item* Item::shulkerShell = nullptr;
+Item *Item::beetroot=nullptr,*Item::beetrootSeeds=nullptr,*Item::beetrootSoup=nullptr;
 Item* Item::elytra = nullptr;
 
 
@@ -546,6 +547,9 @@ void Item::staticCtor()
 	Item::prismarine_shard = (new Item(153))->setIconName(L"prismarineShard")->setDescriptionId(IDS_ITEM_PRISMARINE_SHARD)->setUseDescriptionId(IDS_ITEM_PRISMARINE_SHARD_DESC);
 	Item::chorusFruit = (new ChorusFruitItem(chorusFruit_Id-256))->setIconName(L"chorus_fruit")->setDescriptionId(IDS_ITEM_CHORUS_FRUIT)->setUseDescriptionId(IDS_DESC_CHORUS_FRUIT);
 	Item::poppedChorusFruit = (new Item(poppedChorusFruit_Id-256))->setIconName(L"chorus_fruit_popped")->setDescriptionId(IDS_ITEM_POPPED_CHORUS_FRUIT)->setUseDescriptionId(IDS_DESC_POPPED_CHORUS_FRUIT);
+    Item::beetroot=(new FoodItem(beetroot_Id-256,1,FoodConstants::FOOD_SATURATION_NORMAL,false))->setIconName(L"beetroot")->setDescriptionId(IDS_ITEM_BEETROOT)->setUseDescriptionId(IDS_ITEM_BEETROOT);
+    Item::beetrootSeeds=(new SeedItem(beetrootSeeds_Id-256,Tile::beetroots_Id,Tile::farmland_Id))->setIconName(L"beetroot_seeds")->setDescriptionId(IDS_ITEM_BEETROOT_SEEDS)->setUseDescriptionId(IDS_ITEM_BEETROOT_SEEDS);
+    Item::beetrootSoup=(new BowlFoodItem(beetrootSoup_Id-256,6))->setIconName(L"beetroot_soup")->setDescriptionId(IDS_ITEM_BEETROOT_SOUP)->setUseDescriptionId(IDS_ITEM_BEETROOT_SOUP);
 	Item::shulkerShell = (new Item(shulkerShell_Id-256))->setIconName(L"shulker_shell")->setDescriptionId(IDS_ITEM_SHULKER_SHELL)->setUseDescriptionId(IDS_ITEM_SHULKER_SHELL);
 	Item::elytra = (new ElytraItem())->setBaseItemTypeAndMaterial(eBaseItemType_chestplate, eMaterial_cloth)->setIconName(L"elytra")->setDescriptionId(IDS_ITEM_ELYTRA)->setUseDescriptionId(IDS_ITEM_ELYTRA);
 }
@@ -1206,3 +1210,5 @@ const int Item::netherQuartz_Id		;
 
 
 const int Item::shulkerShell_Id;
+const int Item::beetroot_Id;const int Item::beetrootSeeds_Id;const int Item::beetrootSoup_Id;
+
