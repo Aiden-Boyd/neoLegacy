@@ -20,6 +20,7 @@ on:
       - feature/overworld-integration
       - feature/end-respawn
       - fix/creative-elytra-equip
+      - feature/rockets-color-observers
   workflow_dispatch:
 
 permissions:
@@ -31,7 +32,7 @@ concurrency:
 
 jobs:
   build-client:
-    name: Windows64 Creative and Elytra equip fix
+    name: Windows64 Rockets, color blocks and observers
     runs-on: windows-2022
     timeout-minutes: 45
     env:
@@ -181,6 +182,18 @@ jobs:
           python tests/equipment_inventory_regression.py 2>&1 | Tee-Object logs/elytra-equip.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run rocket, color and observer regressions
+        shell: pwsh
+        run: |
+          python tests/color_observer_regression.py 2>&1 | Tee-Object logs/color-observer.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/rocket_boost_regression.py 2>&1 | Tee-Object logs/rocket-boost.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/color_recipe_regression.py 2>&1 | Tee-Object logs/color-recipes.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/color_assets_regression.py 2>&1 | Tee-Object logs/color-assets.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Configure Windows64
         shell: pwsh
         run: |
@@ -232,12 +245,13 @@ jobs:
           Copy-Item OVERWORLD_TESTS.md "$stage/OVERWORLD_TESTS.md"
           Copy-Item END_RESPAWN_TESTS.md "$stage/END_RESPAWN_TESTS.md"
           Copy-Item INVENTORY_EQUIP_FIX_TESTS.md "$stage/INVENTORY_EQUIP_FIX_TESTS.md"
+          Copy-Item ROCKET_COLOR_OBSERVER_TESTS.md "$stage/ROCKET_COLOR_OBSERVER_TESTS.md"
           Copy-Item END_FIGHT_AUDIT.md "$stage/END_FIGHT_AUDIT.md"
           @(
             "Commit: ${{ github.sha }}",
             "Configuration: Windows64 Release",
             "Runtime: Windows executable; test through Steam/Proton on Bazzite.",
-            "Candidate: Creative Misc texture crash and Elytra equip synchronization fixes; includes all previous End respawn, Overworld, Nether, Frost Walker and Mending updates.",
+            "Candidate: Firework Elytra boost, concrete/powder, glazed terracotta and observers; includes all previous fixes and features.",
             "Compilation does not establish controller compatibility or CU59 parity."
           ) | Set-Content "$stage/BUILD_INFO.txt"
           Get-ChildItem $stage -Recurse -File |
@@ -250,7 +264,7 @@ jobs:
       - name: Upload client test artifact
         uses: actions/upload-artifact@v6
         with:
-          name: neoLegacy-inventory-equip-fix-windows64
+          name: neoLegacy-rockets-color-observers-windows64
           path: staging/
           if-no-files-found: error
           retention-days: 14

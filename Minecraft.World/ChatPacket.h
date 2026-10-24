@@ -101,6 +101,8 @@ public:
 		e_ChatActionBar,
 		e_ChatDeathHotFloor,
 		e_ChatDeathHotFloorPlayer,
+		e_ChatDeathFireworks,
+		e_ChatDeathFireworksPlayer,
 	};
 
 public:

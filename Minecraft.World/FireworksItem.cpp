@@ -4,6 +4,7 @@
 #include "net.minecraft.world.item.h"
 #include "net.minecraft.world.level.h"
 #include "FireworksItem.h"
+#include "FireworksRocketEntity.h"
 
 const wstring FireworksItem::TAG_FIREWORKS = L"Fireworks";
 const wstring FireworksItem::TAG_EXPLOSION = L"Explosion";
@@ -22,12 +23,13 @@ FireworksItem::FireworksItem(int id) : Item(id)
 bool FireworksItem::useOn(shared_ptr<ItemInstance> instance, shared_ptr<Player> player, Level *level, int x, int y, int z, int face, float clickX, float clickY, float clickZ, bool bTestUseOnOnly)
 {
 	// 4J-JEV: Fix for xb1 #173493 - CU7: Content: UI: Missing tooltip for Firework Rocket.
+	if(!instance || instance->count<=0 || !player)return false;
 	if (bTestUseOnOnly) return true;
 
 	if (!level->isClientSide)
 	{
 		shared_ptr<FireworksRocketEntity> f(new FireworksRocketEntity(level, x + clickX, y + clickY, z + clickZ, instance));
-		level->addEntity(f);
+		if(!level->addEntity(f))return false;
 
 		if (!player->abilities.instabuild)
 		{
@@ -78,4 +80,17 @@ void FireworksItem::appendHoverText(shared_ptr<ItemInstance> itemInstance, share
 			}
 		}
 	}
+}
+
+bool FireworksItem::TestUse(shared_ptr<ItemInstance> item,Level*,shared_ptr<Player> player)
+{return item && item->count>0 && player && player->isElytraFlying();}
+shared_ptr<ItemInstance> FireworksItem::use(shared_ptr<ItemInstance> item,Level *level,shared_ptr<Player> player)
+{
+    if(!TestUse(item,level,player))return item;
+    if(!level->isClientSide) {
+        auto rocket=std::make_shared<FireworksRocketEntity>(level,item,player);
+        if(!level->addEntity(rocket))return item;
+    }
+    --item->count; // Native game modes restore Creative inventory and reconcile prediction.
+    return item;
 }

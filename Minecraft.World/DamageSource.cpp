@@ -7,6 +7,7 @@
 #include "net.minecraft.world.food.h"
 #include "net.minecraft.network.packet.h"
 
+DamageSource *DamageSource::fireworks=(new DamageSource(ChatPacket::e_ChatDeathFireworks,ChatPacket::e_ChatDeathFireworksPlayer))->setExplosion();
 DamageSource *DamageSource::hotFloor = (new DamageSource(ChatPacket::e_ChatDeathHotFloor,ChatPacket::e_ChatDeathHotFloorPlayer))->setIsFire();
 DamageSource *DamageSource::inFire = (new DamageSource(ChatPacket::e_ChatDeathInFire, ChatPacket::e_ChatDeathInFirePlayer))->setIsFire();
 DamageSource *DamageSource::onFire = (new DamageSource(ChatPacket::e_ChatDeathOnFire, ChatPacket::e_ChatDeathOnFirePlayer))->bypassArmor()->setIsFire();

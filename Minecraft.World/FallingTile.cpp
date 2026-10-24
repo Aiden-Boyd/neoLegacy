@@ -5,6 +5,7 @@
 #include "net.minecraft.world.damagesource.h"
 #include "com.mojang.nbt.h"
 #include "FallingTile.h"
+#include "ColorUpdateTiles.h"
 
 
 
@@ -120,8 +121,10 @@ void FallingTile::tick()
 			}
 		}
 
+		if(ConcretePowderTile::hardenFalling(this))return;
 		if (onGround)
 		{
+			if(tile==Tile::concretePowder_Id && level->getMaterial(xt,yt,zt)->isLiquid())tile=Tile::concrete_Id;
 			xd *= 0.7f;
 			zd *= 0.7f;
 			yd *= -0.5f;

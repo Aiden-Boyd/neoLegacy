@@ -2,6 +2,7 @@
 
 #include "Entity.h"
 
+class Player;
 class FireworksRocketEntity : public Entity
 {
 public:
@@ -10,6 +11,13 @@ public:
 
 private:
 	static const int DATA_ID_FIREWORKS_ITEM = 8;
+	static const int DATA_ID_BOOSTED_ENTITY = 9;
+	weak_ptr<Player> boostedPlayer;
+	wstring boostedUUID;
+	int missingOwnerTicks=0;
+	bool attached=false;
+	shared_ptr<Player> resolveBoostedPlayer();
+	void dealExplosionDamage();
 
 	int life;
 	int lifetime;
@@ -24,6 +32,7 @@ protected:
 public:
 	virtual bool shouldRenderAtSqrDistance(double distance);
 
+	FireworksRocketEntity(Level *level,shared_ptr<ItemInstance> item,shared_ptr<Player> player);
 	FireworksRocketEntity(Level *level, double x, double y, double z, shared_ptr<ItemInstance> sourceItem);
 
 	virtual void lerpMotion(double xd, double yd, double zd);

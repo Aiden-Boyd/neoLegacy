@@ -85,6 +85,7 @@ public:
 	// clients: send tile update over network connections
 	static const int UPDATE_INVISIBLE_NO_LIGHT = (1 << 3) | UPDATE_INVISIBLE;
 
+	static const int UPDATE_SUPPRESS_OBSERVERS = (1 << 4);
 	static const int UPDATE_NONE = UPDATE_INVISIBLE;
 	static const int UPDATE_ALL = UPDATE_NEIGHBORS | UPDATE_CLIENTS;
 
@@ -424,6 +425,7 @@ public:
 	static const int netherWartBlock_Id = 214;
 	static const int redNetherBrick_Id = 215;
 	static const int boneBlock_Id = 216;
+	static const int observer_Id=218,glazedTerracottaFirst_Id=235,concrete_Id=251,concretePowder_Id=252;
 	//structure_void    217
 	// 
 	//
@@ -511,6 +513,7 @@ public:
 	static Tile *topSnow;
 	static Tile *ice;
 	static Tile *frostedIce;
+	static Tile *concrete,*concretePowder,*observer;
 	static Tile *grassPath;
 	static Tile *magma, *netherWartBlock, *redNetherBrick, *boneBlock, *beetroots;
 	static Tile *snow;

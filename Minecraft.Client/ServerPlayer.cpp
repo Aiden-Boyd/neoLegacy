@@ -57,6 +57,10 @@ static std::wstring FormatDeathMessage(const shared_ptr<ChatPacket>& packet)
 	{
 	case ChatPacket::e_ChatCustom:
 		return packet->m_stringArgs.size() > 0 ? packet->m_stringArgs[0] : L"";
+	case ChatPacket::e_ChatDeathFireworks:
+		message=app.GetString(IDS_DEATH_FIREWORKS);replacePlayer=true;break;
+	case ChatPacket::e_ChatDeathFireworksPlayer:
+		message=app.GetString(IDS_DEATH_FIREWORKS_PLAYER);replacePlayer=true;replaceEntitySource=true;break;
 	case ChatPacket::e_ChatDeathHotFloor:
 		message=app.GetString(IDS_DEATH_HOT_FLOOR);replacePlayer=true;break;
 	case ChatPacket::e_ChatDeathHotFloorPlayer:

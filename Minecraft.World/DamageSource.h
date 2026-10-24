@@ -16,6 +16,7 @@ public:
    
     static DamageSource *inFire;
     static DamageSource *hotFloor;
+    static DamageSource *fireworks;
     static DamageSource *onFire;
     static DamageSource *lava;
     static DamageSource *inWall;

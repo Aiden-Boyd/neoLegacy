@@ -25,6 +25,8 @@ public:
 	static const byte TYPE_MAX = TYPE_BURST;
 
 	FireworksItem(int id);
+	bool TestUse(shared_ptr<ItemInstance>,Level*,shared_ptr<Player>) override;
+	shared_ptr<ItemInstance> use(shared_ptr<ItemInstance>,Level*,shared_ptr<Player>) override;
 
 	bool useOn(shared_ptr<ItemInstance> instance, shared_ptr<Player> player, Level *level, int x, int y, int z, int face, float clickX, float clickY, float clickZ, bool bTestUseOnOnly=false);
 	void appendHoverText(shared_ptr<ItemInstance> itemInstance, shared_ptr<Player> player, vector<HtmlString> *lines, bool advanced);

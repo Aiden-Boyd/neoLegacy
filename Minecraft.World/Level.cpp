@@ -1,4 +1,5 @@
 ﻿#include "stdafx.h"
+#include "ObserverTile.h"
 #include "System.h"
 #include "BasicTypeContainers.h"
 #include "File.h"
@@ -945,6 +946,7 @@ bool Level::setTileAndData(int x, int y, int z, int tile, int data, int updateFl
 	}
 	if (result)
 	{
+		ObserverTile::stateChanged(this,x,y,z,updateFlags);
 		if ((updateFlags & Tile::UPDATE_CLIENTS) != 0 && !(isClientSide && (updateFlags & Tile::UPDATE_INVISIBLE) != 0))
 		{
 			sendTileUpdated(x, y, z);
@@ -1001,6 +1003,7 @@ bool Level::setData(int x, int y, int z, int data, int updateFlags, bool forceUp
 	bool result = c->setData(cx, y, cz, data, importantMask, &maskedBitsChanged);
 	if (result || forceUpdate)
 	{
+		if(result)ObserverTile::stateChanged(this,x,y,z,updateFlags);
 		int tile = c->getTile(cx, y, cz);
 		if (forceUpdate || ((updateFlags & Tile::UPDATE_CLIENTS) != 0 && !(isClientSide && (updateFlags & Tile::UPDATE_INVISIBLE) != 0)))
 		{

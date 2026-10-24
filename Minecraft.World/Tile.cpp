@@ -27,6 +27,9 @@
 #include "FrostedIceTile.h"
 #include "ContentUpdateTiles.h"
 #include "GrassPathTile.h"
+#include "ColorUpdateTiles.h"
+#include "ObserverTile.h"
+#include "ColoredTileItem.h"
 #include "BeetrootTile.h"
 
 
@@ -144,6 +147,7 @@ Tile *Tile::button = nullptr;
 Tile *Tile::topSnow = nullptr;
 Tile *Tile::ice = nullptr;
 Tile *Tile::frostedIce = nullptr;
+Tile *Tile::concrete=nullptr,*Tile::concretePowder=nullptr,*Tile::observer=nullptr;
 Tile *Tile::grassPath=nullptr;
 Tile *Tile::magma=nullptr,*Tile::netherWartBlock=nullptr,*Tile::redNetherBrick=nullptr,*Tile::boneBlock=nullptr,*Tile::beetroots=nullptr;
 Tile *Tile::snow = nullptr;
@@ -587,6 +591,11 @@ void Tile::staticCtor()
 	// End building palette. Preserve the reserved 201-206 save IDs.
 	const unsigned int boxNames[]={IDS_TILE_SHULKER_BOX_WHITE,IDS_TILE_SHULKER_BOX_ORANGE,IDS_TILE_SHULKER_BOX_MAGENTA,IDS_TILE_SHULKER_BOX_LIGHT_BLUE,IDS_TILE_SHULKER_BOX_YELLOW,IDS_TILE_SHULKER_BOX_LIME,IDS_TILE_SHULKER_BOX_PINK,IDS_TILE_SHULKER_BOX_GRAY,IDS_TILE_SHULKER_BOX_LIGHT_GRAY,IDS_TILE_SHULKER_BOX_CYAN,IDS_TILE_SHULKER_BOX_PURPLE,IDS_TILE_SHULKER_BOX_BLUE,IDS_TILE_SHULKER_BOX_BROWN,IDS_TILE_SHULKER_BOX_GREEN,IDS_TILE_SHULKER_BOX_RED,IDS_TILE_SHULKER_BOX_BLACK};
 	for(int color=0;color<16;++color) (new ShulkerBoxTile(ShulkerBoxes::FIRST+color))->setDestroyTime(2)->setExplodeable(10)->setSoundType(SOUND_STONE)->setDescriptionId(boxNames[color])->setUseDescriptionId(IDS_DESC_SHULKER_BOX);
+    concrete=(new ConcreteTile(concrete_Id))->setDestroyTime(1.8f)->setSoundType(SOUND_STONE)->setDescriptionId(IDS_TILE_CONCRETE)->setUseDescriptionId(IDS_DESC_CONCRETE);
+    concretePowder=(new ConcretePowderTile(concretePowder_Id))->setDestroyTime(.5f)->setSoundType(SOUND_SAND)->setDescriptionId(IDS_TILE_CONCRETE_POWDER)->setUseDescriptionId(IDS_DESC_CONCRETE_POWDER);
+    observer=(new ObserverTile(observer_Id))->setDestroyTime(3)->setExplodeable(3)->setSoundType(SOUND_STONE)->setDescriptionId(IDS_TILE_OBSERVER)->setUseDescriptionId(IDS_DESC_OBSERVER);
+    const int glazedNames[]={IDS_TILE_GLAZED_WHITE,IDS_TILE_GLAZED_ORANGE,IDS_TILE_GLAZED_MAGENTA,IDS_TILE_GLAZED_LIGHT_BLUE,IDS_TILE_GLAZED_YELLOW,IDS_TILE_GLAZED_LIME,IDS_TILE_GLAZED_PINK,IDS_TILE_GLAZED_GRAY,IDS_TILE_GLAZED_LIGHT_GRAY,IDS_TILE_GLAZED_CYAN,IDS_TILE_GLAZED_PURPLE,IDS_TILE_GLAZED_BLUE,IDS_TILE_GLAZED_BROWN,IDS_TILE_GLAZED_GREEN,IDS_TILE_GLAZED_RED,IDS_TILE_GLAZED_BLACK};
+    for(int c=0;c<16;++c)(new GlazedTerracottaTile(glazedTerracottaFirst_Id+c,c))->setDestroyTime(1.4f)->setSoundType(SOUND_STONE)->setDescriptionId(glazedNames[c])->setUseDescriptionId(IDS_DESC_GLAZED);
 	Tile::endCityBanner = (new EndCityBanner(177))->setDestroyTime(1)->setIconName(L"end_city_banner")->setDescriptionId(IDS_TILE_END_CITY_BANNER);
 	endGateway = (new EndGatewayTile(endGateway_Id))->setDestroyTime(-1.f)->setExplodeable(6000000.f)->setLightEmission(1.f)->setIconName(L"portal")->setDescriptionId(IDS_TILE_END_GATEWAY)->setUseDescriptionId(IDS_DESC_END_GATEWAY);
 	Tile::endRod = (new EndRodTile(endRod_Id))->setDestroyTime(0.f)->setSoundType(SOUND_WOOD)->setIconName(L"end_rod")->setDescriptionId(IDS_TILE_END_ROD)->setUseDescriptionId(IDS_DESC_END_ROD)->setLightEmission(14.f/15.f)->sendTileData();
@@ -601,6 +610,12 @@ void Tile::staticCtor()
 
 	// Special cases for certain items since they can have different icons
 	Item::items[wool_Id]				= ( new WoolTileItem(Tile::wool_Id- 256) )->setIconName(L"cloth")->setDescriptionId(IDS_TILE_CLOTH)->setUseDescriptionId(IDS_DESC_WOOL);
+    const int concreteNames[]={IDS_TILE_CONCRETE_WHITE,IDS_TILE_CONCRETE_ORANGE,IDS_TILE_CONCRETE_MAGENTA,IDS_TILE_CONCRETE_LIGHT_BLUE,IDS_TILE_CONCRETE_YELLOW,IDS_TILE_CONCRETE_LIME,IDS_TILE_CONCRETE_PINK,IDS_TILE_CONCRETE_GRAY,IDS_TILE_CONCRETE_LIGHT_GRAY,IDS_TILE_CONCRETE_CYAN,IDS_TILE_CONCRETE_PURPLE,IDS_TILE_CONCRETE_BLUE,IDS_TILE_CONCRETE_BROWN,IDS_TILE_CONCRETE_GREEN,IDS_TILE_CONCRETE_RED,IDS_TILE_CONCRETE_BLACK};
+    const int powderNames[]={IDS_TILE_POWDER_WHITE,IDS_TILE_POWDER_ORANGE,IDS_TILE_POWDER_MAGENTA,IDS_TILE_POWDER_LIGHT_BLUE,IDS_TILE_POWDER_YELLOW,IDS_TILE_POWDER_LIME,IDS_TILE_POWDER_PINK,IDS_TILE_POWDER_GRAY,IDS_TILE_POWDER_LIGHT_GRAY,IDS_TILE_POWDER_CYAN,IDS_TILE_POWDER_PURPLE,IDS_TILE_POWDER_BLUE,IDS_TILE_POWDER_BROWN,IDS_TILE_POWDER_GREEN,IDS_TILE_POWDER_RED,IDS_TILE_POWDER_BLACK};
+    intArray concreteDescriptions(16),powderDescriptions(16);
+    for(int c=0;c<16;++c){concreteDescriptions[c]=concreteNames[c];powderDescriptions[c]=powderNames[c];}
+    Item::items[concrete_Id]=(new ColoredTileItem(concrete_Id-256,true))->setDescriptionPostfixes(concreteDescriptions);
+    Item::items[concretePowder_Id]=(new ColoredTileItem(concretePowder_Id-256,true))->setDescriptionPostfixes(powderDescriptions);
 	Item::items[clayHardened_colored_Id]= ( new WoolTileItem(Tile::clayHardened_colored_Id - 256))->setIconName(L"clayHardenedStained")->setDescriptionId(IDS_TILE_STAINED_CLAY)->setUseDescriptionId(IDS_DESC_STAINED_CLAY);
 	Item::items[stained_glass_Id]		= ( new WoolTileItem(Tile::stained_glass_Id - 256))->setIconName(L"stainedGlass")->setDescriptionId(IDS_TILE_STAINED_GLASS)->setUseDescriptionId(IDS_DESC_STAINED_GLASS);
 	Item::items[stained_glass_pane_Id]	= ( new WoolTileItem(Tile::stained_glass_pane_Id - 256))->setIconName(L"stainedGlassPane")->setDescriptionId(IDS_TILE_STAINED_GLASS_PANE)->setUseDescriptionId(IDS_DESC_STAINED_GLASS_PANE);
@@ -1907,3 +1922,5 @@ const int Tile::stairs_darkwood_Id;
 
 
 
+
+const int Tile::observer_Id;const int Tile::glazedTerracottaFirst_Id;const int Tile::concrete_Id;const int Tile::concretePowder_Id;

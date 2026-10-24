@@ -18,6 +18,7 @@ FurnaceRecipes *FurnaceRecipes::getInstance()
 
 FurnaceRecipes::FurnaceRecipes()
 {
+    for(int color=0;color<16;++color)addFurnaceRecipy(new ItemInstance(Tile::clayHardened_colored_Id,1,color),new ItemInstance(Tile::glazedTerracottaFirst_Id+color,1,0),.1f);
 	addFurnaceRecipy(Tile::ironOre_Id, new ItemInstance(Item::ironIngot), .7f);
 	addFurnaceRecipy(Tile::goldOre_Id, new ItemInstance(Item::goldIngot), 1);
 	addFurnaceRecipy(Tile::diamondOre_Id, new ItemInstance(Item::diamond), 1);

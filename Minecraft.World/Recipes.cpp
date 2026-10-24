@@ -49,6 +49,11 @@ void Recipes::_init()
 
 void Recipes::_compileRecipes()
 {
+    addShapedRecipy(new ItemInstance(Tile::observer,1),L"sssctcicig",L"CCC",L"RQR",L"CCC",L'C',Tile::cobblestone,L'R',Item::redStone,L'Q',Item::netherQuartz,L'M');
+    for(int color=0;color<16;++color) {
+        ItemInstance dye(Item::dye_powder_Id,1,15-color);
+        addShapelessRecipy(new ItemInstance(Tile::concretePowder_Id,8,color),L"ttttttttzg",Tile::sand,Tile::sand,Tile::sand,Tile::sand,Tile::gravel,Tile::gravel,Tile::gravel,Tile::gravel,&dye,L'S');
+    }
     addShapedRecipy(new ItemInstance(Item::endCrystal,1),L"sssctcicig",L"GGG",L"GEG",L"GTG",L'G',Tile::glass,L'E',Item::eyeOfEnder,L'T',Item::ghastTear,L'M');
     addShapedRecipy(new ItemInstance(Tile::magma,1),L"sscig",L"##",L"##",L'#',Item::magmaCream,L'S');
     addShapedRecipy(new ItemInstance(Tile::netherWartBlock,1),L"ssscig",L"###",L"###",L"###",L'#',Item::netherwart_seeds,L'S');
