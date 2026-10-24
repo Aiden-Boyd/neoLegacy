@@ -94,6 +94,12 @@ jobs:
           python tests/world_launch_regression.py 2>&1 | Tee-Object logs/world-launch-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run skin texture identity and layout regression
+        shell: pwsh
+        run: |
+          python tests/skin_layout_regression.py 2>&1 | Tee-Object logs/skin-layout-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Run End palette regression checks
         shell: pwsh
         run: |
@@ -295,6 +301,8 @@ jobs:
           Copy-Item MAP_TEXTURE_TESTS.md "$stage/MAP_TEXTURE_TESTS.md"
           Copy-Item VILLAGER_FOOD_TESTS.md "$stage/VILLAGER_FOOD_TESTS.md"
           Copy-Item SHULKER_LID_TESTS.md "$stage/SHULKER_LID_TESTS.md"
+          Copy-Item WORLD_LAUNCH_FIX_TESTS.md "$stage/WORLD_LAUNCH_FIX_TESTS.md"
+          Copy-Item SKIN_LAYOUT_TESTS.md "$stage/SKIN_LAYOUT_TESTS.md"
           Copy-Item ROCKET_COLOR_OBSERVER_TESTS.md "$stage/ROCKET_COLOR_OBSERVER_TESTS.md"
           Copy-Item END_FIGHT_AUDIT.md "$stage/END_FIGHT_AUDIT.md"
           @(
@@ -314,7 +322,7 @@ jobs:
       - name: Upload client test artifact
         uses: actions/upload-artifact@v6
         with:
-          name: neoLegacy-world-launch-fix-windows64
+          name: neoLegacy-skin-layout-fix-windows64
           path: staging/
           if-no-files-found: error
           retention-days: 14

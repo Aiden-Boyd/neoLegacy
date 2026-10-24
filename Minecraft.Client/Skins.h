@@ -27,3 +27,14 @@ static std::map<int, bool> slim = {
 	{ 17, true },
 	{ 18, true },
 };
+
+#include "Textures.h"
+#include <string>
+
+namespace SkinLayout {
+// GPU texture handles are allocation IDs, never skin/model identifiers.
+inline bool isSlimDefaultSkin(const std::wstring &url, int texture) {
+    return (url.empty() || url == L"default" || url.compare(0, 7, L"defskin") == 0) &&
+        texture >= TN_MOB_CHAR9 && texture <= TN_MOB_CHAR17;
+}
+}

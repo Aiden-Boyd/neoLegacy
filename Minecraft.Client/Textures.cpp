@@ -1216,60 +1216,24 @@ int Textures::loadMemTexture(const wstring& url, int backup)
 
 int Textures::getHeight(const wstring& url, int backup)
 {
-	MemTexture *texture = nullptr;
     auto it = memTextures.find(url);
-    if (it != memTextures.end())
-	{
-		texture = (*it).second;
-	}
-	if(texture == nullptr && app.IsFileInMemoryTextures(url))
-	{
-		// If we haven't loaded it yet, but we have the data for it then add it
-		texture = addMemTexture(url, new MobSkinMemTextureProcessor() );
-	}
-	if(texture != nullptr)
-	{
-		if (texture->loadedImage != nullptr && !texture->isLoaded)
-		{
-			// 4J - Disable mipmapping in general for skins & capes. Have seen problems with edge-on polys for some eg mumbo jumbo
-			if( ( url.substr(0,7) == L"dlcskin" ) ||
-				( url.substr(0,7) == L"dlccape" ) )
-			{
-				MIPMAP = false;
-			}
+    MemTexture *texture = it != memTextures.end() ? it->second : nullptr;
+    if (texture == nullptr && app.IsFileInMemoryTextures(url))
+        texture = addMemTexture(url, new MobSkinMemTextureProcessor());
+    if (texture != nullptr && texture->loadedImage != nullptr)
+        return texture->loadedImage->getHeight();
 
-			if (texture->id < 0)
-			{
-				texture->id = getTexture(texture->loadedImage, C4JRender::TEXTURE_FORMAT_RxGyBzAw, MIPMAP);
-			}
-			else
-			{
-				loadTexture(texture->loadedImage, texture->id);
-			}
-			texture->isLoaded = true;
-			MIPMAP = true;
-		}
-	}
-	if (texture == nullptr || texture->id < 0)
-	{
-		BufferedImage* img = readImage(static_cast<TEXTURE_NAME>(backup), wstring(preLoaded[backup]) + L".png");
-
-		if (img)
-		{
-			MemTexture* _texture = new MemTexture();
-			_texture->loadedImage = img;
-			_texture->isLoaded = true;
-			_texture->id = getTexture(_texture->loadedImage, C4JRender::TEXTURE_FORMAT_RxGyBzAw, MIPMAP);
-
-			int h = img->getHeight();
-			//delete img; // commenting this out and inserting the loaded texture to memTextures unordered_map
-			this->memTextures[url] = _texture;
-			return h;
-		}
-
-		return 32;
-	}
-	return texture->loadedImage->getHeight();
+    // A missing custom URL may use different defaults for different players or
+    // previews. Never publish its fallback image as a real custom memory skin.
+    if (backup < 0 || backup >= TN_COUNT) return 32;
+    auto cached = fallbackImageHeights.find(backup);
+    if (cached != fallbackImageHeights.end()) return cached->second;
+    BufferedImage *image = readImage(static_cast<TEXTURE_NAME>(backup), wstring(preLoaded[backup]) + L".png");
+    if (image == nullptr) return 32;
+    int height = image->getHeight();
+    delete image;
+    fallbackImageHeights[backup] = height;
+    return height;
 }
 
 int Textures::getHeight(ResourceLocation resource)
@@ -1415,6 +1379,7 @@ void Textures::tick(bool updateTextures, bool tickDynamics)	// 4J added updateTe
 
 void Textures::reloadAll()
 {
+	fallbackImageHeights.clear();
     TexturePack *skin = skins->getSelected();
 
 	for( int i = 0; i < TN_COUNT - 2; i++ )
@@ -1754,4 +1719,5 @@ bool Textures::IsOriginalImage(TEXTURE_NAME texId, const wstring& name)
 	}
 	return false;
 }
+
 

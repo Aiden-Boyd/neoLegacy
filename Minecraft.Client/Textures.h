@@ -285,6 +285,8 @@ private:
 	unordered_map<wstring, HttpTexture *> httpTextures;
 	// 4J-PB - Added for GTS textures
 	unordered_map<wstring,MemTexture *> memTextures;
+	// Fallback metadata is keyed by the actual texture, never the custom URL.
+	unordered_map<int, int> fallbackImageHeights;
     Options *options;
 
 private:
@@ -360,3 +362,4 @@ public:
 	static bool IsTUImage(TEXTURE_NAME texId, const wstring& name);
 	static bool IsOriginalImage(TEXTURE_NAME texId, const wstring& name);
 };
+

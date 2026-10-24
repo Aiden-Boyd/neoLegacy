@@ -70,10 +70,9 @@ void LivingEntityRenderer::render(shared_ptr<Entity> _mob, double x, double y, d
 	if (player != nullptr)
 	{
 		Textures *textures = Minecraft::GetInstance()->textures;
-		int skinId = player->getPlayerDefaultSkin() - 1;
-		int defaultSkin = player->getPlayerDefaultSkin() + 35;
+		int defaultSkin = player->getTexture();
 
-		if (slim[skinId] == true)
+		if (SkinLayout::isSlimDefaultSkin(player->customTextureUrl, defaultSkin))
 		{
 			if (textures->getHeight(player->customTextureUrl, defaultSkin) == 64)
 				resModel = static_cast<HumanoidModel *>(newModelSlim);
@@ -287,10 +286,9 @@ void LivingEntityRenderer::renderModel(shared_ptr<LivingEntity> mob, float wp, f
 	if (player != nullptr)
 	{
 		Textures *textures = Minecraft::GetInstance()->textures;
-		int skinId = player->getPlayerDefaultSkin() - 1;
-		int defaultSkin = player->getPlayerDefaultSkin() + 35;
+		int defaultSkin = player->getTexture();
 
-		if (slim[skinId] == true)
+		if (SkinLayout::isSlimDefaultSkin(player->customTextureUrl, defaultSkin))
 		{
 			if (textures->getHeight(player->customTextureUrl, defaultSkin) == 64)
 				resModel = static_cast<HumanoidModel *>(newModelSlim);
@@ -385,10 +383,9 @@ void LivingEntityRenderer::renderArrows(shared_ptr<LivingEntity> mob, float a)
 	if (player != nullptr)
 	{
 		Textures *textures = Minecraft::GetInstance()->textures;
-		int skinId = player->getPlayerDefaultSkin() - 1;
-		int defaultSkin = player->getPlayerDefaultSkin() + 35;
+		int defaultSkin = player->getTexture();
 
-		if (slim[skinId] == true)
+		if (SkinLayout::isSlimDefaultSkin(player->customTextureUrl, defaultSkin))
 		{
 			if (textures->getHeight(player->customTextureUrl, defaultSkin) == 64)
 				resModel = static_cast<HumanoidModel *>(newModelSlim);

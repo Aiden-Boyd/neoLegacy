@@ -311,9 +311,7 @@ void UIControl_PlayerSkinPreview::render(EntityRenderer *renderer, double x, dou
 
 	HumanoidModel *model = static_cast<HumanoidModel *>(renderer->getModel());
 	Textures *textures = Minecraft::GetInstance()->textures;
-	int skinId = textures->loadMemTexture(m_customTextureUrl, m_backupTexture) - 37;
-
-	if (slim[skinId] == true)
+	if (SkinLayout::isSlimDefaultSkin(m_customTextureUrl, m_backupTexture))
 	{
 		if (textures->getHeight(m_customTextureUrl, m_backupTexture) == 64)
 			model = static_cast<HumanoidModel *>(renderer->getNewModelSlim());
@@ -594,3 +592,4 @@ bool UIControl_PlayerSkinPreview::bindTexture(const wstring& urlTexture, const w
 		return false;
 	}
 }
+
