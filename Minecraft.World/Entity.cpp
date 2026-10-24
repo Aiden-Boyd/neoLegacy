@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "com.mojang.nbt.h"
 #include "net.minecraft.world.item.h"
 #include "net.minecraft.world.item.enchantment.h"
@@ -17,6 +17,7 @@
 
 #include "EntityPos.h"
 #include "Entity.h"
+#include "SlimeBlockPhysics.h"
 #include "SoundTypes.h"
 #include "../Minecraft.Client/HumanoidModel.h"
 #include "../Minecraft.Client/MinecraftServer.h"
@@ -892,8 +893,15 @@ void Entity::move(double xa, double ya, double za, bool noEntityCubes)   // 4J -
 	checkFallDamage(ya, onGround);
 
 	if (xaOrg != xa) xd = 0;
-	if (yaOrg != ya) yd = 0;
+	if (yaOrg != ya) {
+        int tile=onGround?level->getTile(Mth::floor(x),Mth::floor(bb->y0-.01),Mth::floor(z)):0;
+        yd=tile==165?SlimeBlockPhysics::land(yd,isSneaking(),instanceof(eTYPE_LIVINGENTITY)):0;
+    }
 	if (zaOrg != za) zd = 0;
+    // Native stepOn is sound-distance gated; slime drag must run every grounded move.
+    if(onGround && level->getTile(Mth::floor(x),Mth::floor(bb->y0-.01),Mth::floor(z))==165) {
+        double drag=SlimeBlockPhysics::drag(yd,isSneaking());xd*=drag;zd*=drag;
+    }
 
 	double xm = x - xo;
 	double ym = y - yo;
@@ -1031,6 +1039,7 @@ bool Entity::makeStepSound()
 
 void Entity::checkFallDamage(double ya, bool onGround)
 {
+    if(onGround&&!isSneaking()&&level->getTile(Mth::floor(x),Mth::floor(bb->y0-.01),Mth::floor(z))==165)fallDistance=0;
 	if (onGround)
 	{
 		if (fallDistance > 0)

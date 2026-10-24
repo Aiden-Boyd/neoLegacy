@@ -7,7 +7,7 @@ Base: 80d5b7b629650de5f9ebd57a4113f293dde16718. Cumulative candidate.
 The base already has texture packs, whole-file fallback and texture reloads.
 The confirmed gap is that a supplied terrain atlas prevents whole-file fallback,
 even when its cells for our added blocks are blank. The existing loader is kept.
-Only 124 explicitly allocated added terrain cells get per-cell fallback when
+Only 125 explicitly allocated added terrain cells get per-cell fallback when
 all base-level alpha values are zero. A cell with any supplied nonzero alpha is
 preserved in every mip. Other cells are never modified. Default packs skip this
 step, and the default atlas is loaded only if there is a missing added cell.
@@ -16,8 +16,8 @@ mips are repaired in the same cell; native generation handles absent whole mips.
 The helper accepts power-of-two atlases with the native 16-column/32-row layout.
 It does not attempt to reinterpret differently arranged atlases. Fully transparent
 intentional textures in added cells are treated as missing; nonblank placeholders
-cannot be distinguished from supplied artwork and remain unchanged. Individual
-item/entity file fallback stays on the native path. This is not a new pack system.
+cannot be distinguished from supplied artwork and remain unchanged. The added banner item cell also receives the same missing-cell fallback. Individual
+entity file fallback stays on the native path. This is not a new pack system.
 
 MapItem previously counted block IDs and selected material colors after sampling,
 losing metadata. It now counts map color IDs per sampled block. Concrete/powder,

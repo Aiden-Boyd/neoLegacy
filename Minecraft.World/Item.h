@@ -664,7 +664,8 @@ public:
 
 	static const int mutton_raw_Id = 423;
 	static const int mutton_cooked_Id = 424;
-	//425 banner
+	static const int banner_Id=425;
+    static Item *banner;
 	static const int endCrystal_Id=426;
 
 	static const int door_spruce_Id = 427;

@@ -49,6 +49,12 @@ void Recipes::_init()
 
 void Recipes::_compileRecipes()
 {
+    addShapedRecipy(new ItemInstance(165,1,0),L"ssscig",L"SSS",L"SSS",L"SSS",L'S',Item::slimeBall,L'M');
+    addShapelessRecipy(new ItemInstance(Item::slimeBall,9),L"tg",Tile::tiles[165],L'M');
+    for(int dye=0;dye<16;++dye) {
+        auto wool=new ItemInstance(Tile::wool,1,15-dye);
+        addShapedRecipy(new ItemInstance(425,1,dye),L"sssczcig",L"WWW",L"WWW",L" S ",L'W',wool,L'S',Item::stick,L'M');
+    }
     addShapedRecipy(new ItemInstance(Tile::observer,1),L"sssctcicig",L"CCC",L"RQR",L"CCC",L'C',Tile::cobblestone,L'R',Item::redStone,L'Q',Item::netherQuartz,L'M');
     for(int color=0;color<16;++color) {
         ItemInstance dye(Item::dye_powder_Id,1,15-color);

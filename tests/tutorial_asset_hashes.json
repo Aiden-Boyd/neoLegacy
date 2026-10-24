@@ -1,0 +1,64 @@
+{
+  "source": "InventivetalentDev/minecraft-assets ref 1.12.2; banner_icon derived from banner_base cloth and a drawn pole",
+  "cells": {
+    "terrain": {
+      "row": 31,
+      "col": 15,
+      "name": "slime"
+    },
+    "items": {
+      "row": 13,
+      "col": 10,
+      "name": "banner_icon"
+    }
+  },
+  "sha256": {
+    "textures/blocks/slime.png": "15801c186453bcb88c9e4d141ced30463b3055dd170e301fe9049687805a0293",
+    "textures/items/banner_icon.png": "26da95d5f85c620ea06b25b8b081875c3213fb333751e86cbd5f8be52a57cbee",
+    "mob/banner_base.png": "9d606ab2b6e883683e5696cf4207564db05e4b88cfb564d8decd9484c3ffea3f",
+    "mob/banner/border.png": "925a695bf74573d764be5888d51109877b47019b660a58ed15a15b3536affdcc",
+    "mob/banner/bricks.png": "110bd964410380c0830f95ad6bd69dda2861114d4874dd80559e8bd131559bab",
+    "mob/banner/circle.png": "7955ca074627331b04796585f9e5d7f0d606376f3931fb35e5e304af432a6e4f",
+    "mob/banner/creeper.png": "32f0798c811a44110deeaa0bfe7d39588303515870d75850c26151c3ccf4e005",
+    "mob/banner/cross.png": "a7887ad8a6cc8b6457bb659eb8d0515f4a36faa8281def5f424579d6c6e38f27",
+    "mob/banner/curly_border.png": "fd1884085953882417b4d1a61247fc116ad482072e46c2902010c42eb7df98ea",
+    "mob/banner/diagonal_left.png": "000f38eb7cb73665dfb451e60e15df87f80aa68a242dcb7cca4d0934cd0cc79f",
+    "mob/banner/diagonal_right.png": "1cf4ea55251737c778ce1fbdf24608225deb6bd941c2ac2016125b05f841a78f",
+    "mob/banner/diagonal_up_left.png": "616d3e32bc6542138756e95620d24959d1608a0d641f70fa52e5561d1066ca39",
+    "mob/banner/diagonal_up_right.png": "28f3108dc1db3d22c8fd3d56e64e0d171cf8495b6eecad3848bb760575587ff1",
+    "mob/banner/flower.png": "94e99c24535195ae8af6ad7490cce02f8bfbc47fb92c444e1a585e89e70e3275",
+    "mob/banner/gradient.png": "2f867499a5fe590c54f6a8b5216a8b19a2c337aabc9156d3be69e40d25b95088",
+    "mob/banner/gradient_up.png": "011039bbe5def3641f50ce8b061706a569a88bc94a43b64549c829d99cd51e71",
+    "mob/banner/half_horizontal.png": "923dac6bbe2c6695b5c651f3834b07fafae600bf2ad12c60ec84d95b1a808132",
+    "mob/banner/half_horizontal_bottom.png": "237a6f92f56610fb3420da1f93bd81c31513d5ef62ac322e392131b70c828dc7",
+    "mob/banner/half_vertical.png": "bf97a2457bc1cc1e3ff599b985da297f8721d94c5f3cb0102bc56e66a30dca63",
+    "mob/banner/half_vertical_right.png": "9f961a461a9df08bca08a433c1792677b5ae5e6e3de3be4b1722598cda8e4f1d",
+    "mob/banner/mojang.png": "97f08ef9470962f9120ec5aa0d7a7dd52f9fec1cc785c501495fe3ea6b64c35b",
+    "mob/banner/rhombus.png": "1bee6fc02a4135a6377ec62b4a9a574cbbdb5e2b126402a385d938c7a07bc8d8",
+    "mob/banner/skull.png": "d1c24a6fb8c235f18a8d16558ea6ffd167d12ac5e99f4ac080e15ea3d0ebd89c",
+    "mob/banner/small_stripes.png": "8e124307c64626422637a6079e0b3ffe13e12aef6c4bcc9fe89799b944577ef8",
+    "mob/banner/square_bottom_left.png": "66d787ee7cd66a752454080005f0259da17d2c5107f87ed1468beb1cc5efcd28",
+    "mob/banner/square_bottom_right.png": "f1ab14d8129254c31c4c8640cb864ec90dfe1b9e8501ef77a08a3b2c77db3d01",
+    "mob/banner/square_top_left.png": "bac503757d3d925a641768c660ac778c34390d69f5eb04450b95f0bc856f5efc",
+    "mob/banner/square_top_right.png": "40f4d44521823ff6395e57776b71bdccf3c4f3831389cf2a5afa20eb37e179e8",
+    "mob/banner/straight_cross.png": "96254a9b1ba0b97fbf4abd35e224af7ec8b40e6886c8400adc4bca88f73220c9",
+    "mob/banner/stripe_bottom.png": "fc3be52b84a84bd4fd92ee056ae90a90ea2512c03d2985f8d7eb69288598173f",
+    "mob/banner/stripe_center.png": "d14956b94a0ca8c077143a1b16d12391aa13e1762219b7a47a749a6a81da807a",
+    "mob/banner/stripe_downleft.png": "0f11310b5609994487223bafe4ec55ba0f8ee7741e873fa20415e6efd39689fe",
+    "mob/banner/stripe_downright.png": "ef68496aa705d8e2b443aff31af25de6c578fb0c77942ebbfcce16c02c1dd288",
+    "mob/banner/stripe_left.png": "9667eb67548da4dc9c2a14cb5551e8ef3a6c987ce54e73d394f9b1f32b44922f",
+    "mob/banner/stripe_middle.png": "e3e0d6f73cb595c5812b531db05068c5f0f492383ab2a3262cb310c35043fd80",
+    "mob/banner/stripe_right.png": "df8d6bb06fd087b5f84804f567a0a2db93b9c492b3df2aa0cd8f7d778b4a5294",
+    "mob/banner/stripe_top.png": "1f67ebbc6d9b0e96930a484d647c4e273896252cd9fd331929a4db71505101ac",
+    "mob/banner/triangle_bottom.png": "ceb41c28b6888efe9c26d1c813e8238af5174386cb712ba54141cbaae683d14b",
+    "mob/banner/triangle_top.png": "60d804751ccb4706e03ef3df549350d20a22b27022be003c16a5e50a463109f2",
+    "mob/banner/triangles_bottom.png": "5519022eb06ef746e7d115fdf8da30392e753f41097139110eba982c260d8833",
+    "mob/banner/triangles_top.png": "a7e249bb8e6a92a644071c2d8640743679a969c892d431adb28ab1057d7e6e01"
+  },
+  "atlas_preservation": {
+    "terrain.png": "6dc8471b2fab1be840e264ec4ce55cd18f6eea4a3c229fddb60e69a6d2682eb2",
+    "terrainMipMapLevel2.png": "66d0f31113c0baad3d4bb596a33029169cc4b30f334dde6405db55e6d60ad95f",
+    "terrainMipMapLevel3.png": "7d994d204db8859d86bc619bd6a85c9be5e5af35b5c22f55762cdfe57b150a60",
+    "items.png": "09ec474075fa06429d44ab03cd841192cacc383d63d2c45e47545ce35ebad31f"
+  }
+}

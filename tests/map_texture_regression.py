@@ -25,7 +25,7 @@ struct MapItem {enum{IMAGE_WIDTH=128,IMAGE_HEIGHT=128};void update(Level*,shared
 struct ColourTable {int getColor(int col){return 0x345678+col;}};
 struct Minecraft {ColourTable table;static Minecraft*GetInstance(){static Minecraft m;return &m;}ColourTable*getColourTable(){return &table;}};
 struct Minimap {enum{w=128};inline static int LUT[256];inline static bool genLUT=true;void reloadColours();};
-struct Image {int width;vector<vector<int>> levels;explicit Image(int w):width(w),levels(3){for(int l=0;l<3;++l)levels[l].resize((w>>l)*(2*w>>l));}int getWidth(){return width;}int getHeight(){return width*2;}int*getData(int l){return l<int(levels.size())&&!levels[l].empty()?levels[l].data():nullptr;}};
+struct Image {int width;vector<vector<int>> levels;explicit Image(int w):width(w),levels(3){for(int l=0;l<3;++l)levels[l].resize((w>>l)*(2*w>>l));}int getWidth(){return width;}int height=0;int getHeight(){return height?height:width*2;}int*getData(int l){return l<int(levels.size())&&!levels[l].empty()?levels[l].data():nullptr;}};
 '''
 TEST=r'''
 int main(){
@@ -44,6 +44,11 @@ int main(){
  auto original=selected.levels;assert(AddedTerrainFallback::needed(&selected));int n=AddedTerrainFallback::apply(&selected,&defaults);assert(n==int(sizeof(AddedTerrainFallback::cells)/sizeof(AddedTerrainFallback::cells[0]))-1);
  assert(!AddedTerrainFallback::needed(&selected));for(int l=0;l<3;++l){assert(selected.levels[l][0]==original[l][0]);int w=width>>l,s=w/16;for(int y=0;y<s;++y)for(int x=0;x<s;++x)assert(selected.levels[l][(row*s+y)*w+col*s+x]==original[l][(row*s+y)*w+col*s+x]);}
  auto once=selected.levels;AddedTerrainFallback::apply(&selected,&defaults);assert(selected.levels==once);
+ }
+ for(int width:{256,512}){
+ Image selected(width),defaults(256);selected.height=width;defaults.height=256;for(int l=0;l<3;++l)fill(defaults.levels[l].begin(),defaults.levels[l].end(),0xffabcdef+l);
+ selected.levels[0][0]=0xff123456;assert(AddedTerrainFallback::needsBanner(&selected));assert(AddedTerrainFallback::applyBanner(&selected,&defaults)==1);assert(selected.levels[0][0]==int(0xff123456));assert(!AddedTerrainFallback::needsBanner(&selected));
+ for(int l=0;l<3;++l){int w=width>>l,s=w/16;assert(selected.levels[l][13*s*w+10*s]==int(0xffabcdef)+l);}auto after=selected.levels;assert(AddedTerrainFallback::applyBanner(&selected,&defaults)==0&&after==selected.levels);
  }
  Image low(8);assert(!AddedTerrainFallback::needed(&low));
 }

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../Minecraft.World/EndCityBanner.h"
 #include "../Minecraft.World/EndGateway.h"
 #include "../Minecraft.World/Shulker.h"
 #include "ClientConnection.h"
@@ -3458,6 +3459,9 @@ void ClientConnection::handleTileEntityData(shared_ptr<TileEntityDataPacket> pac
 	{
 		shared_ptr<TileEntity> te = minecraft->level->getTileEntity(packet->x, packet->y, packet->z);
 
+        if(packet->type==TileEntityDataPacket::TYPE_BANNER) {
+            auto b=dynamic_pointer_cast<EndCityBannerEntity>(te);if(b)b->load(packet->tag);return;
+        }
         if(packet->type==TileEntityDataPacket::TYPE_END_GATEWAY) {
             auto gateway=dynamic_pointer_cast<EndGatewayTileEntity>(te);
             if(gateway) gateway->load(packet->tag);

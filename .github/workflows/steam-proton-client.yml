@@ -25,6 +25,7 @@ on:
       - feature/villager-food
       - feature/map-texture-compat
       - feature/end-reliability
+      - feature/tutorial-world-compat
   workflow_dispatch:
 
 permissions:
@@ -36,7 +37,7 @@ concurrency:
 
 jobs:
   build-client:
-    name: Windows64 End recovery and chunk safety
+    name: Windows64 tutorial world compatibility
     runs-on: windows-2022
     timeout-minutes: 45
     env:
@@ -210,6 +211,12 @@ jobs:
           python tests/map_texture_regression.py 2>&1 | Tee-Object logs/map-texture.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run tutorial compatibility regressions
+        shell: pwsh
+        run: |
+          python tests/tutorial_compat_regression.py 2>&1 | Tee-Object logs/tutorial-compat.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Configure Windows64
         shell: pwsh
         run: |
@@ -261,6 +268,7 @@ jobs:
           Copy-Item OVERWORLD_TESTS.md "$stage/OVERWORLD_TESTS.md"
           Copy-Item END_RESPAWN_TESTS.md "$stage/END_RESPAWN_TESTS.md"
           Copy-Item INVENTORY_EQUIP_FIX_TESTS.md "$stage/INVENTORY_EQUIP_FIX_TESTS.md"
+          Copy-Item TUTORIAL_WORLD_TESTS.md "$stage/TUTORIAL_WORLD_TESTS.md"
           Copy-Item END_RELIABILITY_TESTS.md "$stage/END_RELIABILITY_TESTS.md"
           Copy-Item MAP_TEXTURE_TESTS.md "$stage/MAP_TEXTURE_TESTS.md"
           Copy-Item VILLAGER_FOOD_TESTS.md "$stage/VILLAGER_FOOD_TESTS.md"
@@ -271,7 +279,7 @@ jobs:
             "Commit: ${{ github.sha }}",
             "Configuration: Windows64 Release",
             "Runtime: Windows executable; test through Steam/Proton on Bazzite.",
-            "Candidate: End dragon recovery and chunk-safe rituals; includes all previous features and fixes.",
+            "Candidate: TU46 world import compatibility, slime blocks and general banners; includes all previous features and fixes.",
             "Compilation does not establish controller compatibility or CU59 parity."
           ) | Set-Content "$stage/BUILD_INFO.txt"
           Get-ChildItem $stage -Recurse -File |
@@ -284,7 +292,7 @@ jobs:
       - name: Upload client test artifact
         uses: actions/upload-artifact@v6
         with:
-          name: neoLegacy-end-reliability-windows64
+          name: neoLegacy-tutorial-world-compat-windows64
           path: staging/
           if-no-files-found: error
           retention-days: 14

@@ -17,7 +17,8 @@ TileEntity::classToIdMapType TileEntity::classIdMap = unordered_map<eINSTANCEOF,
 void TileEntity::staticCtor()
 {
 	TileEntity::setId(ShulkerBoxEntity::create,eTYPE_SHULKERBOXENTITY,L"ShulkerBox");
-	TileEntity::setId(EndCityBannerEntity::create,eTYPE_ENDCITYBANNERENTITY,L"EndCityBanner");
+	TileEntity::setId(EndCityBannerEntity::create,eTYPE_ENDCITYBANNERENTITY,L"Banner");
+    TileEntity::setId(EndCityBannerEntity::create,eTYPE_ENDCITYBANNERENTITY,L"EndCityBanner");
 	TileEntity::setId(EndGatewayTileEntity::create,eTYPE_ENDGATEWAYTILEENTITY,L"EndGateway");
 	TileEntity::setId(FurnaceTileEntity::create, eTYPE_FURNACETILEENTITY, L"Furnace");
 	TileEntity::setId(ChestTileEntity::create, eTYPE_CHESTTILEENTITY, L"Chest");
@@ -221,3 +222,4 @@ void TileEntity::clone(shared_ptr<TileEntity> tileEntity)
 	tileEntity->data = this->data;
 	tileEntity->tile = this->tile;
 }
+

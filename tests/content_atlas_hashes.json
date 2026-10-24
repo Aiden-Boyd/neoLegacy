@@ -575,9 +575,14 @@
         31,
         14,
         "3423aa7da2a9993b7908247ddcdd6aacb89d072ccd84168e7652bf4c1a3c499d"
+      ],
+      [
+        31,
+        15,
+        "ac60f57cc3331f1a3383c4425035a6028e2f9260c5205c20d6d02b9da6bca6a8"
       ]
     ],
-    "outside_sha256": "408a58452faa85e3d96612e8840a033b654257b5e08d78fe8ff6e403ba643fb4"
+    "outside_sha256": "07b596791dff04aec65915e341ae960ecb544b1b3ef0383de80bb3194c00561e"
   },
   "terrainMipMapLevel2.png": {
     "cells": [
@@ -1155,9 +1160,14 @@
         31,
         14,
         "40e101d115de1b68abda30043f3297b519f83dbc43f9fa61916bbcd9723fad3f"
+      ],
+      [
+        31,
+        15,
+        "f9f0b972ec160e815f731c6a1affeedbb1491faa72f14cafc55ceb0e266fb353"
       ]
     ],
-    "outside_sha256": "290f92583fcf13ed88552e198da3231737cc2a7e4f35ef14589e56ccc4bd84de"
+    "outside_sha256": "daccd2b755a298de5e89d3c3539bea8d8c66a5080764215f12a0b6c802338289"
   },
   "terrainMipMapLevel3.png": {
     "cells": [
@@ -1735,9 +1745,14 @@
         31,
         14,
         "31bd080c0a7ba0cc87557deeb5d11491c1f070ac987927bea8de1947436e0b8c"
+      ],
+      [
+        31,
+        15,
+        "5fd6236a2af58f7618dea15b4ffef7b75b8d7fcb9a795ed259d67c49b50159f6"
       ]
     ],
-    "outside_sha256": "ee087df3082579b0c10208814076a714c08434bc9046f8be025aaf319b6c5197"
+    "outside_sha256": "dd67afafda7367a84f2a88ba928b1fadf82bd6a77a34b7c72bf5d993582875c0"
   },
   "items.png": {
     "cells": [
@@ -1760,8 +1775,13 @@
         13,
         7,
         "5d9b58c4c993ad800ca608783752d2e053ce71e2897bb9ab7aee5a760dfa7aaf"
+      ],
+      [
+        13,
+        10,
+        "933d4bdc2c561c335595cd8f8c33559e63cc509399876a0453209b8383a85e39"
       ]
     ],
-    "outside_sha256": "55e2db62f48aec3f5a04e59ca99aeb7003ccfe4bfd573e5b654db8dab8435760"
+    "outside_sha256": "50f74f161683ac1061cd25d27af1d032300f958b87a9b97224e81c60ddddd06f"
   }
 }

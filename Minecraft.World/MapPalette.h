@@ -3,6 +3,7 @@
 namespace MapPalette {
 inline int dye(int data) {static const int ids[16]={8,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29};return ids[data&15];}
 inline int block(int id,int data,int original) {
+    if(id==165)return 1;
     if(id==35||id==171||id==251||id==252)return dye(data);
     if(id>=235&&id<=250)return dye(id-235);
     if(id>=219&&id<=234)return dye(id-219);

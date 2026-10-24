@@ -1157,7 +1157,7 @@
           "3423aa7da2a9993b7908247ddcdd6aacb89d072ccd84168e7652bf4c1a3c499d"
         ]
       ],
-      "outside_sha256": "3528c040ddec6c986d39948900bb413cdc3df5fccf174bb98842de811c8f4eaf"
+      "outside_sha256": "95734d94d4591570865de39ee1be195addf5167152b56fbb92b434af9b362404"
     },
     "terrainMipMapLevel2.png": {
       "cells": [
@@ -1682,7 +1682,7 @@
           "40e101d115de1b68abda30043f3297b519f83dbc43f9fa61916bbcd9723fad3f"
         ]
       ],
-      "outside_sha256": "92bd9cd0b82ce791a8e348eac9bed77d61c145a3a217077b8ad9434b9874834e"
+      "outside_sha256": "df7cae8da53ad96edd0719a5c0c4f631519807d08a39901e67fe09ae4a0b6a41"
     },
     "terrainMipMapLevel3.png": {
       "cells": [
@@ -2207,7 +2207,7 @@
           "31bd080c0a7ba0cc87557deeb5d11491c1f070ac987927bea8de1947436e0b8c"
         ]
       ],
-      "outside_sha256": "1af47d9aec49264cc50321e98bdb5cf4fb4c6aa915fcd1356c2b3bf74f19dee3"
+      "outside_sha256": "d40e01fa35761688e3d3c8438751392176975bb36f06c39cc23ea57f68105948"
     }
   }
 }

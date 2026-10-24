@@ -120,10 +120,14 @@ void PreStitchedTextureMap::stitch()
 	//BufferedImage *image = new BufferedImage(texturePack->getResource(L"/" + filename),false,true,drive); //ImageIO::read(texturePack->getResource(L"/" + filename));
 	BufferedImage *image = texturePack->getImageResource(filename, false, true, drive);
     // Whole-file fallback above stays native. Fill only missing added terrain cells.
-    if(name==L"terrain" && texturePack!=Minecraft::GetInstance()->skins->getDefault() && AddedTerrainFallback::needed(image)) {
+    if(texturePack!=Minecraft::GetInstance()->skins->getDefault() &&
+       ((name==L"terrain"&&AddedTerrainFallback::needed(image)) ||
+        (name==L"items"&&AddedTerrainFallback::needsBanner(image)))) {
         auto defaults=Minecraft::GetInstance()->skins->getDefault();
         auto fallback=defaults->getImageResource(filename,false,true,defaults->getPath(true));
-        AddedTerrainFallback::apply(image,fallback);delete fallback;
+        if(name==L"terrain")AddedTerrainFallback::apply(image,fallback);
+        else AddedTerrainFallback::applyBanner(image,fallback);
+        delete fallback;
     }
 	MemSect(0);
 	int height = image->getHeight();
@@ -373,6 +377,7 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(1,		12,	L"bone")
 		ADD_ICON(1,		13,	L"cake")
 		ADD_ICON(1,		14,	L"slimeball")
+		ADD_ICON(13, 10, L"banner_icon");
 		ADD_ICON(1,		15,	L"slot_empty_chestplate")
 
 		ADD_ICON(2,		0,	L"leggingsCloth")
@@ -1014,6 +1019,8 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(19,	15,	L"glass_pane_top_yellow");
 
 		
+		
+		ADD_ICON(31, 15, L"slime");
 		// Unused row 25 in the default terrain atlas: original End textures.
 		ADD_ICON(25, 4, L"end_rod");
 		ADD_ICON(25, 5, L"chorus_plant");

@@ -13,6 +13,7 @@ public:
 	static const int TYPE_BEACON = 3;
 	static const int TYPE_SKULL = 4;
 	static constexpr int TYPE_END_GATEWAY = 8;
+    static constexpr int TYPE_BANNER = 6;
 
 	int x, y, z;
 	int type;

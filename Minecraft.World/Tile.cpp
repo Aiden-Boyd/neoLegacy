@@ -22,6 +22,7 @@
 #include "EndPlantTiles.h"
 #include "EndGateway.h"
 #include "EndCityBanner.h"
+#include "SlimeBlockTile.h"
 #include "ShulkerBox.h"
 #include "ShulkerBoxItem.h"
 #include "FrostedIceTile.h"
@@ -596,7 +597,9 @@ void Tile::staticCtor()
     observer=(new ObserverTile(observer_Id))->setDestroyTime(3)->setExplodeable(3)->setSoundType(SOUND_STONE)->setDescriptionId(IDS_TILE_OBSERVER)->setUseDescriptionId(IDS_DESC_OBSERVER);
     const int glazedNames[]={IDS_TILE_GLAZED_WHITE,IDS_TILE_GLAZED_ORANGE,IDS_TILE_GLAZED_MAGENTA,IDS_TILE_GLAZED_LIGHT_BLUE,IDS_TILE_GLAZED_YELLOW,IDS_TILE_GLAZED_LIME,IDS_TILE_GLAZED_PINK,IDS_TILE_GLAZED_GRAY,IDS_TILE_GLAZED_LIGHT_GRAY,IDS_TILE_GLAZED_CYAN,IDS_TILE_GLAZED_PURPLE,IDS_TILE_GLAZED_BLUE,IDS_TILE_GLAZED_BROWN,IDS_TILE_GLAZED_GREEN,IDS_TILE_GLAZED_RED,IDS_TILE_GLAZED_BLACK};
     for(int c=0;c<16;++c)(new GlazedTerracottaTile(glazedTerracottaFirst_Id+c,c))->setDestroyTime(1.4f)->setSoundType(SOUND_STONE)->setDescriptionId(glazedNames[c])->setUseDescriptionId(IDS_DESC_GLAZED);
-	Tile::endCityBanner = (new EndCityBanner(177))->setDestroyTime(1)->setIconName(L"end_city_banner")->setDescriptionId(IDS_TILE_END_CITY_BANNER);
+	(new SlimeBlockTile(165))->setDestroyTime(0)->setSoundType(SOUND_GRASS)->setIconName(L"slime")->setDescriptionId(IDS_TILE_SLIME_BLOCK);
+    (new EndCityBanner(176))->setDestroyTime(1)->setIconName(L"end_city_banner")->setDescriptionId(IDS_TILE_END_CITY_BANNER)->sendTileData(15);
+	Tile::endCityBanner = (new EndCityBanner(177))->setDestroyTime(1)->setIconName(L"end_city_banner")->setDescriptionId(IDS_TILE_END_CITY_BANNER)->sendTileData(7);
 	endGateway = (new EndGatewayTile(endGateway_Id))->setDestroyTime(-1.f)->setExplodeable(6000000.f)->setLightEmission(1.f)->setIconName(L"portal")->setDescriptionId(IDS_TILE_END_GATEWAY)->setUseDescriptionId(IDS_DESC_END_GATEWAY);
 	Tile::endRod = (new EndRodTile(endRod_Id))->setDestroyTime(0.f)->setSoundType(SOUND_WOOD)->setIconName(L"end_rod")->setDescriptionId(IDS_TILE_END_ROD)->setUseDescriptionId(IDS_DESC_END_ROD)->setLightEmission(14.f/15.f)->sendTileData();
 	Tile::chorusPlant = (new ChorusPlantTile(chorusPlant_Id))->setDestroyTime(0.4f)->setSoundType(SOUND_WOOD)->setIconName(L"chorus_plant")->setDescriptionId(IDS_TILE_CHORUS_PLANT)->setUseDescriptionId(IDS_DESC_CHORUS_PLANT);

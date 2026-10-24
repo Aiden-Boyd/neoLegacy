@@ -39,7 +39,7 @@
   <data name="IDS_ITEM_SHULKER_SHELL"><value>Shulker Shell</value></data>
   <data name="IDS_POTION_LEVITATION"><value>Levitation</value></data>
   <data name="IDS_ITEM_SKULL_DRAGON"><value>Dragon Head</value></data>
-  <data name="IDS_TILE_END_CITY_BANNER"><value>End City Banner</value></data>
+  <data name="IDS_TILE_END_CITY_BANNER"><value>Banner</value></data>
   <data name="IDS_TILE_SHULKER_BOX"><value>Shulker Box</value></data>
   <data name="IDS_DESC_SHULKER_BOX"><value>Stores items and keeps its contents when broken. Cannot contain other shulker boxes.</value></data>
   <data name="IDS_TILE_SHULKER_BOX_WHITE"><value>White Shulker Box</value></data>
@@ -132,4 +132,5 @@
   <data name="IDS_DESC_CONCRETE_POWDER"><value>Falls when unsupported and hardens on contact with water.</value></data>
   <data name="IDS_DESC_GLAZED"><value>A patterned building block that rotates when placed.</value></data>
   <data name="IDS_DESC_OBSERVER"><value>Detects changes in front and emits a short redstone pulse from the back.</value></data>
+<data name="IDS_TILE_SLIME_BLOCK"><value>Slime Block</value></data>
 </root>
