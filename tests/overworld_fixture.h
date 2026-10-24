@@ -36,8 +36,8 @@ struct Level;struct Player;
 struct Tile {
  enum{grass_Id=2,dirt_Id=3,farmland_Id=60,wheat_Id=59,carrots_Id=141,potatoes_Id=142,beetroots_Id=207,grassPath_Id=208,UPDATE_ALL=3,UPDATE_CLIENTS=2};
  inline static Tile*tiles[4096]={};inline static Tile*dirt=nullptr,*grassPath=nullptr;
- Icon*icon=nullptr;Sound*soundType;int id,light=0;float shapeY=1;
- Tile(int id,Material* =nullptr):id(id){tiles[id]=this;static Sound s;soundType=&s;}
+ Icon*icon=nullptr;Sound*soundType;int id,light=0;bool solid;float shapeY=1;
+ Tile(int id,Material* =nullptr,bool solid=true):id(id),solid(solid){tiles[id]=this;static Sound s;soundType=&s;}
  void setLightBlock(int n){light=n;}void setShape(float,float,float,float,float y,float){shapeY=y;}
  virtual Icon*getTexture(int,int){return icon;}bool shouldRenderFace(Level*,int,int,int,int){return true;}
 };

@@ -8,7 +8,7 @@ def clean(path):return '\n'.join(l for l in path.read_text().splitlines()if not 
 TEST=r'''
 int main(){
  Tile dirt(3);Tile::dirt=&dirt;GrassPathTile path(208);Tile::grassPath=&path;
- assert(path.light==255 && path.shapeY==15.f/16 && !path.isSolidRender() && !path.isCubeShaped() && !path.isSilkTouchable());
+ assert(!path.solid && path.light==255 && path.shapeY==15.f/16 && !path.isSolidRender() && !path.isCubeShaped() && !path.isSilkTouchable());
  auto a=path.getAABB(nullptr,-2,64,3);assert(a->y1==64.9375 && a->x0==-2);assert(path.getResource(0,nullptr,3)==3);
  Level l;l.blocks[{0,65,0}]=0;l.blocks[{0,64,0}]=208;path.onPlace(&l,0,64,0);assert(l.getTile(0,64,0)==208);l.blocks[{0,65,0}]=1;path.neighborChanged(&l,0,64,0,1);assert(l.getTile(0,64,0)==3);
  l.isClientSide=true;l.blocks[{0,64,0}]=208;path.neighborChanged(&l,0,64,0,1);assert(l.getTile(0,64,0)==208);

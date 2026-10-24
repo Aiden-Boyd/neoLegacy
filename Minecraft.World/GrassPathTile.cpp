@@ -4,7 +4,7 @@
 #include "net.minecraft.world.level.material.h"
 #include "net.minecraft.world.phys.h"
 #include "IconRegister.h"
-GrassPathTile::GrassPathTile(int id) : Tile(id,Material::dirt),side(nullptr)
+GrassPathTile::GrassPathTile(int id) : Tile(id,Material::dirt,false),side(nullptr)
 {
     setLightBlock(255);
     updateDefaultShape();
