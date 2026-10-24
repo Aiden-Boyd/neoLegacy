@@ -38,6 +38,8 @@ protected:
 public:
 	TutorialHint(eTutorial_Hint id, Tutorial *tutorial, int descriptionId, eHintType type, bool allowFade = true);
 
+	virtual ~TutorialHint() {}
+
 	eTutorial_Hint getId() { return m_id; }
 
 	virtual int startDestroyBlock(shared_ptr<ItemInstance> item, Tile *tile);

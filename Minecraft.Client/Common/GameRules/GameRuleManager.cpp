@@ -204,7 +204,7 @@ void GameRuleManager::loadGameRules(LevelGenerationOptions *lgo, byte *dIn, UINT
 
 	// Read RuleFile.
 	byteArray bRuleFile;
-	bRuleFile.length = content.length - bStringTable.length;
+	bRuleFile.length = content.length - bStringTable.length - sizeof(int); // string-table length prefix was already consumed
 	bRuleFile.data = new BYTE[ bRuleFile.length ];
 	dis2.read(bRuleFile);
 
@@ -780,3 +780,4 @@ void GameRuleManager::unloadCurrentGameRules()
 	m_currentGameRuleDefinitions = nullptr;
 	m_currentLevelGenerationOptions = nullptr;
 }
+

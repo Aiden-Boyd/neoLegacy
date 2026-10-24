@@ -28,7 +28,9 @@ int AreaHint::tick()
 	Minecraft *minecraft = Minecraft::GetInstance();
 	if( (m_displayState == e_Tutorial_State_Any || m_tutorial->getCurrentState() == m_displayState) &&
 		m_hintNeeded &&
-		area->contains( minecraft->player->getPos(1) ) == contains )
+		minecraft->localplayers[m_tutorial->getPad()] != nullptr &&
+        minecraft->localplayers[m_tutorial->getPad()]->dimension == 0 &&
+        area->contains( minecraft->localplayers[m_tutorial->getPad()]->getPos(1) ) == contains )
 	{
 		if( m_completeState == e_Tutorial_State_None ) 
 		{

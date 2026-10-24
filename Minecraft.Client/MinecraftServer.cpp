@@ -1095,6 +1095,11 @@ bool MinecraftServer::loadLevel(LevelStorageSource *storageSource, const wstring
 		assert(numberOfBytesRead == ba_gameRules.length);
 
 		app.m_gameRules.loadGameRules(ba_gameRules.data, ba_gameRules.length);
+        // An imported tutorial is a save, so it bypasses the Play Tutorial button.
+        // Enable the native tutorial mode only when its rules explicitly opt in.
+        auto tutorialOptions = app.m_gameRules.getLevelGenerationOptions();
+        if(tutorialOptions != nullptr && tutorialOptions->isImportedTutorial())
+            app.SetTutorialMode(true);
 		csf->closeHandle(fe);
 	}
 
@@ -2744,3 +2749,4 @@ bool MinecraftServer::flagEntitiesToBeRemoved(unsigned int *flags)
 	}
 	return removedFound;
 }
+

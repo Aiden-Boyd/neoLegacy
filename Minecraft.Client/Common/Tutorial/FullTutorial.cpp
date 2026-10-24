@@ -707,6 +707,19 @@ FullTutorial::FullTutorial(int iPad, bool isTrial /*= false*/)
 		}
 	}
 
+    // The imported TU46 rules supply their own coordinates; never use guessed areas.
+    auto importedOptions=app.m_gameRules.getLevelGenerationOptions();
+    if(importedOptions != nullptr && importedOptions->isImportedTutorial() && app.getGameRuleDefinitions() != nullptr) {
+        const wchar_t *areas[]={L"bannerArea",L"slimeArea",L"elytraArea"};
+        const int descriptions[]={IDS_TU46_BANNER_AREA,IDS_TU46_SLIME_AREA,IDS_TU46_ELYTRA_AREA};
+        for(int i=0;i<3;++i) {
+            auto area=app.getGameRuleDefinitions()->getNamedArea(areas[i]);
+            if(area != nullptr) addHint(e_Tutorial_State_Gameplay,new AreaHint(
+                e_Tutorial_Hint_Always_On,this,e_Tutorial_State_Gameplay,e_Tutorial_State_None,
+                descriptions[i],area->x0,area->y0,area->z0,area->x1,area->y1,area->z1,true));
+        }
+    }
+
 }
 
 // 4J Stu - All tutorials are onby default in the full tutorial whether the player has previously completed them or not

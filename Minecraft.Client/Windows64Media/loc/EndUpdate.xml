@@ -133,4 +133,7 @@
   <data name="IDS_DESC_GLAZED"><value>A patterned building block that rotates when placed.</value></data>
   <data name="IDS_DESC_OBSERVER"><value>Detects changes in front and emits a short redstone pulse from the back.</value></data>
 <data name="IDS_TILE_SLIME_BLOCK"><value>Slime Block</value></data>
+  <data name="IDS_TU46_BANNER_AREA"><value>Banners decorate your world. Use a banner on the ground or against a wall. Breaking it keeps its color and existing patterns.</value></data>
+  <data name="IDS_TU46_SLIME_AREA"><value>Slime blocks cushion falls and bounce you back up. Sneak to stop bouncing; you will take normal fall damage while sneaking.</value></data>
+  <data name="IDS_TU46_ELYTRA_AREA"><value>Equip an Elytra in your chest slot. Jump again while falling to glide. Look down to gain speed, then ease upward to turn speed into height. Land gently.</value></data>
 </root>

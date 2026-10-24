@@ -37,7 +37,7 @@ concurrency:
 
 jobs:
   build-client:
-    name: Windows64 tutorial world compatibility
+    name: Windows64 imported tutorial lessons
     runs-on: windows-2022
     timeout-minutes: 45
     env:
@@ -217,6 +217,12 @@ jobs:
           python tests/tutorial_compat_regression.py 2>&1 | Tee-Object logs/tutorial-compat.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run imported tutorial lesson regressions
+        shell: pwsh
+        run: |
+          python tests/tutorial_lessons_regression.py 2>&1 | Tee-Object logs/tutorial-lessons.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Configure Windows64
         shell: pwsh
         run: |
@@ -279,7 +285,7 @@ jobs:
             "Commit: ${{ github.sha }}",
             "Configuration: Windows64 Release",
             "Runtime: Windows executable; test through Steam/Proton on Bazzite.",
-            "Candidate: TU46 world import compatibility, slime blocks and general banners; includes all previous features and fixes.",
+            "Candidate: imported TU46 tutorial lessons and area hints; includes all previous features and fixes.",
             "Compilation does not establish controller compatibility or CU59 parity."
           ) | Set-Content "$stage/BUILD_INFO.txt"
           Get-ChildItem $stage -Recurse -File |
@@ -292,7 +298,7 @@ jobs:
       - name: Upload client test artifact
         uses: actions/upload-artifact@v6
         with:
-          name: neoLegacy-tutorial-world-compat-windows64
+          name: neoLegacy-tutorial-lessons-windows64
           path: staging/
           if-no-files-found: error
           retention-days: 14

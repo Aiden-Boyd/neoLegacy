@@ -64,3 +64,44 @@ Steam/controller acceptance. The private tutorial save is not included in git.
 This imports the map. The TU46 tutorial lesson/hint progression is not connected
 to the older engine scripts. Existing dragon data is preserved by conversion;
 its compatibility still needs a real load/play/save test.
+
+## Activated tutorial lessons
+
+The lessons candidate builds on baba9e9e9b70ec8a29ee5ec222d3564447b1aa3b.
+Use the separate TU46_Tutorial_World_with_lessons package. The activation tool
+opts its existing MapOptions into native FullTutorialMode with dataTag 0x54553436.
+Unmarked saves keep their normal behavior. The marker survives native game-rule
+serialization through the existing base dataTag attribute. No save-name or seed
+heuristic is used. All 12 region files, level.dat and every other virtual file
+except requiredGameRules.grf remain byte-identical to the converted map.
+
+The source supplies 23 named areas. The existing introductory sequence and older
+area lessons use those rules. Three short area hints introduce banners, slime
+and Elytra. These hints use the correct local player's position, require the
+Overworld, and appear once per session. The base hint destructor is now virtual,
+so retiring area hints releases their bounds. The rule loader also excludes the
+already-consumed four-byte string-table length from the remaining payload size.
+
+Activation preserves the original rule content except MapOptions.dataTag, and
+re-encodes its outer envelope with platform-independent RLE. It does not rebuild
+the terrain. The tool refuses unsupported layouts and an existing output path.
+Xbox rule decoding requires the separate MIT LCEStudio codec.py in --codec-dir;
+that helper and license accompany the private map package, not the repository.
+
+`python tests/tutorial_lessons_regression.py` compiles the production AreaHint
+and marker predicate and tests local-player selection, missing players, both
+other dimensions, one-shot behavior, state gating and polymorphic cleanup. It
+also exercises the actual activation tool with synthetic rules/save entries,
+checking deterministic output, idempotence, preserved files and malformed input.
+The supplied map was separately activated and all untouched VFS bytes compared.
+
+Playtest the new package: confirm the initial overview, movement, wood gathering,
+crafting and furnace steps. Try skipping and completing the basic sequence.
+Visit the brewing, farming, redstone, trading and other existing lesson areas;
+then visit the banner/slime/Elytra displays. Save/quit/reload and confirm that
+lesson mode still activates. The native full tutorial starts its task sequence
+again each session; this change does not add exact task checkpoint persistence.
+Check that an ordinary save still launches without full tutorial mode. Test a
+second local player and both other dimensions for misplaced hints. Remote-client
+lesson synchronization and actual in-game progression remain unverified.
+These are adapted native lessons, not a claim of exact TU46 popup/script parity.
