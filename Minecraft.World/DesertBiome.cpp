@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "FossilFeature.h"
 #include "net.minecraft.world.level.levelgen.feature.h"
 #include "net.minecraft.world.level.h"
 #include "net.minecraft.world.level.tile.h"
@@ -23,6 +24,7 @@ DesertBiome::DesertBiome(int id) : Biome(id)
 void DesertBiome::decorate(Level *level, Random *random, int xo, int zo)
 {
 	Biome::decorate(level, random, xo, zo);
+	FossilFeature::decorate(level,xo,zo);
 
 	if (random->nextInt(1000) == 0)
 	{

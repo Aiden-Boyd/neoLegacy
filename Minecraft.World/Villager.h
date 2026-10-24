@@ -5,6 +5,7 @@
 #include "Merchant.h"
 #include "ParticleTypes.h"
 
+class FarmerInventory;
 class Level;
 class Village;
 class MerchantRecipeList;
@@ -45,6 +46,8 @@ private:
 
 private:
 
+	FarmerInventory *farmInventory;
+	void collectFarmItems();
 	void _init(int profession);
 
 public:
@@ -96,6 +99,7 @@ public:
 	void setTradingPlayer(shared_ptr<Player> player);
 	shared_ptr<Player> getTradingPlayer();
 	bool isTrading();
+	FarmerInventory *getFarmInventory() {return farmInventory;}
 	void notifyTrade(MerchantRecipe *activeRecipe);
 	void notifyTradeUpdated(shared_ptr<ItemInstance> item);
 	MerchantRecipeList *getOffers(shared_ptr<Player> forPlayer);

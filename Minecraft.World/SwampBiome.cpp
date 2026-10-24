@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "FossilFeature.h"
 #include "net.minecraft.world.level.h"
 #include "net.minecraft.world.level.biome.h"
 #include "SwampTreeFeature.h"
@@ -72,3 +73,9 @@ void SwampBiome::buildSurfaceAtDefault(Level *level, Random *random, byte* chunk
 //
 //    return ((FoliageColor::get(temp, rain) & 0xfefefe) + 0x4e0e4e) / 2;
 //}
+
+void SwampBiome::decorate(Level *level,Random *random,int xo,int zo)
+{
+    Biome::decorate(level,random,xo,zo);
+    FossilFeature::decorate(level,xo,zo);
+}

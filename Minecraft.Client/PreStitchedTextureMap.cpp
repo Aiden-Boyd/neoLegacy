@@ -1024,6 +1024,8 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(26, 6, L"beetroots_stage_1");
 		ADD_ICON(26, 7, L"beetroots_stage_2");
 		ADD_ICON(26, 8, L"beetroots_stage_3");
+		ADD_ICON(26, 9, L"grass_path_top");
+		ADD_ICON(26, 10, L"grass_path_side");
 
 		ADD_ICON(25, 0, L"purpur_block");
 		ADD_ICON(25, 1, L"purpur_pillar");

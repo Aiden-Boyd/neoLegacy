@@ -26,6 +26,7 @@
 #include "ShulkerBoxItem.h"
 #include "FrostedIceTile.h"
 #include "ContentUpdateTiles.h"
+#include "GrassPathTile.h"
 #include "BeetrootTile.h"
 
 
@@ -143,6 +144,7 @@ Tile *Tile::button = nullptr;
 Tile *Tile::topSnow = nullptr;
 Tile *Tile::ice = nullptr;
 Tile *Tile::frostedIce = nullptr;
+Tile *Tile::grassPath=nullptr;
 Tile *Tile::magma=nullptr,*Tile::netherWartBlock=nullptr,*Tile::redNetherBrick=nullptr,*Tile::boneBlock=nullptr,*Tile::beetroots=nullptr;
 Tile *Tile::snow = nullptr;
 Tile *Tile::cactus = nullptr;
@@ -442,6 +444,7 @@ void Tile::staticCtor()
     Tile::netherWartBlock=(new Tile(netherWartBlock_Id,Material::vegetable))->setDestroyTime(1.0f)->setSoundType(SOUND_WOOD)->setIconName(L"nether_wart_block")->setDescriptionId(IDS_TILE_NETHER_WART_BLOCK);
     Tile::redNetherBrick=(new Tile(redNetherBrick_Id,Material::stone))->setDestroyTime(2.0f)->setExplodeable(10.0f)->setSoundType(SOUND_STONE)->setIconName(L"red_nether_brick")->setDescriptionId(IDS_TILE_RED_NETHER_BRICKS);
     Tile::boneBlock=(new BoneBlockTile(boneBlock_Id))->setDestroyTime(2.0f)->setSoundType(SOUND_STONE)->setDescriptionId(IDS_TILE_BONE_BLOCK);
+    Tile::grassPath=(new GrassPathTile(grassPath_Id))->setDestroyTime(0.65f)->setSoundType(SOUND_GRASS)->setDescriptionId(IDS_TILE_GRASS_PATH);
     Tile::beetroots=(new BeetrootTile(beetroots_Id))->setIconName(L"beetroots")->setDescriptionId(IDS_TILE_BEETROOTS);
 	Tile::frostedIce = (new FrostedIceTile(frostedIce_Id))->setDestroyTime(0.5f)->setLightBlock(3)->setSoundType(Tile::SOUND_GLASS)->setDescriptionId(IDS_TILE_FROSTED_ICE)->sendTileData(3);
 	Tile::ice = (new IceTile(79))								->setDestroyTime(0.5f)->setLightBlock(3)->setSoundType(Tile::SOUND_GLASS)->setIconName(L"ice")->setDescriptionId(IDS_TILE_ICE)->setUseDescriptionId(IDS_DESC_ICE);
@@ -1823,7 +1826,7 @@ const int Tile::button_stone_Id;
 const int Tile::topSnow_Id;
 const int Tile::ice_Id;
 const int Tile::frostedIce_Id;
-const int Tile::magma_Id;const int Tile::netherWartBlock_Id;const int Tile::redNetherBrick_Id;const int Tile::boneBlock_Id;const int Tile::beetroots_Id;
+const int Tile::grassPath_Id;const int Tile::magma_Id;const int Tile::netherWartBlock_Id;const int Tile::redNetherBrick_Id;const int Tile::boneBlock_Id;const int Tile::beetroots_Id;
 const int Tile::snow_Id;
 const int Tile::cactus_Id;
 const int Tile::clay_Id;

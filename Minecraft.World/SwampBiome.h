@@ -13,6 +13,7 @@ public:
 	SwampBiome(int id);
 
 public:
+	virtual void decorate(Level *level,Random *random,int xo,int zo);
 	virtual Feature *getTreeFeature(Random *random);
 	virtual void buildSurfaceAtDefault(Level *level, Random *random, byte* chunkBlocks, int x, int z, double noiseVal) override;
 	virtual Feature* getFlowerFeature(Random* random, int x, int y, int z) override{return new FlowerFeature(Tile::rose_Id, Rose::BLUE_ORCHID);}

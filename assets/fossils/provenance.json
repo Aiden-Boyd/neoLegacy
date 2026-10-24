@@ -1,0 +1,149 @@
+{
+  "source": "https://github.com/InventivetalentDev/minecraft-assets/tree/1.12.2/assets/minecraft/structures/fossils",
+  "templates": {
+    "fossil_spine_01.nbt": {
+      "sha256": "c5541ebdd95011f6d5051ca3444062ee34b6011829c8a49d482debb109c8c14a",
+      "size": [
+        3,
+        3,
+        13
+      ],
+      "cells": 37
+    },
+    "fossil_spine_01_coal.nbt": {
+      "sha256": "8ec608e82536b74906e056fe3da763191bade847581a651e5fadc9e477ab9eba",
+      "size": [
+        3,
+        3,
+        13
+      ],
+      "cells": 37
+    },
+    "fossil_spine_02.nbt": {
+      "sha256": "d6abff5351345824a55d6c101560b21d8a8683586e83aae429c9df7cb55fdc97",
+      "size": [
+        5,
+        4,
+        13
+      ],
+      "cells": 61
+    },
+    "fossil_spine_02_coal.nbt": {
+      "sha256": "b90040a3f42ee0937e9e94c4c9b301ea3fd3880ad0b15408e46f343c6cfcb1a0",
+      "size": [
+        5,
+        4,
+        13
+      ],
+      "cells": 61
+    },
+    "fossil_spine_03.nbt": {
+      "sha256": "927a563b39c4c39bff62486f736b3ae97c66658936b472cf8e0a4c9d95d4ff6f",
+      "size": [
+        7,
+        4,
+        13
+      ],
+      "cells": 97
+    },
+    "fossil_spine_03_coal.nbt": {
+      "sha256": "bc4903a6b3a545b8c4fce8bf1c06d66e5c398666dee87dff674e9cbdaa5fc0ff",
+      "size": [
+        7,
+        4,
+        13
+      ],
+      "cells": 104
+    },
+    "fossil_spine_04.nbt": {
+      "sha256": "c947670f2fa7711883e801a2cc730d0071384cdc1a34ec6ca026c31dae574b77",
+      "size": [
+        9,
+        5,
+        13
+      ],
+      "cells": 121
+    },
+    "fossil_spine_04_coal.nbt": {
+      "sha256": "8f73fbd064c39ade158963f07e50f4111e00ed2738a7e0e135596eb546b860f8",
+      "size": [
+        9,
+        5,
+        13
+      ],
+      "cells": 121
+    },
+    "fossil_skull_01.nbt": {
+      "sha256": "6e94e471ffe8ef5ff81b79e663170c05dd915918721f0e092023bd70c3fa8dcc",
+      "size": [
+        6,
+        5,
+        7
+      ],
+      "cells": 86
+    },
+    "fossil_skull_01_coal.nbt": {
+      "sha256": "c0b883aefa63539cfdb75c5ec838606494ed6b465a95cd9e533cdc01ef8f5c6b",
+      "size": [
+        6,
+        5,
+        7
+      ],
+      "cells": 86
+    },
+    "fossil_skull_02.nbt": {
+      "sha256": "5bae768e197be50baa5fc9cf55a187f42ce1bb1c32d930ad81bf45a4ebb3b318",
+      "size": [
+        7,
+        5,
+        5
+      ],
+      "cells": 75
+    },
+    "fossil_skull_02_coal.nbt": {
+      "sha256": "32a1d92ee055b25dd4b0eca56c92a85f41abc314d6da2c194567f779498884cd",
+      "size": [
+        7,
+        5,
+        5
+      ],
+      "cells": 75
+    },
+    "fossil_skull_03.nbt": {
+      "sha256": "8bf2706ee0a9e355d6fc34c57286f31d54a225ca971c268fd87f047ff6ad5c46",
+      "size": [
+        5,
+        4,
+        5
+      ],
+      "cells": 58
+    },
+    "fossil_skull_03_coal.nbt": {
+      "sha256": "5b83c115df82243565b27b15bb214289c4f16d3192fd1bedd1ee3a83f5a842e0",
+      "size": [
+        5,
+        4,
+        5
+      ],
+      "cells": 58
+    },
+    "fossil_skull_04.nbt": {
+      "sha256": "c068a84964866b7d8acc2e6c2d9efc03d49eb060de6cac7e78ad10d71dee4af2",
+      "size": [
+        4,
+        4,
+        4
+      ],
+      "cells": 32
+    },
+    "fossil_skull_04_coal.nbt": {
+      "sha256": "1fbb53fe70e19c9e4d0caf77b2c965dc844d08a311a118665b318b2ad2cc4f50",
+      "size": [
+        4,
+        4,
+        4
+      ],
+      "cells": 32
+    }
+  }
+}

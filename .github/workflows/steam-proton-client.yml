@@ -17,6 +17,7 @@ on:
       - feature/mending
       - feature/frost-walker
       - feature/nether-beetroot
+      - feature/overworld-integration
   workflow_dispatch:
 
 permissions:
@@ -28,7 +29,7 @@ concurrency:
 
 jobs:
   build-client:
-    name: Windows64 Nether, bone and beetroot candidate
+    name: Windows64 Overworld integration candidate
     runs-on: windows-2022
     timeout-minutes: 45
     env:
@@ -154,6 +155,14 @@ jobs:
           python tests/content_update_regression.py 2>&1 | Tee-Object logs/content-update.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run Overworld integration regressions
+        shell: pwsh
+        run: |
+          python tools/generate_fossil_header.py --check 2>&1 | Tee-Object logs/fossil-templates.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/overworld_regression.py 2>&1 | Tee-Object logs/overworld.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Configure Windows64
         shell: pwsh
         run: |
@@ -219,7 +228,7 @@ jobs:
       - name: Upload client test artifact
         uses: actions/upload-artifact@v6
         with:
-          name: neoLegacy-nether-beetroot-windows64
+          name: neoLegacy-overworld-windows64
           path: staging/
           if-no-files-found: error
           retention-days: 14

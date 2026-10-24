@@ -718,7 +718,9 @@ bool VillagePieces::StraightRoad::postProcess(Level *level, Random *random, Boun
 			if (chunkBB->isInside(x, 64, z))
 			{
 				int y = level->getTopSolidBlock(x, z) - 1;
-				level->setTileAndData(x, y, z, roadTile, 0, Tile::UPDATE_CLIENTS);
+				int surface=level->getTile(x,y,z);
+				int path=(roadTile==Tile::gravel_Id && surface==Tile::grass_Id && level->getTile(x,y+1,z)==0)?Tile::grassPath_Id:roadTile;
+				level->setTileAndData(x, y, z, path, 0, Tile::UPDATE_CLIENTS);
 				level->setTileAndData(x, y - 1, z, baseTile, 0, Tile::UPDATE_CLIENTS);
 			}
 		}
@@ -1763,14 +1765,16 @@ VillagePieces::Farmland::Farmland(StartPiece *startPiece, int genDepth, Random *
 
 int VillagePieces::Farmland::selectCrops(Random *random)
 {
-	switch (random->nextInt(5))
+	switch (random->nextInt(10))
 	{
 	default:
 		return Tile::wheat_Id;
-	case 0:
+	case 0: case 1:
 		return Tile::carrots_Id;
-	case 1:
+	case 2: case 3:
 		return Tile::potatoes_Id;
+	case 4:
+		return Tile::beetroots_Id;
 	}
 }
 
@@ -1829,10 +1833,10 @@ bool VillagePieces::Farmland::postProcess(Level *level, Random *random, Bounding
 	// crops
 	for (int d = 1; d <= 7; d++)
 	{
-		placeBlock(level, cropsA, Mth::nextInt(random, 2, 7), 1, 1, d, chunkBB);
-		placeBlock(level, cropsA, Mth::nextInt(random, 2, 7), 2, 1, d, chunkBB);
-		placeBlock(level, cropsB, Mth::nextInt(random, 2, 7), 4, 1, d, chunkBB);
-		placeBlock(level, cropsB, Mth::nextInt(random, 2, 7), 5, 1, d, chunkBB);
+		placeBlock(level, cropsA, Mth::nextInt(random, cropsA==Tile::beetroots_Id?1:2, cropsA==Tile::beetroots_Id?3:7), 1, 1, d, chunkBB);
+		placeBlock(level, cropsA, Mth::nextInt(random, cropsA==Tile::beetroots_Id?1:2, cropsA==Tile::beetroots_Id?3:7), 2, 1, d, chunkBB);
+		placeBlock(level, cropsB, Mth::nextInt(random, cropsB==Tile::beetroots_Id?1:2, cropsB==Tile::beetroots_Id?3:7), 4, 1, d, chunkBB);
+		placeBlock(level, cropsB, Mth::nextInt(random, cropsB==Tile::beetroots_Id?1:2, cropsB==Tile::beetroots_Id?3:7), 5, 1, d, chunkBB);
 	}
 
 	for (int z = 0; z < depth; z++)
@@ -1889,14 +1893,16 @@ void VillagePieces::DoubleFarmland::readAdditonalSaveData(CompoundTag *tag)
 
 int VillagePieces::DoubleFarmland::selectCrops(Random *random)
 {
-	switch (random->nextInt(5))
+	switch (random->nextInt(10))
 	{
 	default:
 		return Tile::wheat_Id;
-	case 0:
+	case 0: case 1:
 		return Tile::carrots_Id;
-	case 1:
+	case 2: case 3:
 		return Tile::potatoes_Id;
+	case 4:
+		return Tile::beetroots_Id;
 	}
 }
 
@@ -1945,14 +1951,14 @@ bool VillagePieces::DoubleFarmland::postProcess(Level *level, Random *random, Bo
 	// crops
 	for (int d = 1; d <= 7; d++)
 	{
-		placeBlock(level, cropsA, Mth::nextInt(random, 2, 7), 1, 1, d, chunkBB);
-		placeBlock(level, cropsA, Mth::nextInt(random, 2, 7), 2, 1, d, chunkBB);
-		placeBlock(level, cropsB, Mth::nextInt(random, 2, 7), 4, 1, d, chunkBB);
-		placeBlock(level, cropsB, Mth::nextInt(random, 2, 7), 5, 1, d, chunkBB);
-		placeBlock(level, cropsC, Mth::nextInt(random, 2, 7), 7, 1, d, chunkBB);
-		placeBlock(level, cropsC, Mth::nextInt(random, 2, 7), 8, 1, d, chunkBB);
-		placeBlock(level, cropsD, Mth::nextInt(random, 2, 7), 10, 1, d, chunkBB);
-		placeBlock(level, cropsD, Mth::nextInt(random, 2, 7), 11, 1, d, chunkBB);
+		placeBlock(level, cropsA, Mth::nextInt(random, cropsA==Tile::beetroots_Id?1:2, cropsA==Tile::beetroots_Id?3:7), 1, 1, d, chunkBB);
+		placeBlock(level, cropsA, Mth::nextInt(random, cropsA==Tile::beetroots_Id?1:2, cropsA==Tile::beetroots_Id?3:7), 2, 1, d, chunkBB);
+		placeBlock(level, cropsB, Mth::nextInt(random, cropsB==Tile::beetroots_Id?1:2, cropsB==Tile::beetroots_Id?3:7), 4, 1, d, chunkBB);
+		placeBlock(level, cropsB, Mth::nextInt(random, cropsB==Tile::beetroots_Id?1:2, cropsB==Tile::beetroots_Id?3:7), 5, 1, d, chunkBB);
+		placeBlock(level, cropsC, Mth::nextInt(random, cropsC==Tile::beetroots_Id?1:2, cropsC==Tile::beetroots_Id?3:7), 7, 1, d, chunkBB);
+		placeBlock(level, cropsC, Mth::nextInt(random, cropsC==Tile::beetroots_Id?1:2, cropsC==Tile::beetroots_Id?3:7), 8, 1, d, chunkBB);
+		placeBlock(level, cropsD, Mth::nextInt(random, cropsD==Tile::beetroots_Id?1:2, cropsD==Tile::beetroots_Id?3:7), 10, 1, d, chunkBB);
+		placeBlock(level, cropsD, Mth::nextInt(random, cropsD==Tile::beetroots_Id?1:2, cropsD==Tile::beetroots_Id?3:7), 11, 1, d, chunkBB);
 	}
 
 	for (int z = 0; z < depth; z++)
@@ -2025,3 +2031,4 @@ bool VillagePieces::LightPost::postProcess(Level *level, Random *random, Boundin
 
 	return true;
 }
+

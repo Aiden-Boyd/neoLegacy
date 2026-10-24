@@ -16,6 +16,11 @@
 #include "net.minecraft.world.level.h"
 #include "../Minecraft.Client/Textures.h"
 #include "Villager.h"
+#include "FarmerInventory.h"
+#include "FarmerHarvestGoal.h"
+#include "ItemEntity.h"
+#include "GameRules.h"
+#include "net.minecraft.world.phys.h"
 #include "AbstractContainerMenu.h"
 
 unordered_map<int, pair<int,int> > Villager::MIN_MAX_VALUES;
@@ -39,6 +44,7 @@ void Villager::_init(int profession)
 
 	tradingPlayer = weak_ptr<Player>();
 	offers = nullptr;
+	farmInventory = new FarmerInventory();
 	updateMerchantTimer = 0;
 	addRecipeOnUpdate = false;
 	riches = 0;
@@ -58,6 +64,7 @@ void Villager::_init(int profession)
 	goalSelector.addGoal(4, new OpenDoorGoal(this, true));
 	goalSelector.addGoal(5, new MoveTowardsRestrictionGoal(this, 0.6));
 	goalSelector.addGoal(6, new MakeLoveGoal(this));
+	goalSelector.addGoal(6, new FarmerHarvestGoal(this));
 	goalSelector.addGoal(7, new TakeFlowerGoal(this));
 	goalSelector.addGoal(8, new PlayGoal(this, 0.32));
 	goalSelector.addGoal(9, new InteractGoal(this, typeid(Player), 3, 1.f));
@@ -78,6 +85,7 @@ Villager::Villager(Level *level, int profession) : AgableMob(level)
 
 Villager::~Villager()
 {
+	delete farmInventory;
 	delete offers;
 }
 
@@ -95,6 +103,7 @@ bool Villager::useNewAi()
 
 void Villager::serverAiMobStep()
 {
+	collectFarmItems();
 	if (--villageUpdateInterval <= 0)
 	{
 		level->villages->queryUpdateAround(Mth::floor(x), Mth::floor(y), Mth::floor(z));
@@ -182,6 +191,7 @@ void Villager::addAdditonalSaveData(CompoundTag *tag)
 	AgableMob::addAdditonalSaveData(tag);
 	tag->putInt(L"Profession", getProfession());
 	tag->putInt(L"Riches", riches);
+	farmInventory->save(tag);
 	if (offers != nullptr)
 	{
 		tag->putCompound(L"Offers", offers->createTag());
@@ -193,6 +203,7 @@ void Villager::readAdditionalSaveData(CompoundTag *tag)
 	AgableMob::readAdditionalSaveData(tag);
 	setProfession(tag->getInt(L"Profession"));
 	riches = tag->getInt(L"Riches");
+	farmInventory->load(tag);
 	if (tag->contains(L"Offers"))
 	{
 		CompoundTag *compound = tag->getCompound(L"Offers");
@@ -407,6 +418,8 @@ void Villager::addOffers(int addCount)
 	{
 	case PROFESSION_FARMER:
 		addItemForTradeIn(newOffers, Item::wheat_Id, random, getRecipeChance(.9f));
+		addItemForTradeIn(newOffers, 391, random, getRecipeChance(.9f));
+		addItemForTradeIn(newOffers, Item::potato_Id, random, getRecipeChance(.9f));
 		addItemForTradeIn(newOffers, Tile::wool_Id, random, getRecipeChance(.5f));
 		addItemForTradeIn(newOffers, Item::chicken_raw_Id, random, getRecipeChance(.5f));
 		addItemForTradeIn(newOffers, Item::fish_cooked_Id, random, getRecipeChance(.4f));
@@ -557,6 +570,8 @@ void Villager::staticCtor()
 	MIN_MAX_VALUES[Item::seeds_melon_Id] = pair<int,int>(30, 38);
 	MIN_MAX_VALUES[Item::seeds_pumpkin_Id] = pair<int,int>(30, 38);
 	MIN_MAX_VALUES[Item::wheat_Id] = pair<int,int>(18, 22);
+	MIN_MAX_VALUES[391] = pair<int,int>(15, 19);
+	MIN_MAX_VALUES[Item::potato_Id] = pair<int,int>(15, 19);
 	MIN_MAX_VALUES[Tile::wool_Id] = pair<int,int>(14, 22);
 	MIN_MAX_VALUES[Item::rotten_flesh_Id] = pair<int,int>(36, 64);
 
@@ -795,3 +810,19 @@ void Villager::thunderHit(const LightningBolt *lightningBolt)
 	remove();
 }
 
+
+
+void Villager::collectFarmItems()
+{
+    if(level->isClientSide || !isAlive() || isBaby() || isTrading() || getProfession()!=PROFESSION_FARMER || !level->getGameRules()->getBoolean(GameRules::RULE_MOBGRIEFING))return;
+    auto entities=level->getEntitiesOfClass(typeid(ItemEntity),bb->grow(1,0,1));
+    for(auto &entity:*entities) {
+        auto drop=dynamic_pointer_cast<ItemEntity>(entity);
+        if(!drop || drop->removed || drop->throwTime>0)continue;
+        auto item=drop->getItem();int accepted=farmInventory->add(item);
+        if(accepted<=0)continue;
+        take(drop,accepted);item->count-=accepted;
+        if(item->count==0)drop->remove();else drop->setItem(item);
+    }
+    delete entities;
+}

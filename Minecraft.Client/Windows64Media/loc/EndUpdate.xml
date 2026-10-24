@@ -72,4 +72,5 @@
   <data name="IDS_ITEM_BEETROOT_SOUP"><value>Beetroot Soup</value></data>
   <data name="IDS_DEATH_HOT_FLOOR"><value>{*PLAYER*} discovered the floor was lava</value></data>
   <data name="IDS_DEATH_HOT_FLOOR_PLAYER"><value>{*PLAYER*} walked into the danger zone due to {*SOURCE*}</value></data>
+  <data name="IDS_TILE_GRASS_PATH"><value>Grass Path</value></data>
 </root>
