@@ -163,8 +163,11 @@ bool EndFight::tryRespawn(Level *l)
 void EndFight::tick(Level *l)
 {
     if(!hostEnd(l))return;
-    if(!playersNear(l)){l->getLevelData()->getEndFight().missingTicks=0;return;}
     auto &s=l->getLevelData()->getEndFight();
+    // A loaded dragon may keep moving near players outside the central island.
+    // Record that movement even while ritual work and chunk requests are paused.
+    if(s.phase==EndFightState::IDLE)if(auto dragon=livingDragon(l))trackDragon(s,dragon);
+    if(!playersNear(l)){s.missingTicks=0;return;}
     if(!prepareChunks(l,s)) {s.missingTicks=0;return;}
     initialize(l,s);
     if(s.pendingAbort){abortRespawn(l,s);return;}
