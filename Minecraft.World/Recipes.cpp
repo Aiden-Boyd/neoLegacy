@@ -49,6 +49,7 @@ void Recipes::_init()
 
 void Recipes::_compileRecipes()
 {
+    addShapedRecipy(new ItemInstance(Item::endCrystal,1),L"sssctcicig",L"GGG",L"GEG",L"GTG",L'G',Tile::glass,L'E',Item::eyeOfEnder,L'T',Item::ghastTear,L'M');
     addShapedRecipy(new ItemInstance(Tile::magma,1),L"sscig",L"##",L"##",L'#',Item::magmaCream,L'S');
     addShapedRecipy(new ItemInstance(Tile::netherWartBlock,1),L"ssscig",L"###",L"###",L"###",L'#',Item::netherwart_seeds,L'S');
     addShapedRecipy(new ItemInstance(Tile::redNetherBrick,1),L"sscicig",L"WB",L"BW",L'W',Item::netherwart_seeds,L'B',Item::netherbrick,L'S');

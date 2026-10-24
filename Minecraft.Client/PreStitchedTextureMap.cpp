@@ -559,6 +559,7 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(13, 4, L"doorSpruce")
 		ADD_ICON(13, 5, L"rabbitStew") 
 		ADD_ICON(13, 6, L"salmonCooked")
+		ADD_ICON(13, 7, L"end_crystal");
 		
 
 		ADD_ICON(14,	0,	L"skull_skeleton")

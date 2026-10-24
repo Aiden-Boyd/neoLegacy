@@ -103,6 +103,7 @@ private:
 
 public:
 	int dragonDeathTime;
+	int deathXpReward;
 
 public:
 	shared_ptr<EnderCrystal> nearestCrystal;
@@ -188,3 +189,4 @@ public:
 	virtual float getMaxHealth() { return LivingEntity::getMaxHealth(); };
     virtual int getDimension() { return Entity::dimension; }
 };
+

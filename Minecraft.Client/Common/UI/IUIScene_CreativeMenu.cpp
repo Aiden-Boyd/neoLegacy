@@ -694,6 +694,7 @@ void IUIScene_CreativeMenu::staticCtor()
 	// Materials
 	DEF(eCreativeInventory_Materials)
 		ITEM(Item::poppedChorusFruit_Id)
+        ITEM(Item::endCrystal_Id)
         ITEM(Item::shulkerShell_Id)
 		ITEM(Item::coal_Id)
 		ITEM_AUX(Item::coal_Id,1)

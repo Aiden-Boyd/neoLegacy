@@ -439,6 +439,7 @@ public:
 	static Item* chorusFruit;
 	static Item* poppedChorusFruit;
 	static Item* shulkerShell;
+	static Item *endCrystal;
 	static Item *beetroot, *beetrootSeeds, *beetrootSoup;
 	static Item* elytra;
 
@@ -664,7 +665,7 @@ public:
 	static const int mutton_raw_Id = 423;
 	static const int mutton_cooked_Id = 424;
 	//425 banner
-	//426 end_crystal
+	static const int endCrystal_Id=426;
 
 	static const int door_spruce_Id = 427;
 	static const int door_birch_Id = 428;

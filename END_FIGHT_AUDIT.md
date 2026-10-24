@@ -1,7 +1,11 @@
 # End fight audit
 
-Scope: inspect the cumulative CU59-targeted port after the Overworld batch.
-This document records source findings; it does not add dragon respawning.
+Status: the findings below describe the Overworld baseline. The subsequent
+`feature/end-respawn` candidate implements crystal placement, synchronized/saved
+beams and base visibility, a saved staged ritual, interruption recovery, and
+first/repeat XP/egg rules. See `END_RESPAWN_TESTS.md` for implemented scope and
+pending in-game acceptance. Initial-dragon recovery, exact CU59 visual/audio
+parity and full combat-AI comparison remain separate work.
 
 ## Present
 
@@ -14,7 +18,7 @@ This document records source findings; it does not add dragon respawning.
   `EndGateways::dragonDefeated(level)` call. Gateway sequencing/persistence and
   outer End transport are already separate implemented features.
 
-## Missing or divergent
+## Original baseline gaps (addressed by the respawn candidate unless noted)
 
 1. No player-usable End Crystal item, placement checks, recipe or Creative entry.
    The existing crystal entity alone cannot initiate the four-crystal ritual.
@@ -35,7 +39,7 @@ This document records source findings; it does not add dragon respawning.
    crystal placement and multiple clients need host-authoritative, idempotent
    behavior. Neither a successful build nor a mock entity test establishes this.
 
-## Next implementation order
+## Implementation sequence used
 
 1. Add End Crystal item/recipe/UI and safe placement; extend crystal data/save/
    packet/renderer support for beams and bottom visibility. Keep existing natural

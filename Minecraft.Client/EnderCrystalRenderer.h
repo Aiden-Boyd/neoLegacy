@@ -9,6 +9,7 @@ private:
 	int currentModel;
 	Model *model;
 	static ResourceLocation ENDER_CRYSTAL_LOCATION;
+	static ResourceLocation CRYSTAL_BEAM_LOCATION;
 
 public:
 	EnderCrystalRenderer();

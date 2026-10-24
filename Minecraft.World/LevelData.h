@@ -1,5 +1,6 @@
 #pragma once
 #include <set>
+#include "EndFightState.h"
 using namespace std;
 
 #include "GameRules.h"
@@ -14,6 +15,7 @@ class LevelData
 {
 	friend class DerivedLevelData;
 private:
+	EndFightState endFight;
 	int endGatewaysGenerated=0;
 	std::set<int> endCityChunks;
 	int64_t seed;
@@ -153,6 +155,7 @@ public:
 	virtual const std::set<int> &getEndCityChunks();
 	virtual bool hasEndCityChunk(int,int);
 	virtual void markEndCityChunk(int,int);
+	virtual EndFightState &getEndFight();
 	virtual int getEndGatewaysGenerated();
 	virtual void setEndGatewaysGenerated(int);
 	virtual int getXZSize(); // 4J Added

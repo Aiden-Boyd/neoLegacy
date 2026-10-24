@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "EndFight.h"
+#include "GameRules.h"
 #include "EndGateway.h"
 #include "net.minecraft.world.level.h"
 #include "net.minecraft.world.level.tile.h"
@@ -56,6 +58,7 @@ void EnderDragon::_init()
 	inWall = false;
 	attackTarget = nullptr;
 	dragonDeathTime = 0;
+	deathXpReward = 0;
 	nearestCrystal = nullptr;
 
 	// 4J Stu - Added for new dragon behaviour
@@ -1195,6 +1198,10 @@ void EnderDragon::tickDeath()
 		return;
 	}
 
+	if(!level->isClientSide) {
+		int budget=EndFight::deathReward(level,this);
+		if(dragonDeathTime==0 || budget==0) deathXpReward=budget;
+	}
 	dragonDeathTime++;
 	if (dragonDeathTime >= 180 && dragonDeathTime <= 200)
 	{
@@ -1207,7 +1214,7 @@ void EnderDragon::tickDeath()
 	{
 		if (dragonDeathTime > 150 && dragonDeathTime % 5 == 0)
 		{
-			int xpCount = 1000;
+			int xpCount = level->getGameRules()->getBoolean(GameRules::RULE_DOMOBLOOT)?deathXpReward*8/100:0;
 			while (xpCount > 0)
 			{
 				int newCount = ExperienceOrb::getExperienceValue(xpCount);
@@ -1227,7 +1234,7 @@ void EnderDragon::tickDeath()
 	{
 		//level->levelEvent(nullptr, LevelEvent::ENDERDRAGON_KILLED, (int) x, (int) y, (int) z, 0);
 
-		int xpCount = 2000;
+		int xpCount = level->getGameRules()->getBoolean(GameRules::RULE_DOMOBLOOT)?deathXpReward*20/100:0;
 		while (xpCount > 0)
 		{
 			int newCount = ExperienceOrb::getExperienceValue(xpCount);
@@ -1245,8 +1252,10 @@ void EnderDragon::tickDeath()
 			zo = 0;
 		}
 		// 4J-PB changed to center this between the pillars
-		EndGateways::dragonDefeated(level);
-		spawnExitPortal(0,0);//Mth::floor(x), Mth::floor(z));
+		if(EndFight::dragonDefeated(level,this)) {
+			EndGateways::dragonDefeated(level);
+			spawnExitPortal(0,0);
+		}//Mth::floor(x), Mth::floor(z));
 		remove();
 	}
 }
@@ -1307,7 +1316,7 @@ void EnderDragon::spawnExitPortal(int x, int z)
 	level->setTileAndUpdate(x, y + 2, z - 1, Tile::torch_Id);
 	level->setTileAndUpdate(x, y + 2, z + 1, Tile::torch_Id);
 	level->setTileAndUpdate(x, y + 3, z, Tile::unbreakable_Id);
-	level->setTileAndUpdate(x, y + 4, z, Tile::dragonEgg_Id);
+	if(deathXpReward==12000) level->setTileAndUpdate(x, y + 4, z, Tile::dragonEgg_Id);
 
 	// 4J-PB - The podium can be floating with nothing under it, so put some whiteStone under it if this is the case
 	for (int yy = y - 5; yy < y - 1; yy++)
@@ -1792,6 +1801,7 @@ Path *EnderDragon::reconstruct_path(Node *from, Node *to)
 void EnderDragon::addAdditonalSaveData(CompoundTag *entityTag) 
 {
 	app.DebugPrintf("Adding EnderDragon additional save data\n");
+	entityTag->putInt(L"DragonDeathTime",dragonDeathTime);entityTag->putInt(L"DeathXpReward",deathXpReward);
 	entityTag->putShort(L"RemainingCrystals", m_remainingCrystalsCount);
 	entityTag->putInt(L"DragonState", (int)getSynchedAction() );
 
@@ -1801,6 +1811,8 @@ void EnderDragon::addAdditonalSaveData(CompoundTag *entityTag)
 void EnderDragon::readAdditionalSaveData(CompoundTag *tag) 
 {
 	app.DebugPrintf("Reading EnderDragon additional save data\n");
+	dragonDeathTime=(std::max)(0,(std::min)(199,tag->getInt(L"DragonDeathTime")));
+	deathXpReward=tag->getInt(L"DeathXpReward");if(deathXpReward!=500&&deathXpReward!=12000)deathXpReward=0;
 	m_remainingCrystalsCount = tag->getShort(L"RemainingCrystals");
 	if(!tag->contains(L"RemainingCrystals")) m_remainingCrystalsCount = CRYSTAL_COUNT;
 
@@ -1967,3 +1979,4 @@ Vec3 *EnderDragon::getHeadLookVector(float a)
 	}
 	return result;
 }
+

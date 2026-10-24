@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "EnderCrystalModel.h"
+#include "../Minecraft.World/EnderCrystal.h"
 
 
 
@@ -26,7 +27,8 @@ void EnderCrystalModel::render(shared_ptr<Entity> entity, float time, float r, f
 	glPushMatrix();
 	glScalef(2, 2, 2);
 	glTranslatef(0, -0.5f, 0);
-	base->render(scale,usecompiled);
+	auto crystal=dynamic_pointer_cast<EnderCrystal>(entity);
+	if(!crystal || crystal->shouldShowBottom())base->render(scale,usecompiled);
 	glRotatef(r, 0, 1, 0);
 	glTranslatef(0, 0.8f + bob, 0);
 	glRotatef(60, 0.7071f, 0, 0.7071f);

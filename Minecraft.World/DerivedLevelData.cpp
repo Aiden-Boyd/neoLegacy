@@ -232,3 +232,5 @@ void DerivedLevelData::setEndGatewaysGenerated(int count) {wrapped->setEndGatewa
 const std::set<int> &DerivedLevelData::getEndCityChunks() {return wrapped->getEndCityChunks();}
 bool DerivedLevelData::hasEndCityChunk(int x,int z) {return wrapped->hasEndCityChunk(x,z);}
 void DerivedLevelData::markEndCityChunk(int x,int z) {wrapped->markEndCityChunk(x,z);}
+
+EndFightState &DerivedLevelData::getEndFight() {return wrapped->getEndFight();}

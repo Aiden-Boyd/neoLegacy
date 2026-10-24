@@ -12,6 +12,7 @@ LevelData::LevelData()
 
 LevelData::LevelData(CompoundTag *tag)
 {
+	endFight.load(tag);
 	seed = tag->getLong(L"RandomSeed");
 	setEndGatewaysGenerated(tag->getInt(L"EndGatewaysGenerated"));
     if(tag->contains(L"EndCityChunks")) {
@@ -318,6 +319,7 @@ LevelData::LevelData(LevelData *copy)
 	xStrongholdEndPortal = copy->xStrongholdEndPortal;
 	zStrongholdEndPortal = copy->zStrongholdEndPortal;
 	bStrongholdEndPortal = copy->bStrongholdEndPortal;
+	endFight = copy->getEndFight();
 	endGatewaysGenerated = copy->getEndGatewaysGenerated();
     endCityChunks = copy->getEndCityChunks();
 	m_xzSize = copy->m_xzSize;
@@ -384,6 +386,7 @@ void LevelData::setTagData(CompoundTag *tag)
 	tag->putBoolean(L"hasStrongholdEndPortal", bStrongholdEndPortal);
 	tag->putInt(L"StrongholdEndPortalX", xStrongholdEndPortal);
 	tag->putInt(L"StrongholdEndPortalZ", zStrongholdEndPortal);
+	endFight.save(tag);
 	tag->putInt(L"EndGatewaysGenerated", endGatewaysGenerated);
     intArray cityChunks(static_cast<unsigned>(endCityChunks.size()));unsigned cityIndex=0;
     for(int key:endCityChunks) cityChunks[cityIndex++]=key;
@@ -768,3 +771,5 @@ void LevelData::setEndGatewaysGenerated(int count) {endGatewaysGenerated=count<0
 const std::set<int> &LevelData::getEndCityChunks() {return endCityChunks;}
 bool LevelData::hasEndCityChunk(int x,int z) {return x>=-128&&x<128&&z>=-128&&z<128&&endCityChunks.count((x+128)*256+z+128)!=0;}
 void LevelData::markEndCityChunk(int x,int z) {if(x>=-128&&x<128&&z>=-128&&z<128) endCityChunks.insert((x+128)*256+z+128);}
+
+EndFightState &LevelData::getEndFight() {return endFight;}

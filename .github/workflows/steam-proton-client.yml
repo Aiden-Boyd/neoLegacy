@@ -18,6 +18,7 @@ on:
       - feature/frost-walker
       - feature/nether-beetroot
       - feature/overworld-integration
+      - feature/end-respawn
   workflow_dispatch:
 
 permissions:
@@ -29,7 +30,7 @@ concurrency:
 
 jobs:
   build-client:
-    name: Windows64 Overworld integration candidate
+    name: Windows64 End respawn candidate
     runs-on: windows-2022
     timeout-minutes: 45
     env:
@@ -163,6 +164,14 @@ jobs:
           python tests/overworld_regression.py 2>&1 | Tee-Object logs/overworld.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run End respawn regressions
+        shell: pwsh
+        run: |
+          python tests/end_fight_regression.py 2>&1 | Tee-Object logs/end-fight.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/end_crystal_integration.py 2>&1 | Tee-Object logs/end-crystal-integration.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Configure Windows64
         shell: pwsh
         run: |
@@ -211,11 +220,14 @@ jobs:
           Copy-Item MENDING_TESTS.md "$stage/MENDING_TESTS.md"
           Copy-Item FROST_WALKER_TESTS.md "$stage/FROST_WALKER_TESTS.md"
           Copy-Item CONTENT_UPDATE_TESTS.md "$stage/CONTENT_UPDATE_TESTS.md"
+          Copy-Item OVERWORLD_TESTS.md "$stage/OVERWORLD_TESTS.md"
+          Copy-Item END_RESPAWN_TESTS.md "$stage/END_RESPAWN_TESTS.md"
+          Copy-Item END_FIGHT_AUDIT.md "$stage/END_FIGHT_AUDIT.md"
           @(
             "Commit: ${{ github.sha }}",
             "Configuration: Windows64 Release",
             "Runtime: Windows executable; test through Steam/Proton on Bazzite.",
-            "Candidate: Magma, Nether building blocks, bone blocks and beetroot; includes previous Frost Walker, Mending and End updates.",
+            "Candidate: End Crystals and dragon respawning; includes Overworld integration and all previous Nether, Frost Walker, Mending and End updates.",
             "Compilation does not establish controller compatibility or CU59 parity."
           ) | Set-Content "$stage/BUILD_INFO.txt"
           Get-ChildItem $stage -Recurse -File |
@@ -228,7 +240,7 @@ jobs:
       - name: Upload client test artifact
         uses: actions/upload-artifact@v6
         with:
-          name: neoLegacy-overworld-windows64
+          name: neoLegacy-end-respawn-windows64
           path: staging/
           if-no-files-found: error
           retention-days: 14

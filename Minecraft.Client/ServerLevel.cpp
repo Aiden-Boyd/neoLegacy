@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../Minecraft.World/EndFight.h"
 #include "ServerLevel.h"
 #include "../Minecraft.World/EndGateway.h"
 
@@ -199,6 +200,7 @@ ServerLevel::~ServerLevel()
 
 void ServerLevel::tick()
 {
+	if(dimension->id==1) EndFight::tick(this);
 	if(dimension->id==1 && getGameTime()%20==0) EndGateways::migrateDefeatedWorld(this);
 #if defined(_WINDOWS64) && defined(MINECRAFT_SERVER_BUILD) && defined(MINECRAFT_SERVER_PROFILER)
 	// ts[N] = wall-clock at substep N. Logged when level total exceeds
@@ -1714,4 +1716,5 @@ void ServerLevel::sendParticles(const ParticleType* type, double x, double y, do
 {
     this->sendParticles(type, false, x, y, z, count, dx, dy, dz, speed, data);
 }
+
 
