@@ -20,14 +20,20 @@ bool ElytraItem::isFlyEnabled(shared_ptr<ItemInstance> item)
 
 bool ElytraItem::TestUse(shared_ptr<ItemInstance> instance, Level* level, shared_ptr<Player> player)
 {
-    return true;
+    return instance && instance->id==Item::elytra_Id && instance->count>0 && player &&
+        player->getCarried(LivingEntity::SLOT_CHEST)==nullptr;
 }
 
 shared_ptr<ItemInstance> ElytraItem::use(shared_ptr<ItemInstance> instance, Level* level, shared_ptr<Player> player)
 {
-    // Play cloth armor equip sound (range 194–199)
-    player->playSound(194, 0.5f, 1.0f);
-
+    if(!TestUse(instance,level,player))return instance;
+    // The inventory uses boots-to-helmet order; the menu uses the reverse order.
+    // Copy before consuming the hand stack so damage, name and enchantments survive.
+    auto equipped=instance->copy();equipped->count=1;
+    player->inventory->setItem(player->inventory->items.length+LivingEntity::SLOT_CHEST-1,equipped);
+    player->inventory->setChanged();
+    --instance->count; // Native game modes clear the empty hand or restore Creative's count.
+    player->playSound(194,0.5f,1.0f);
     return instance;
 }
 
@@ -58,3 +64,4 @@ Icon* ElytraItem::getIcon(int auxValue)
     else
         return m_brokenElytraIcon;
 }
+

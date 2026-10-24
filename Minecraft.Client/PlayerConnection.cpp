@@ -825,8 +825,9 @@ skipUseItemOn:
 		}
 	}
 
-	//Migrate QuickEquip packet here instead
-	if (item != nullptr && (item->getItem()->getBaseItemType() == Item::eBaseItemType_helmet
+	// Elytra equips through Item::use, before broadcasting inventory changes.
+	// Do not run the old post-broadcast armor swap on its restored Creative hand stack.
+	if (item != nullptr && item->id != Item::elytra_Id && (item->getItem()->getBaseItemType() == Item::eBaseItemType_helmet
 		|| item->getItem()->getBaseItemType() == Item::eBaseItemType_chestplate
 		|| item->getItem()->getBaseItemType() == Item::eBaseItemType_leggings
 		|| item->getItem()->getBaseItemType() == Item::eBaseItemType_boots)) {
@@ -2845,4 +2846,5 @@ bool PlayerConnection::isGuest()
 		return isGuest;
 	}
 }
+
 
