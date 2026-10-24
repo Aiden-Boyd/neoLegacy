@@ -52,7 +52,13 @@ struct Level {
  bool isClientSide=false,blocked=false;int data=1;shared_ptr<TileEntity>te;Tile*worldTile=nullptr;
  vector<shared_ptr<ItemInstance>> drops;vector<shared_ptr<Entity>>entities;vector<AABB*>cubes;int sounds=0,events=0;
  shared_ptr<TileEntity>getTileEntity(int,int,int){return te;}void removeTileEntity(int,int,int){te.reset();}int getData(int,int,int){return data;}
- vector<AABB*>*getCubes(shared_ptr<Entity>,AABB*b){cubes.clear();if(blocked)cubes.push_back(b);return &cubes;}
+ vector<AABB*>*getCubes(shared_ptr<Entity>source,AABB*b,bool noEntities=false,bool=false){
+  // Native Level::getCubes calls source->getCollideAgainstBox for nearby entities.
+  // A null source is valid only for the block-only query used by getTileCubes.
+  assert(noEntities||source||entities.empty());
+  cubes.clear();if(blocked)cubes.push_back(b);return &cubes;
+ }
+ vector<AABB*>*getTileCubes(AABB*b,bool blockAtEdge=false){return getCubes(nullptr,b,true,blockAtEdge);}
  vector<shared_ptr<Entity>>*getEntities(shared_ptr<Entity>,AABB*){return &entities;}
  void tileEvent(int,int,int,int,int,int){++events;}void playSound(double,double,double,int,float,float){++sounds;}
  void updateNeighbourForOutputSignal(int,int,int,int){}

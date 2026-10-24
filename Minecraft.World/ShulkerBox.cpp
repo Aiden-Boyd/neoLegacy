@@ -111,7 +111,9 @@ bool ShulkerBoxTile::use(Level *level,int x,int y,int z,shared_ptr<Player> playe
         if(dy<0){y0=y-.5;y1=y;}if(dy>0){y0=y+1;y1=y+1.5;}
         if(dz<0){z0=z-.5;z1=z;}if(dz>0){z0=z+1;z1=z+1.5;}
         auto space=AABB::newTemp(x0+.0001,y0+.0001,z0+.0001,x1-.0001,y1-.0001,z1-.0001);
-        if(!level->getCubes(nullptr,space)->empty())return true;
+        // Opening clearance is blocked by terrain, not by entities the lid
+        // should push. getCubes needs a non-null source when entities are near.
+        if(!level->getTileCubes(space)->empty())return true;
     }
     player->openContainer(box);return true;
 }

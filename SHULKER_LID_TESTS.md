@@ -11,6 +11,12 @@ Scratch entity lists and pooled bounds are copied before movement.
 Existing six-direction obstruction checks and expanded collision bounds remain.
 Named empty boxes now survive Creative breaking, preserving their names.
 
+Opening clearance now uses the native block-only getTileCubes query. The old
+getCubes(nullptr, space) query dereferenced its null source when a player or
+another entity was near the lid. Standing on an upward box could therefore
+crash before its menu opened. Nearby entities must be pushed by the lid, not
+treated as terrain obstructions. Solid blocks still prevent opening.
+
 Cauldron washing is not added: the examined 1.12.2 cauldron implementation has
 no shulker-box washing branch. CU59 support has not been established. The
 current palette has sixteen dyed boxes and no distinct undyed box, so mapping
@@ -23,6 +29,10 @@ Tests cover all six directions, overlap-dependent displacement, entities inside
 the base, non-physical/removed entities, closing, client authority and named
 Creative drops, alongside prior NBT/lifecycle/clearance cases. The fixture
 exercises movement requests, not the full native world collision resolver.
+The fixture now enforces the native entity-query null-source contract. A new
+case places a player in each of the six opening directions, opens the menu and
+checks the first lid displacement; solid obstruction still denies opening.
+It failed before the block-only query fix and passes with the fix.
 Windows CI also runs prior regressions and builds the full client.
 
 ## In-game checks

@@ -49,6 +49,23 @@ int main(){
   box->startOpen();for(int n=0;n<10;++n)box->tick();assert(box->openness==1);auto b=tile.getAABB(&level,0,0,0);assert(abs((b->x1-b->x0)*(b->y1-b->y0)*(b->z1-b->z0)-1.5)<.001);
   box->startOpen();box->stopOpen();assert(box->openCount==1);box->stopOpen();for(int n=0;n<10;++n)box->tick();assert(box->openness<.001&&box->openCount==0);
  }
+ // Standing in the opening volume must not enter the entity-collision query
+ // with a null source. The native query dereferences it for nearby entities.
+ for(int face=0;face<6;++face){
+  box=fresh();level.data=face;
+  int dx=Facing::STEP_X[face],dy=Facing::STEP_Y[face],dz=Facing::STEP_Z[face];
+  player->bounds={.2,.2,.2,.8,.8,.8};
+  if(dx){player->bounds.x0=dx>0?1:-.6;player->bounds.x1=dx>0?1.6:0;}
+  if(dy){player->bounds.y0=dy>0?1:-1.8;player->bounds.y1=dy>0?2.8:0;}
+  if(dz){player->bounds.z0=dz>0?1:-.6;player->bounds.z1=dz>0?1.6:0;}
+  level.entities={player};level.blocked=false;int opened=player->opened;
+  tile.use(&level,0,0,0,player,face,0,0,0);assert(player->opened==opened+1);
+  box->startOpen();player->xd=player->yd=player->zd=0;box->tick();
+  assert(abs(player->xd-dx*.06)<.00001&&abs(player->yd-dy*.06)<.00001&&abs(player->zd-dz*.06)<.00001);
+  box=fresh();level.blocked=true;opened=player->opened;
+  tile.use(&level,0,0,0,player,face,0,0,0);assert(player->opened==opened);
+  level.blocked=false;level.entities.clear();
+ }
  // Exact lid overlap displacement in every direction, including dropped items
  // (whose native isPushable is false), side/base exclusions and physics guards.
  for(int face=0;face<6;++face){
