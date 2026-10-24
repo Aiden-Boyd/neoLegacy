@@ -35,8 +35,8 @@ Steam/Proton/controller, GPU and multiplayer acceptance is pending.
   texture, strength 15, two-tick delay and two-tick pulse, deduplicated scheduling,
   placement pulse and output updates when removed while powered. Successful
   Level block and metadata writes notify observers; neighbor power notifications,
-  unchanged writes and forced no-op updates do not. Invisible generation writes
-  and explicit suppression bit 16 do not start pulses. Native scheduled-tick
+  unchanged writes and forced no-op updates do not. Hidden gameplay metadata writes (including dispenser triggers) are observed.
+  Bulk no-light generation writes (flag 12) and explicit suppression bit 16 do not start pulses. Native scheduled-tick
   persistence is retained; no tile entity or new save format is required.
 - Original 1.12.2 textures are inserted into 104 previously empty, unregistered
   atlas cells. Multi-cell water/lava allocations are reserved. Existing pixels

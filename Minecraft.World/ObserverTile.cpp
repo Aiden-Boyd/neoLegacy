@@ -47,7 +47,7 @@ void ObserverTile::tick(Level*l,int x,int y,int z,Random*)
 }
 void ObserverTile::stateChanged(Level*l,int x,int y,int z,int flags)
 {
-    if(l->isClientSide || (flags&Tile::UPDATE_SUPPRESS_OBSERVERS) || !(flags&Tile::UPDATE_ALL))return;
+    if(l->isClientSide || (flags&Tile::UPDATE_SUPPRESS_OBSERVERS) || (flags&Tile::UPDATE_INVISIBLE_NO_LIGHT)==Tile::UPDATE_INVISIBLE_NO_LIGHT)return;
     for(int face=0;face<6;++face) {
         int xx=x+Facing::STEP_X[face],yy=y+Facing::STEP_Y[face],zz=z+Facing::STEP_Z[face];
         if(yy<0 || yy>=Level::maxBuildHeight || !l->hasChunkAt(xx,yy,zz) || l->getTile(xx,yy,zz)!=Tile::observer_Id)continue;
