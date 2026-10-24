@@ -587,8 +587,7 @@ void UIScene_CreateWorldMenu::StartSharedLaunchFlow()
 	{
 		// texture pack hasn't been set yet, so check what it will be
 		TexturePack *pTexturePack = pMinecraft->skins->getTexturePackById(m_MoreOptionsParams.dwTexturePack);
-		DLCTexturePack *pDLCTexPack=static_cast<DLCTexturePack *>(pTexturePack);
-		m_pDLCPack=pDLCTexPack->getDLCInfoParentPack();
+		m_pDLCPack = pTexturePack ? pTexturePack->getDLCInfoParentPack() : nullptr;
 
 		// do we have a license?
 		if(m_pDLCPack && !m_pDLCPack->hasPurchasedFile( DLCManager::e_DLCType_Texture, L"" ))
@@ -1575,3 +1574,4 @@ void UIScene_CreateWorldMenu::handleTouchBoxRebuild()
 {
 	m_bRebuildTouchBoxes = true;
 }
+

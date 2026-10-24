@@ -36,6 +36,9 @@ public:
 		return name;
     }
 	virtual DLCPack * getDLCPack() { return nullptr;}
+	// Local/default packs have no DLC license owner. Ask through the base API
+	// so launch menus never reinterpret them as DLCTexturePack objects.
+	virtual DLCPack *getDLCInfoParentPack() { return nullptr; }
 
 
 	// 4J Added
@@ -57,3 +60,4 @@ private:
 	bool m_bHasAudio;
 
 };
+

@@ -88,6 +88,12 @@ jobs:
           python tests/base_stability_regression.py 2>&1 | Tee-Object logs/base-stability-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run world launch texture-pack regression
+        shell: pwsh
+        run: |
+          python tests/world_launch_regression.py 2>&1 | Tee-Object logs/world-launch-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Run End palette regression checks
         shell: pwsh
         run: |
@@ -308,7 +314,7 @@ jobs:
       - name: Upload client test artifact
         uses: actions/upload-artifact@v6
         with:
-          name: neoLegacy-tumble-join-codes-windows64
+          name: neoLegacy-world-launch-fix-windows64
           path: staging/
           if-no-files-found: error
           retention-days: 14
