@@ -48,6 +48,9 @@ private:
 
 	FarmerInventory *farmInventory;
 	void collectFarmItems();
+    int foodShareDelay;
+    weak_ptr<Villager> foodShareTarget;
+    void shareFood();
 	void _init(int profession);
 
 public:
@@ -100,6 +103,8 @@ public:
 	shared_ptr<Player> getTradingPlayer();
 	bool isTrading();
 	FarmerInventory *getFarmInventory() {return farmInventory;}
+    bool isWilling(bool update);
+    void setWilling(bool value);
 	void notifyTrade(MerchantRecipe *activeRecipe);
 	void notifyTradeUpdated(shared_ptr<ItemInstance> item);
 	MerchantRecipeList *getOffers(shared_ptr<Player> forPlayer);

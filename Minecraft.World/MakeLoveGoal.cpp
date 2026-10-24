@@ -22,18 +22,18 @@ MakeLoveGoal::MakeLoveGoal(Villager *villager)
 bool MakeLoveGoal::canUse()
 {
 
-	if (villager->getAge() != 0) return false;
+	if (level->isClientSide || !villager->isAlive() || villager->isTrading() || villager->getAge() != 0) return false;
 	if (villager->getRandom()->nextInt(500) != 0) return false;
 
 	village = level->villages->getClosestVillage(Mth::floor(villager->x), Mth::floor(villager->y), Mth::floor(villager->z), 0);
 	if (village.lock() == nullptr) return false;
-	if (!villageNeedsMoreVillagers()) return false;
+	if (!villageNeedsMoreVillagers() || !villager->isWilling(true)) return false;
 
 	shared_ptr<Entity> mate = level->getClosestEntityOfClass(typeid(Villager), villager->bb->grow(8, 3, 8), villager->shared_from_this());
 	if (mate == nullptr) return false;
 
 	partner = weak_ptr<Villager>(dynamic_pointer_cast<Villager>(mate));
-	if (partner.lock()->getAge() != 0) return false;
+	if (!partner.lock() || !partner.lock()->isAlive() || partner.lock()->isTrading() || partner.lock()->getAge() != 0 || !partner.lock()->isWilling(true)) return false;
 
 	return true;
 }
@@ -53,11 +53,13 @@ void MakeLoveGoal::stop()
 
 bool MakeLoveGoal::canContinueToUse()
 {
-	return partner.lock() != nullptr && loveMakingTime >= 0 && villageNeedsMoreVillagers() && villager->getAge() == 0;
+	auto mate=partner.lock();
+    return mate && mate->isAlive() && mate->level==level && !mate->isTrading() && mate->getAge()==0 && mate->isWilling(false) && villager->isAlive() && !villager->isTrading() && loveMakingTime >= 0 && villageNeedsMoreVillagers() && villager->getAge() == 0 && villager->isWilling(false);
 }
 
 void MakeLoveGoal::tick()
 {
+    if(!canContinueToUse())return;
 	--loveMakingTime;
 	villager->getLookControl()->setLookAt(partner.lock(), 10, 30);
 
@@ -91,17 +93,16 @@ bool MakeLoveGoal::villageNeedsMoreVillagers()
 
 void MakeLoveGoal::breed()
 {
-	// 4J Stu - This sets a timer that stops these villagers from trying to breed again
-	// We should do this even if breeding fails due to vilalger count to stop them continually trying to breed
-	partner.lock()->setAge(5 * 60 * 20);
-	villager->setAge(5 * 60 * 20);
-	// 4J - added limit to number of animals that can be bred
-	if(level->canCreateMore( eTYPE_VILLAGER, Level::eSpawnType_Breed) )
-	{
-		shared_ptr<Villager> child = dynamic_pointer_cast<Villager>( villager->getBreedOffspring(partner.lock()) );
-		child->setAge(-20 * 60 * 20);
-		child->moveTo(villager->x, villager->y, villager->z, 0, 0);
-		level->addEntity(child);
-		level->broadcastEntityEvent(child, EntityEvent::LOVE_HEARTS);
-	}
+    auto mate=partner.lock();
+    if(level->isClientSide||!canContinueToUse()||!mate||!mate->isInLove())return;
+    // Keep native capacity limits and avoid consuming willingness on failed spawn.
+    if(!level->canCreateMore(eTYPE_VILLAGER,Level::eSpawnType_Breed))return;
+    auto child=dynamic_pointer_cast<Villager>(villager->getBreedOffspring(mate));
+    if(!child)return;
+    child->setAge(-20*60*20);
+    child->moveTo(villager->x,villager->y,villager->z,0,0);
+    if(!level->addEntity(child))return;
+    mate->setAge(5*60*20);villager->setAge(5*60*20);
+    mate->setWilling(false);villager->setWilling(false);
+    level->broadcastEntityEvent(child,EntityEvent::LOVE_HEARTS);
 }

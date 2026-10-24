@@ -22,6 +22,7 @@ on:
       - fix/creative-elytra-equip
       - feature/rockets-color-observers
       - feature/shulker-lid-collision
+      - feature/villager-food
   workflow_dispatch:
 
 permissions:
@@ -33,7 +34,7 @@ concurrency:
 
 jobs:
   build-client:
-    name: Windows64 Rockets, color blocks and observers
+    name: Windows64 Villager food and breeding
     runs-on: windows-2022
     timeout-minutes: 45
     env:
@@ -195,6 +196,12 @@ jobs:
           python tests/color_assets_regression.py 2>&1 | Tee-Object logs/color-assets.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run villager food regressions
+        shell: pwsh
+        run: |
+          python tests/villager_food_regression.py 2>&1 | Tee-Object logs/villager-food.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Configure Windows64
         shell: pwsh
         run: |
@@ -246,6 +253,7 @@ jobs:
           Copy-Item OVERWORLD_TESTS.md "$stage/OVERWORLD_TESTS.md"
           Copy-Item END_RESPAWN_TESTS.md "$stage/END_RESPAWN_TESTS.md"
           Copy-Item INVENTORY_EQUIP_FIX_TESTS.md "$stage/INVENTORY_EQUIP_FIX_TESTS.md"
+          Copy-Item VILLAGER_FOOD_TESTS.md "$stage/VILLAGER_FOOD_TESTS.md"
           Copy-Item SHULKER_LID_TESTS.md "$stage/SHULKER_LID_TESTS.md"
           Copy-Item ROCKET_COLOR_OBSERVER_TESTS.md "$stage/ROCKET_COLOR_OBSERVER_TESTS.md"
           Copy-Item END_FIGHT_AUDIT.md "$stage/END_FIGHT_AUDIT.md"
@@ -253,7 +261,7 @@ jobs:
             "Commit: ${{ github.sha }}",
             "Configuration: Windows64 Release",
             "Runtime: Windows executable; test through Steam/Proton on Bazzite.",
-            "Candidate: Shulker lid collision and named Creative drops; includes rockets, color blocks, observers and all previous fixes and features.",
+            "Candidate: Villager food sharing, bread and breeding willingness; includes all previous features and fixes.",
             "Compilation does not establish controller compatibility or CU59 parity."
           ) | Set-Content "$stage/BUILD_INFO.txt"
           Get-ChildItem $stage -Recurse -File |
@@ -266,7 +274,7 @@ jobs:
       - name: Upload client test artifact
         uses: actions/upload-artifact@v6
         with:
-          name: neoLegacy-shulker-lid-collision-windows64
+          name: neoLegacy-villager-food-windows64
           path: staging/
           if-no-files-found: error
           retention-days: 14

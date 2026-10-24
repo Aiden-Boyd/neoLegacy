@@ -45,6 +45,7 @@ void Villager::_init(int profession)
 	tradingPlayer = weak_ptr<Player>();
 	offers = nullptr;
 	farmInventory = new FarmerInventory();
+    foodShareDelay=0;
 	updateMerchantTimer = 0;
 	addRecipeOnUpdate = false;
 	riches = 0;
@@ -104,6 +105,7 @@ bool Villager::useNewAi()
 void Villager::serverAiMobStep()
 {
 	collectFarmItems();
+    shareFood();
 	if (--villageUpdateInterval <= 0)
 	{
 		level->villages->queryUpdateAround(Mth::floor(x), Mth::floor(y), Mth::floor(z));
@@ -204,6 +206,7 @@ void Villager::readAdditionalSaveData(CompoundTag *tag)
 	setProfession(tag->getInt(L"Profession"));
 	riches = tag->getInt(L"Riches");
 	farmInventory->load(tag);
+    foodShareDelay=0;foodShareTarget.reset();
 	if (tag->contains(L"Offers"))
 	{
 		CompoundTag *compound = tag->getCompound(L"Offers");
@@ -360,6 +363,7 @@ void Villager::notifyTrade(MerchantRecipe *activeRecipe)
 	{
 		updateMerchantTimer = SharedConstants::TICKS_PER_SECOND * 2;
 		addRecipeOnUpdate = true;
+        setWilling(true);
 		if (tradingPlayer.lock() != nullptr)
 		{
 			lastPlayerTradeName = tradingPlayer.lock()->getName();
@@ -814,7 +818,7 @@ void Villager::thunderHit(const LightningBolt *lightningBolt)
 
 void Villager::collectFarmItems()
 {
-    if(level->isClientSide || !isAlive() || isBaby() || isTrading() || getProfession()!=PROFESSION_FARMER || !level->getGameRules()->getBoolean(GameRules::RULE_MOBGRIEFING))return;
+    if(level->isClientSide || !isAlive() || isBaby() || isTrading() || !level->getGameRules()->getBoolean(GameRules::RULE_MOBGRIEFING))return;
     auto entities=level->getEntitiesOfClass(typeid(ItemEntity),bb->grow(1,0,1));
     for(auto &entity:*entities) {
         auto drop=dynamic_pointer_cast<ItemEntity>(entity);
@@ -823,6 +827,41 @@ void Villager::collectFarmItems()
         if(accepted<=0)continue;
         take(drop,accepted);item->count-=accepted;
         if(item->count==0)drop->remove();else drop->setItem(item);
+    }
+    delete entities;
+}
+
+bool Villager::isWilling(bool update) {
+    if(level->isClientSide)return farmInventory->willing;
+    bool was=farmInventory->willing;
+    if(update)farmInventory->prepareBreeding();
+    if(!was&&farmInventory->willing)level->broadcastEntityEvent(shared_from_this(),EntityEvent::LOVE_HEARTS);
+    return farmInventory->willing;
+}
+void Villager::setWilling(bool value) {farmInventory->willing=value;}
+void Villager::shareFood() {
+    if(level->isClientSide||!isAlive()||isBaby()||isTrading()) {foodShareDelay=0;foodShareTarget.reset();return;}
+    auto target=foodShareTarget.lock();
+    if(foodShareDelay>0) {
+        if(!target||!target->isAlive()||target->level!=level||target->isTrading()||distanceToSqr(target)>9||!canSee(target)) {foodShareDelay=0;foodShareTarget.reset();return;}
+        if(--foodShareDelay>0)return;
+        foodShareTarget.reset();
+        if(target->getFarmInventory()->enoughFood(target->getProfession()==PROFESSION_FARMER?5:1,target->getProfession()==PROFESSION_FARMER))return;
+        auto gift=farmInventory->share(getProfession()==PROFESSION_FARMER,false);if(!gift)return;
+        auto drop=std::make_shared<ItemEntity>(level,x,y+getEyeHeight()-.3,z,gift);
+        double dx=target->x-x,dz=target->z-z,len=sqrt(dx*dx+dz*dz);
+        drop->xd=len>0?dx/len*.3:0;drop->yd=.1;drop->zd=len>0?dz/len*.3:0;drop->throwTime=10;
+        if(level->addEntity(drop))farmInventory->share(getProfession()==PROFESSION_FARMER,true);
+        return;
+    }
+    if(!farmInventory->enoughFood(2,getProfession()==PROFESSION_FARMER)||getRandom()->nextInt(50)!=0)return;
+    auto entities=level->getEntitiesOfClass(typeid(Villager),bb->grow(3,1,3));
+    for(auto entity:*entities) {
+        target=dynamic_pointer_cast<Villager>(entity);
+        if(!target||target.get()==this||!target->isAlive()||target->isBaby()||target->isTrading()||distanceToSqr(target)>9||!canSee(target))continue;
+        bool farmer=target->getProfession()==PROFESSION_FARMER;
+        if(target->getFarmInventory()->enoughFood(farmer?5:1,farmer))continue;
+        foodShareTarget=target;foodShareDelay=10;break;
     }
     delete entities;
 }

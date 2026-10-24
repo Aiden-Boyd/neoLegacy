@@ -20,7 +20,7 @@ struct CompoundTag:Tag {
 };
 struct ItemInstance {
  int id,count,aux=0,tag=0,damage=0;
- ItemInstance(int id,int count=1):id(id),count(count){}
+ ItemInstance(int id,int count=1,int aux=0):id(id),count(count),aux(aux){}
  int getMaxStackSize(){return 64;}shared_ptr<ItemInstance>copy(){return make_shared<ItemInstance>(*this);}
  bool sameItemWithTags(shared_ptr<ItemInstance> p){return id==p->id&&aux==p->aux&&tag==p->tag;}
  void save(CompoundTag*t){t->ints[L"id"]=id;t->ints[L"count"]=count;t->ints[L"aux"]=aux;t->ints[L"tag"]=tag;}
