@@ -5,6 +5,7 @@ on:
     branches:
       - steam-proton-base
       - fix/base-stability
+      - qa/sponge-bounded-workspace
   workflow_dispatch:
 
 permissions:
@@ -64,6 +65,12 @@ jobs:
         shell: pwsh
         run: |
           python tests/base_stability_regression.py 2>&1 | Tee-Object logs/base-stability-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run absorption workspace differential checks
+        shell: pwsh
+        run: |
+          python tests/sponge_workspace_regression.py 2>&1 | Tee-Object logs/sponge-workspace-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Configure Windows64
