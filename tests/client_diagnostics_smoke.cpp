@@ -1,8 +1,6 @@
 // Windows-only integration check; no GPU, game assets, or game process required.
 #include "../Minecraft.Client/Windows64/ClientDiagnostics.h"
 #include <string>
-#include <fstream>
-#include <iterator>
 
 static bool Contains(const wchar_t* pattern, const char* needle)
 {
@@ -13,8 +11,15 @@ static bool Contains(const wchar_t* pattern, const char* needle)
     do
     {
         const std::wstring path = std::wstring(L"logs\\") + entry.cFileName;
-        std::ifstream input(path.c_str(), std::ios::binary);
-        const std::string contents((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
+        HANDLE input = CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+            nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+        if (input == INVALID_HANDLE_VALUE) continue;
+        std::string contents;
+        char buffer[4096];
+        DWORD count = 0;
+        while (ReadFile(input, buffer, sizeof(buffer), &count, nullptr) && count)
+            contents.append(buffer, count);
+        CloseHandle(input);
         if (contents.find(needle) != std::string::npos) found = true;
     } while (FindNextFileW(search, &entry));
     FindClose(search);
@@ -43,7 +48,10 @@ int main(int argc, char** argv)
     std::fprintf(stderr, "stderr-marker\n");
     if (!Contains(L"logs\\*.log", "diagnostics-message-marker") ||
         !Contains(L"logs\\*.log", "stdout-marker") ||
-        !Contains(L"logs\\*.log", "stderr-marker")) return 3;
+        !Contains(L"logs\\*.log", "stderr-marker")) {
+        ClientDiagnostics::Log("FAIL: could not read redirected stream markers");
+        return 3;
+    }
 
     std::wstring command = L"\"" + std::wstring(executable) + L"\" --crash";
     STARTUPINFOW startup = {};

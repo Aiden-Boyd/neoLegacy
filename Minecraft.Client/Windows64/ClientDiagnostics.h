@@ -7,6 +7,7 @@
 #include <cstring>
 #include <cwchar>
 #include <io.h>
+#include <share.h>
 
 namespace ClientDiagnostics
 {
@@ -90,19 +91,35 @@ inline void Initialize()
         GetCurrentProcessId());
     wchar_t logPath[MAX_PATH];
     swprintf_s(logPath, L"%s\\%s.log", folder, stem);
-    FILE* opened = nullptr;
-    if (_wfreopen_s(&opened, logPath, L"w", stderr) != 0)
+    FILE* opened = _wfsopen(logPath, L"w", _SH_DENYNO);
+    if (!opened)
     {
         const DWORD length = GetTempPathW(MAX_PATH, folder);
         if (length == 0 || length >= MAX_PATH - 120) return;
         wcscat_s(folder, L"neoLegacy-logs");
         CreateDirectoryW(folder, nullptr);
         swprintf_s(logPath, L"%s\\%s.log", folder, stem);
-        if (_wfreopen_s(&opened, logPath, L"w", stderr) != 0) return;
+        opened = _wfsopen(logPath, L"w", _SH_DENYNO);
+        if (!opened) return;
     }
+    // GUI processes can start with CRT descriptor -2 for stdout/stderr. Give
+    // them real descriptors before duplicating the shared log-file handle.
+    FILE* redirected = nullptr;
+    if (_wfreopen_s(&redirected, L"NUL", L"w", stderr) != 0 ||
+        _dup2(_fileno(opened), _fileno(stderr)) != 0)
+    {
+        std::fclose(opened);
+        return;
+    }
+    std::fclose(opened);
     setvbuf(stderr, nullptr, _IONBF, 0);
-    if (_dup2(_fileno(stderr), _fileno(stdout)) == 0)
+    if (_wfreopen_s(&redirected, L"NUL", L"w", stdout) == 0 &&
+        _dup2(_fileno(stderr), _fileno(stdout)) == 0)
+    {
         setvbuf(stdout, nullptr, _IONBF, 0);
+        SetStdHandle(STD_OUTPUT_HANDLE, reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(stdout))));
+    }
+    SetStdHandle(STD_ERROR_HANDLE, reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(stderr))));
     wchar_t crashPath[MAX_PATH];
     swprintf_s(crashPath, L"%s\\%s-crash.txt", folder, stem);
     crashFile = CreateFileW(crashPath, GENERIC_WRITE, FILE_SHARE_READ, nullptr,
