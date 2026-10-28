@@ -167,7 +167,9 @@ StringTable::StringTable(PBYTE pbData, DWORD dwSize)
 {
 	isStatic = false;
 	m_xmlRootPath.clear();
-	src = byteArray(pbData, dwSize);
+	if (pbData != nullptr && dwSize != 0)
+		m_ownedSource.assign(pbData, pbData + dwSize);
+	src = byteArray(m_ownedSource.data(), static_cast<unsigned int>(m_ownedSource.size()));
 
 	ProcessStringTableData();
 }

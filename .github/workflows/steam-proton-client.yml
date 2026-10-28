@@ -88,6 +88,12 @@ jobs:
           & ./logs/client_diagnostics_smoke.exe 2>&1 | Tee-Object logs/diagnostics-smoke.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Verify binary language buffer lifetime
+        shell: pwsh
+        run: |
+          python tests/string_table_lifetime_regression.py 2>&1 | Tee-Object logs/string-table-lifetime.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Configure Windows64
         shell: pwsh
         run: |

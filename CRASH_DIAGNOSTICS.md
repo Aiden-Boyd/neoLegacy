@@ -57,6 +57,8 @@ Actions run as the playable build. Their retention is 14 days.
 - Return an explicit exit status after the normal game loop.
 - Match language-buffer `new[]` allocations with `delete[]` in both legacy
   language-loading paths, avoiding undefined behavior from scalar deletion.
+- Keep an owned copy of binary language data in `StringTable`: the caller frees
+  its input after construction, but language reload reads the stored data later.
 
 Remaining acceptance: successful Windows CI, then launch, create/load/save/exit
 and resize/fullscreen checks on the target Bazzite machine. This source audit

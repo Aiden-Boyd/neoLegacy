@@ -20,6 +20,8 @@ private:
 	wstring m_missingKeyFallback;
 
 	byteArray src;
+	// Binary callers may release their input immediately; reload still needs it.
+	vector<unsigned char> m_ownedSource;
 	wstring m_xmlRootPath;
 
 public:
