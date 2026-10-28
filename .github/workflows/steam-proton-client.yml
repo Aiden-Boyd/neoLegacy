@@ -47,6 +47,13 @@ jobs:
         with:
           arch: x64
 
+      - name: Start detailed build transcript
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force logs | Out-Null
+          Get-ComputerInfo -Property WindowsProductName,WindowsVersion,OsArchitecture | Out-File logs/host.txt
+          Get-PSDrive -PSProvider FileSystem | Out-File logs/disk-space.txt
+
       - name: Setup .NET for existing CMake configuration
         uses: actions/setup-dotnet@v4
         with:
@@ -73,16 +80,24 @@ jobs:
           python tests/sponge_workspace_regression.py 2>&1 | Tee-Object logs/sponge-workspace-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Verify runtime diagnostics and crash capture
+        shell: pwsh
+        run: |
+          cl /nologo /EHsc /std:c++17 /Zi tests/client_diagnostics_smoke.cpp /Fe:logs/client_diagnostics_smoke.exe /link user32.lib 2>&1 | Tee-Object logs/diagnostics-compile.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & ./logs/client_diagnostics_smoke.exe 2>&1 | Tee-Object logs/diagnostics-smoke.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Configure Windows64
         shell: pwsh
         run: |
-          cmake --preset windows64 2>&1 | Tee-Object logs/configure.log
+          cmake --preset windows64 --log-level=VERBOSE --debug-output -DCMAKE_EXPORT_COMPILE_COMMANDS=ON 2>&1 | Tee-Object logs/configure.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Build game client
         shell: pwsh
         run: |
-          cmake --build --preset windows64-release --target Minecraft.Client --parallel 2 2>&1 | Tee-Object logs/build.log
+          cmake --build --preset windows64-release --target Minecraft.Client --parallel 2 --verbose 2>&1 | Tee-Object logs/build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Stage playable runtime
@@ -110,6 +125,7 @@ jobs:
           New-Item -ItemType Directory -Force "$stage/Windows64/GameHDD" | Out-Null
           Copy-Item STEAM_PROTON.md "$stage/STEAM_PROTON.md"
           Copy-Item BASE_STABILITY_TESTS.md "$stage/BASE_STABILITY_TESTS.md"
+          Copy-Item CRASH_DIAGNOSTICS.md "$stage/CRASH_DIAGNOSTICS.md"
           @(
             "Commit: ${{ github.sha }}",
             "Configuration: Windows64 Release",
@@ -136,7 +152,21 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: steam-proton-build-logs
-          path: logs/
+          path: |
+            logs/
+            build/windows64/CMakeCache.txt
+            build/windows64/CMakeFiles/CMakeConfigureLog.yaml
+            build/windows64/compile_commands.json
+            build/windows64/.ninja_log
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload matching debugging symbols
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: steam-proton-debug-symbols
+          path: build/windows64/**/*.pdb
           if-no-files-found: ignore
           retention-days: 14
 

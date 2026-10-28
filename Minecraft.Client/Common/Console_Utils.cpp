@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#if defined(_WINDOWS64) && !defined(MINECRAFT_SERVER_BUILD)
+#include "../Windows64/ClientDiagnostics.h"
+#endif
 #if defined(_WINDOWS64) && defined(MINECRAFT_SERVER_BUILD)
 #include "../../Minecraft.Server/ServerLogManager.h"
 #endif
@@ -27,6 +30,9 @@ static VOID DebugSpewV( const CHAR* strFormat, va_list pArgList )
     // rather than triggering an error.
     _vsnprintf_s( str, _TRUNCATE, strFormat, pArgList );
     OutputDebugStringA( str );
+#if defined(_WINDOWS64) && !defined(MINECRAFT_SERVER_BUILD)
+    ClientDiagnostics::Log(str);
+#endif
 #endif
 }
 #endif
