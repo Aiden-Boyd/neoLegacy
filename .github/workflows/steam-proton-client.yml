@@ -163,6 +163,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: steam-proton-build-logs
+          include-hidden-files: true
           path: |
             logs/
             build/windows64/CMakeCache.txt

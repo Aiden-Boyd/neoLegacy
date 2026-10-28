@@ -24,7 +24,13 @@ inline DumpWriter writeDump = nullptr;
 inline void Log(const char* message)
 {
     // Global constructors can emit debug messages before the entry point.
-    if (!ready) { OutputDebugStringA(message); return; }
+    if (!ready)
+    {
+#ifndef _FINAL_BUILD
+        OutputDebugStringA(message);
+#endif
+        return;
+    }
     SYSTEMTIME now;
     GetLocalTime(&now);
     _lock_file(stderr);

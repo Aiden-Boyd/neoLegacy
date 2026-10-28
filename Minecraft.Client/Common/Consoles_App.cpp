@@ -295,7 +295,9 @@ void CMinecraftApp::DebugPrintf(const char *szFormat, ...)
     char    buf[1024];
     vsnprintf(buf, sizeof(buf), szFormat, ap);
     va_end(ap);
+#ifndef _FINAL_BUILD
     OutputDebugStringA(buf);
+#endif
 #if defined(_WINDOWS64) && !defined(MINECRAFT_SERVER_BUILD)
     ClientDiagnostics::Log(buf);
 #endif
@@ -355,7 +357,9 @@ void CMinecraftApp::DebugPrintf(int user, const char *szFormat, ...)
         break;
     }
 #else
+#ifndef _FINAL_BUILD
     OutputDebugStringA(buf);
+#endif
 #if defined(_WINDOWS64) && !defined(MINECRAFT_SERVER_BUILD)
     ClientDiagnostics::Log(buf);
 #endif
