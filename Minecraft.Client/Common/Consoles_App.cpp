@@ -4770,7 +4770,7 @@ void CMinecraftApp::loadStringTable()
 		{
 			byteArray locFile = m_mediaArchive->getFile(localisationFile);
 			m_stringTable = new StringTable(locFile.data, locFile.length);
-			delete locFile.data;
+			delete[] locFile.data;
 		}
 	}
 
@@ -4785,7 +4785,7 @@ void CMinecraftApp::loadStringTable()
 	{
 		byteArray locFile = m_mediaArchive->getFile(localisationFile);
 		m_stringTable = new StringTable(locFile.data, locFile.length);
-		delete locFile.data;
+		delete[] locFile.data;
 	}
 	else
 	{

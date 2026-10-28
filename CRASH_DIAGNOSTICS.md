@@ -55,6 +55,8 @@ Actions run as the playable build. Their retention is 14 days.
 - Use Unicode executable-directory selection, detect truncated/failed paths, and
   resolve user configuration relative to that directory.
 - Return an explicit exit status after the normal game loop.
+- Match language-buffer `new[]` allocations with `delete[]` in both legacy
+  language-loading paths, avoiding undefined behavior from scalar deletion.
 
 Remaining acceptance: successful Windows CI, then launch, create/load/save/exit
 and resize/fullscreen checks on the target Bazzite machine. This source audit
