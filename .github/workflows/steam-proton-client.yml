@@ -123,6 +123,11 @@ jobs:
             }
           }
           New-Item -ItemType Directory -Force "$stage/Windows64/GameHDD" | Out-Null
+          Get-ChildItem $stage -File | Where-Object { $_.Extension -in ".exe", ".dll" } | ForEach-Object {
+            "Dependencies: $($_.Name)" | Tee-Object logs/runtime-dependencies.log -Append
+            dumpbin /dependents $_.FullName 2>&1 | Tee-Object logs/runtime-dependencies.log -Append
+            if ($LASTEXITCODE -ne 0) { throw "Dependency inspection failed: $($_.Name)" }
+          }
           Copy-Item STEAM_PROTON.md "$stage/STEAM_PROTON.md"
           Copy-Item BASE_STABILITY_TESTS.md "$stage/BASE_STABILITY_TESTS.md"
           Copy-Item CRASH_DIAGNOSTICS.md "$stage/CRASH_DIAGNOSTICS.md"

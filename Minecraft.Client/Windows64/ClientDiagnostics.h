@@ -11,6 +11,7 @@
 namespace ClientDiagnostics
 {
 inline HANDLE crashFile = INVALID_HANDLE_VALUE;
+inline bool ready = false;
 inline wchar_t dumpPath[MAX_PATH] = {};
 inline LONG crashing = 0;
 inline LPTOP_LEVEL_EXCEPTION_FILTER previousFilter = nullptr;
@@ -21,6 +22,8 @@ inline DumpWriter writeDump = nullptr;
 
 inline void Log(const char* message)
 {
+    // Global constructors can emit debug messages before the entry point.
+    if (!ready) { OutputDebugStringA(message); return; }
     SYSTEMTIME now;
     GetLocalTime(&now);
     _lock_file(stderr);
@@ -109,6 +112,7 @@ inline void Initialize()
     HMODULE dbghelp = LoadLibraryW(L"dbghelp.dll");
     if (dbghelp) writeDump = reinterpret_cast<DumpWriter>(GetProcAddress(dbghelp, "MiniDumpWriteDump"));
     previousFilter = SetUnhandledExceptionFilter(OnCrash);
+    ready = true;
     Log("Diagnostics started; stdout/stderr and client debug messages captured.");
     std::fprintf(stderr, "Runtime log: %ls\nCrash record: %ls\nMinidump available: %s\n",
         logPath, crashPath, writeDump ? "yes" : "no");
