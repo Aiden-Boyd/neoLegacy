@@ -47,13 +47,23 @@ jobs:
           done
           npm test 2>&1 | tee ../logs/relay-tests.log
           dotnet run --project ../helper/LegacyJoin.csproj -c Release --no-build -- self-test ws://127.0.0.1:8787 2>&1 | tee ../logs/transport-tests.log
+      - name: Test deployed public relay
+        timeout-minutes: 4
+        env:
+          RELAY_TEST_URL: wss://legacy-join-relay.newlifemedia.workers.dev
+        run: |
+          set -euo pipefail
+          test "$(curl --fail --silent --show-error --max-time 30 https://legacy-join-relay.newlifemedia.workers.dev/health)" = legacy-code-relay-v1
+          cd relay
+          timeout 120 npm test 2>&1 | tee ../logs/public-relay-tests.log
+          dotnet run --project ../helper/LegacyJoin.csproj -c Release --no-build -- self-test "$RELAY_TEST_URL" 2>&1 | tee ../logs/public-transport-tests.log
       - name: Publish standalone companions
         run: |
           set -euo pipefail
           for runtime in win-x64 linux-x64; do
             dotnet publish helper/LegacyJoin.csproj -c Release -r "$runtime" --self-contained true -p:PublishSingleFile=true -o "artifacts/$runtime" 2>&1 | tee "logs/publish-$runtime.log"
             cp README.md "artifacts/$runtime/README.md"
-            printf '%s\n' '{ "relay": "wss://YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev" }' > "artifacts/$runtime/relay.json.example"
+            cp relay.default.json "artifacts/$runtime/relay.json"
           done
           mkdir -p artifacts/relay
           cp -r relay/src artifacts/relay/
