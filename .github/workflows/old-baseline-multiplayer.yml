@@ -1,0 +1,98 @@
+name: Old Baseline Multiplayer
+on:
+  push:
+    branches: [rollback/steam-multiplayer-baseline]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: old-baseline-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    env:
+      VCPKG_ROOT: ""
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: false
+          persist-credentials: false
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Configure and record revision
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force logs | Out-Null
+          git rev-parse HEAD | Out-File logs/commit.txt
+          cmake --version | Out-File logs/toolchain.txt
+          cmake --preset windows64 --log-level=VERBOSE --debug-output 2>&1 | Tee-Object logs/configure.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build matching old client and vanilla server
+        shell: pwsh
+        run: |
+          cmake --build --preset windows64-release --target Minecraft.Client Minecraft.Server --parallel 2 --verbose 2>&1 | Tee-Object logs/build.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Package isolated runtimes
+        shell: pwsh
+        run: |
+          foreach ($kind in @("Client", "Server")) {
+            $source = "build/windows64/Minecraft.$kind/Release"
+            $stage = "staging/$($kind.ToLower())"
+            if (-not (Test-Path "$source/Minecraft.$kind.exe")) { throw "Missing $kind executable" }
+            New-Item -ItemType Directory -Force $stage | Out-Null
+            Get-ChildItem $source -File | Where-Object { $_.Extension -in ".exe", ".dll" } | Copy-Item -Destination $stage
+            foreach ($folder in @("Common", "music", "Windows64", "Windows64Media")) {
+              if (Test-Path "$source/$folder") { Copy-Item "$source/$folder" "$stage/$folder" -Recurse }
+            }
+            foreach ($required in @("Common/Media/MediaWindows64", "Common/res", "iggy_w64.dll")) {
+              if (-not (Test-Path "$stage/$required")) { throw "$kind package missing $required" }
+            }
+            New-Item -ItemType Directory -Force "$stage/Windows64/GameHDD" | Out-Null
+            @(
+              "Build commit: ${{ github.sha }}",
+              "Game source baseline: eaf2da084859e4990a3935c76527d9b07ac9a91e",
+              "Gameplay/network/save code unchanged from steam-proton-base.",
+              "Matching old client/server; not stock Java or Bedrock.",
+              "Two-player gameplay and Bazzite acceptance remain unverified."
+            ) | Set-Content "$stage/BUILD_INFO.txt"
+            Copy-Item MULTIPLAYER_BASELINE.md "$stage/MULTIPLAYER_BASELINE.md"
+            dumpbin /dependents "$stage/Minecraft.$kind.exe" | Out-File "logs/$kind-dependencies.txt"
+          }
+          Copy-Item Start-Server.cmd staging/server/Start-Server.cmd
+          Copy-Item MULTIPLAYER_BASELINE.md staging/README.md
+          Get-ChildItem staging -Recurse -File | ForEach-Object {
+            $hash = Get-FileHash $_.FullName -Algorithm SHA256
+            "$($hash.Hash)  $([IO.Path]::GetRelativePath((Resolve-Path staging).Path, $_.FullName))"
+          } | Set-Content SHA256SUMS.txt
+          Copy-Item SHA256SUMS.txt staging/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v6
+        with:
+          name: old-baseline-client-and-multiplayer-server
+          path: staging/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload verbose build logs
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: old-baseline-build-logs
+          path: |
+            logs/
+            build/windows64/CMakeCache.txt
+            build/windows64/CMakeFiles/CMakeConfigureLog.yaml
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Upload matching symbols
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: old-baseline-symbols
+          path: build/windows64/**/*.pdb
+          if-no-files-found: ignore
+          retention-days: 30
