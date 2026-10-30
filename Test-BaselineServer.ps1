@@ -8,6 +8,7 @@ $start.UseShellExecute = $false
 $start.RedirectStandardInput = $true
 $start.RedirectStandardOutput = $true
 $start.RedirectStandardError = $true
+$start.EnvironmentVariables["SERVER_CLI_INPUT_MODE"] = "stream"
 $process = [Diagnostics.Process]::new()
 $process.StartInfo = $start
 $out = $null
