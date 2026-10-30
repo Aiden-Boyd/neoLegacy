@@ -54,6 +54,12 @@ jobs:
           Get-ComputerInfo -Property WindowsProductName,WindowsVersion,OsArchitecture | Out-File logs/host.txt
           Get-PSDrive -PSProvider FileSystem | Out-File logs/disk-space.txt
 
+      - name: Verify save persistence and failure handling
+        shell: pwsh
+        run: |
+          python tests/storage_persistence_regression.py 2>&1 | Tee-Object logs/storage-persistence.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Setup .NET for existing CMake configuration
         uses: actions/setup-dotnet@v4
         with:

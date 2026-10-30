@@ -24,6 +24,57 @@ SOFTWARE.
 
 #include "STO_SaveGame.h"
 #include "STO_Main.h"
+#include <cstdio>
+#include <cstring>
+
+namespace
+{
+bool EnsureSaveDirectory(const char* path)
+{
+    if (CreateDirectoryA(path, nullptr)) return true;
+    const DWORD error = GetLastError();
+    const DWORD attributes = GetFileAttributesA(path);
+    if (error == ERROR_ALREADY_EXISTS && attributes != INVALID_FILE_ATTRIBUTES &&
+        (attributes & FILE_ATTRIBUTE_DIRECTORY)) return true;
+    fprintf(stderr, "[SAVE] Cannot create directory '%s': error=%lu\n", path, error);
+    return false;
+}
+
+bool IsWorldFile(const WIN32_FIND_DATAA& file)
+{
+    if (file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) return false;
+    const char* extension = strrchr(file.cFileName, '.');
+    return extension && _stricmp(extension, ".ms") == 0;
+}
+
+bool WriteSaveFile(const char* path, const void* data, DWORD size)
+{
+    char temporary[640];
+    if (_snprintf_s(temporary, sizeof(temporary), _TRUNCATE, "%s.tmp", path) < 0) return false;
+    HANDLE file = CreateFileA(temporary, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (file == INVALID_HANDLE_VALUE)
+    {
+        fprintf(stderr, "[SAVE] Cannot open temporary '%s': error=%lu\n", temporary, GetLastError());
+        return false;
+    }
+    DWORD written = 0;
+    bool success = WriteFile(file, data, size, &written, nullptr) != FALSE && written == size;
+    DWORD error = success ? ERROR_SUCCESS : GetLastError();
+    if (success && !FlushFileBuffers(file)) { success = false; error = GetLastError(); }
+    if (!CloseHandle(file)) { success = false; error = GetLastError(); }
+    if (success && !MoveFileExA(temporary, path, MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH))
+    { success = false; error = GetLastError(); }
+    if (!success)
+    {
+        fprintf(stderr, "[SAVE] Commit FAILED '%s': error=%lu bytes=%lu/%lu; previous file retained\n", path, error, written, size);
+        DeleteFileA(temporary);
+    }
+    else fprintf(stderr, "[SAVE] Committed '%s': bytes=%lu\n", path, size);
+    fflush(stderr);
+    return success;
+}
+}
+
 
 // @Patoke add
 char CSaveGame::szPNGHeader[] = "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A";
@@ -39,14 +90,6 @@ CSaveGame::CSaveGame()
 
     m_pSaveDetails = nullptr;
     m_bHasSaveDetails = false;
-
-    GetCurrentDirectoryA(sizeof(m_szSaveUniqueName), m_szSaveUniqueName);
-
-    char dirName[256];
-    char curDir[256];
-    GetCurrentDirectoryA(sizeof(dirName), dirName);
-    sprintf(curDir, "%s/Windows64/GameHDD/", dirName);
-    CreateDirectoryA(curDir, 0);
 
     // @Patoke add
     this->m_pbThumbnailData = nullptr;
@@ -76,7 +119,7 @@ C4JStorage::ESaveGameState CSaveGame::GetSavesInfo(int iPad, int (*Func)(LPVOID 
                                                    char *pszSavePackName)
 {
     WIN32_FIND_DATAA findFileData;
-    WIN32_FILE_ATTRIBUTE_DATA fileInfoBuffer;
+    WIN32_FILE_ATTRIBUTE_DATA fileInfoBuffer = {};
 
     if (!m_pSaveDetails)
     {
@@ -90,7 +133,7 @@ C4JStorage::ESaveGameState CSaveGame::GetSavesInfo(int iPad, int (*Func)(LPVOID 
 
     char dirName[256];
     char curDir[256];
-    GetCurrentDirectoryA(sizeof(dirName), dirName);
+    strcpy_s(dirName, ".");
     sprintf(curDir, "%s\\Windows64\\GameHDD\\*", dirName);
 
     int resultCount = 0;
@@ -133,10 +176,11 @@ C4JStorage::ESaveGameState CSaveGame::GetSavesInfo(int iPad, int (*Func)(LPVOID 
                     char searchPath[280];
                     sprintf(searchPath, "%s\\Windows64\\GameHDD\\%s\\*", dirName, findFileData.cFileName);
 
-                    WIN32_FIND_DATAA saveFileData;
+                    WIN32_FIND_DATAA saveFileData = {};
                     HANDLE hSaveFile = FindFirstFileA(searchPath, &saveFileData);
 
                     char szTitleName[256] = {0};
+                    bool foundWorld = false;
 
                     if (hSaveFile != INVALID_HANDLE_VALUE)
                     {
@@ -144,7 +188,7 @@ C4JStorage::ESaveGameState CSaveGame::GetSavesInfo(int iPad, int (*Func)(LPVOID 
                         {
                             // @Patoke todo: we assume the first actual file here to be the save file, ideally we would want to check the extension
                             // too but this is good enough for now
-                            if (!(saveFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+                            if (IsWorldFile(saveFileData))
                             {
                                 // remove the file extension
                                 std::string decoratedSaveTitle = saveFileData.cFileName;
@@ -161,12 +205,15 @@ C4JStorage::ESaveGameState CSaveGame::GetSavesInfo(int iPad, int (*Func)(LPVOID 
                                 }
 
                                 strcpy_s(szTitleName, sizeof(szTitleName), this->m_szSaveTitle);
+                                foundWorld = true;
                                 break;
                             }
                         } while (FindNextFileA(hSaveFile, &saveFileData));
 
                         FindClose(hSaveFile);
                     }
+
+                    if (!foundWorld) continue;
 
                     // set the actual save file name as the title now, before we would use the folder name which is the unique save name
                     strcpy_s(m_pSaveDetails->SaveInfoA[i].UTF8SaveTitle, szTitleName);
@@ -190,7 +237,7 @@ C4JStorage::ESaveGameState CSaveGame::GetSavesInfo(int iPad, int (*Func)(LPVOID 
                             free(m_pSaveDetails->SaveInfoA[i].thumbnailData);
                             m_pSaveDetails->SaveInfoA[i].thumbnailData = nullptr;
                         }
-                        m_pSaveDetails->SaveInfoA[i].metaData.thumbnailSize = fileInfoBuffer.nFileSizeLow;
+                        m_pSaveDetails->SaveInfoA[i].metaData.thumbnailSize = 0;
                     }
                     else
                     {
@@ -284,67 +331,41 @@ C4JStorage::ESaveGameState CSaveGame::LoadSaveDataThumbnail(PSAVE_INFO pSaveInfo
 
 C4JStorage::ESaveGameState CSaveGame::LoadSaveData(PSAVE_INFO pSaveInfo, int (*Func)(LPVOID lpParam, const bool, const bool), LPVOID lpParam)
 {
-    SetSaveUniqueFilename(pSaveInfo->UTF8SaveFilename);
-
-    memcpy(this->m_szSaveTitle, pSaveInfo->UTF8SaveTitle, sizeof(this->m_szSaveTitle)); // @Patoke add
-
-    if (m_pSaveData)
-    {
-        free(m_pSaveData);
-    }
-
-    m_pSaveData = malloc(pSaveInfo->metaData.dataSize);
-    m_uiSaveSize = pSaveInfo->metaData.dataSize;
-
-    char dirName[256];
-    char curDir[256];
-    char fileName[280];
-    GetCurrentDirectoryA(sizeof(curDir), curDir);
-    sprintf(dirName, "%s/Windows64/GameHDD/%s", curDir, m_szSaveUniqueName);
-    CreateDirectoryA(dirName, 0);
-    
-    // @Patoke add
-    char searchPath[280];
-    sprintf(searchPath, "%s\\*", dirName);
-
-    WIN32_FIND_DATAA saveFileData;
-    HANDLE hSaveFile = FindFirstFileA(searchPath, &saveFileData);
-
-    char szTitleName[256] = {0};
-
-    if (hSaveFile != INVALID_HANDLE_VALUE)
-    {
-        do
-        {
-            // there should always be only 1 file in this directory which is the save file
-            if (!(saveFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-            {
-                sprintf(fileName, "%s/%s", dirName, saveFileData.cFileName);
-                break;
-            }
-            // @Patoke todo: add fail case?
-        } while (FindNextFileA(hSaveFile, &saveFileData));
-
-        FindClose(hSaveFile);
-    }
-
-    HANDLE h = CreateFileA(fileName, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-
+    ResetSaveData();
     bool success = false;
-    if (h != INVALID_HANDLE_VALUE)
+    if (pSaveInfo)
     {
-        DWORD bytesRead = 0;
-        BOOL res = ReadFile(h, m_pSaveData, m_uiSaveSize, &bytesRead, 0);
-        _ASSERT(res && bytesRead == m_uiSaveSize);
-        CloseHandle(h);
-        success = true;
+        SetSaveUniqueFilename(pSaveInfo->UTF8SaveFilename);
+        strncpy_s(m_szSaveTitle, sizeof(m_szSaveTitle), pSaveInfo->UTF8SaveTitle, _TRUNCATE);
+        char path[512];
+        _snprintf_s(path, sizeof(path), _TRUNCATE, "Windows64\\GameHDD\\%s\\%s.ms", m_szSaveUniqueName, m_szSaveTitle);
+        HANDLE file = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+        DWORD error = ERROR_SUCCESS;
+        if (file != INVALID_HANDLE_VALUE)
+        {
+            LARGE_INTEGER size = {};
+            if (GetFileSizeEx(file, &size) && size.QuadPart > 0 && size.QuadPart <= MAXDWORD)
+            {
+                void* data = malloc(static_cast<size_t>(size.QuadPart));
+                if (data)
+                {
+                    DWORD read = 0;
+                    success = ReadFile(file, data, static_cast<DWORD>(size.QuadPart), &read, nullptr) != FALSE &&
+                        read == static_cast<DWORD>(size.QuadPart);
+                    error = success ? ERROR_SUCCESS : GetLastError();
+                    if (success) { m_pSaveData = data; m_uiSaveSize = read; }
+                    else free(data);
+                }
+                else error = ERROR_NOT_ENOUGH_MEMORY;
+            }
+            else error = ERROR_INVALID_DATA;
+            CloseHandle(file);
+        }
+        else error = GetLastError();
+        fprintf(stderr, "[SAVE] Load success=%d path='%s' size=%u error=%lu\n", success ? 1 : 0, path, m_uiSaveSize, error);
     }
-
-    if (Func)
-    {
-        Func(lpParam, 0, success);
-    }
-
+    if (Func) Func(lpParam, false, success);
+    fflush(stderr);
     return C4JStorage::ESaveGame_Idle;
 }
 
@@ -402,7 +423,7 @@ bool CSaveGame::GetSaveUniqueFilename(char *pszName)
 void CSaveGame::SetSaveTitle(LPCWSTR pwchDefaultSaveName)
 {
     CreateSaveUniqueName();
-    sprintf(m_szSaveTitle, "%S", pwchDefaultSaveName); // @Patoke add
+    _snprintf_s(m_szSaveTitle, sizeof(m_szSaveTitle), _TRUNCATE, "%ls", pwchDefaultSaveName ? pwchDefaultSaveName : L"World");
 }
 
 PVOID CSaveGame::AllocateSaveData(unsigned int uiBytes)
@@ -533,44 +554,45 @@ unsigned int CSaveGame::ReverseBytes(unsigned int uiValue)
 
 C4JStorage::ESaveGameState CSaveGame::SaveSaveData(int (*Func)(LPVOID, const bool), LPVOID lpParam)
 {
-    char dirName[256];
-    char curDir[256];
-    char fileName[280];
-    char thumbName[280];
-
-    GetCurrentDirectoryA(sizeof(curDir), curDir);
-    sprintf(dirName, "%s/Windows64/GameHDD/%s", curDir, m_szSaveUniqueName);
-    CreateDirectoryA(dirName, 0);
-    sprintf(fileName, "%s/%s.ms", dirName, this->m_szSaveTitle); // @Patoke add
-
-    HANDLE h = CreateFileA(fileName, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
-
-    DWORD bytesWritten = 0;
-    BOOL res = WriteFile(h, m_pSaveData, m_uiSaveSize, &bytesWritten, 0);
-    _ASSERT(res && bytesWritten == m_uiSaveSize);
-
-    CloseHandle(h);
-
-    // @Patoke add
-    if (this->m_pbThumbnailData != nullptr && this->m_uiThumbnailSize > 0)
+    bool success = false;
+    char directory[128] = {};
+    char path[512] = {};
+    char title[256] = {};
+    // A title is display text, not a filesystem path.
+    strncpy_s(title, sizeof(title), m_szSaveTitle, _TRUNCATE);
+    for (char* p = title; *p; ++p)
+        if (static_cast<unsigned char>(*p) < 32 || strchr("\\/:*?\"<>|", *p)) *p = '_';
+    size_t length = strlen(title);
+    while (length && (title[length - 1] == ' ' || title[length - 1] == '.')) title[--length] = '\0';
+    if (!length) strcpy_s(title, "World");
+    const bool validName = m_szSaveUniqueName[0] &&
+        strnlen_s(m_szSaveUniqueName, sizeof(m_szSaveUniqueName)) < sizeof(m_szSaveUniqueName) &&
+        !strpbrk(m_szSaveUniqueName, "\\/:*?\"<>|") &&
+        strcmp(m_szSaveUniqueName, ".") && strcmp(m_szSaveUniqueName, "..");
+    if (!m_bIsSafeDisabled && m_pSaveData && m_uiSaveSize && validName &&
+        EnsureSaveDirectory("Windows64") && EnsureSaveDirectory("Windows64\\GameHDD"))
     {
-        char thumbDir[280];
-        sprintf(thumbDir, "%s/thumbnails", dirName);
-        CreateDirectoryA(thumbDir, 0);
-
-        sprintf(thumbName, "%s/thumbnails/thumbData.png", dirName);
-
-        HANDLE hThumb = CreateFileA(thumbName, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
-
-        DWORD thumbBytesWritten = 0;
-        BOOL thumbRes = WriteFile(hThumb, this->m_pbThumbnailData, this->m_uiThumbnailSize, &thumbBytesWritten, 0);
-        _ASSERT(thumbRes && thumbBytesWritten == this->m_uiThumbnailSize);
-
-        CloseHandle(hThumb);
+        _snprintf_s(directory, sizeof(directory), _TRUNCATE, "Windows64\\GameHDD\\%s", m_szSaveUniqueName);
+        if (EnsureSaveDirectory(directory))
+        {
+            _snprintf_s(path, sizeof(path), _TRUNCATE, "%s\\%s.ms", directory, title);
+            success = WriteSaveFile(path, m_pSaveData, m_uiSaveSize);
+            if (success && m_pbThumbnailData && m_uiThumbnailSize)
+            {
+                char thumbnails[160];
+                char thumbnail[192];
+                _snprintf_s(thumbnails, sizeof(thumbnails), _TRUNCATE, "%s\\thumbnails", directory);
+                _snprintf_s(thumbnail, sizeof(thumbnail), _TRUNCATE, "%s\\thumbData.png", thumbnails);
+                if (!EnsureSaveDirectory(thumbnails) || !WriteSaveFile(thumbnail, m_pbThumbnailData, m_uiThumbnailSize))
+                    fprintf(stderr, "[SAVE] WARNING world saved, thumbnail failed\n");
+            }
+        }
     }
-
-    Func(lpParam, true);
-
+    else fprintf(stderr, "[SAVE] Rejected save: disabled=%d data=%p size=%u validName=%d\n",
+        m_bIsSafeDisabled ? 1 : 0, m_pSaveData, m_uiSaveSize, validName ? 1 : 0);
+    fprintf(stderr, "[SAVE] Completion success=%d relativePath='%s'\n", success ? 1 : 0, path);
+    fflush(stderr);
+    if (Func) Func(lpParam, success);
     return C4JStorage::ESaveGame_Idle;
 }
 
@@ -603,7 +625,7 @@ C4JStorage::ESaveGameState CSaveGame::DeleteSaveData(PSAVE_INFO pSaveInfo, int (
     {
         do
         {
-            if (!(saveFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+            if (IsWorldFile(saveFileData))
             {
                 sprintf(fileName, "%s/%s", dirName, saveFileData.cFileName);
                 DeleteFileA(fileName);
