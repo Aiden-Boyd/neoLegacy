@@ -15,7 +15,9 @@ The old game executable and gameplay code remain unchanged.
   are tested too.
 - Public deployment, a real two-player game session, and Bazzite acceptance have
   not been verified. Do not label this ready for players until those pass.
-- A live relay URL is required. No fake or shared third-party endpoint is bundled.
+- Packages include relay.json pointing to the owner-deployed relay at
+  wss://legacy-join-relay.newlifemedia.workers.dev. CI tests this public relay
+  before publishing companions.
 
 ## Deploy once to your Cloudflare account
 
@@ -37,7 +39,7 @@ Use the deployed HTTPS hostname with the `wss://` scheme in `relay.json`, beside
 the companion and `Minecraft.Client.exe`:
 
 ```json
-{ "relay": "wss://YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev" }
+{ "relay": "wss://legacy-join-relay.newlifemedia.workers.dev" }
 ```
 
 The relay forwards only the paired game byte streams. Host registration uses a
