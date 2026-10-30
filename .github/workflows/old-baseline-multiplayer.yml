@@ -38,6 +38,9 @@ jobs:
         run: |
           cmake --build --preset windows64-release --target Minecraft.Client Minecraft.Server --parallel 2 --verbose 2>&1 | Tee-Object logs/build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Smoke test server startup, TCP listener and shutdown
+        shell: pwsh
+        run: ./Test-BaselineServer.ps1
       - name: Package isolated runtimes
         shell: pwsh
         run: |
