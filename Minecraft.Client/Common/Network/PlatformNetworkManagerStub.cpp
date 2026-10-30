@@ -5,6 +5,7 @@
 #include "../../Xbox/Network/NetworkPlayerXbox.h"
 #ifdef _WINDOWS64
 #include "../../Windows64/Network/WinsockNetLayer.h"
+#include "../../Windows64/Network/JoinCodeRelay.h"
 #include "../../Windows64/Windows64_Xuid.h"
 #include "../../Minecraft.h"
 #include "../../User.h"
@@ -430,6 +431,7 @@ bool CPlatformNetworkManagerStub::LeaveGame(bool bMigrateHost)
 	m_bLeaveGameOnTick = false;
 
 #ifdef _WINDOWS64
+	JoinCodeRelay::Stop();
 	WinsockNetLayer::StopAdvertising();
 #endif
 
@@ -492,6 +494,7 @@ void CPlatformNetworkManagerStub::HostGame(int localUsersMask, bool bOnlineGame,
 	_HostGame( localUsersMask, publicSlots, privateSlots );
 
 #ifdef _WINDOWS64
+	JoinCodeRelay::Stop(); // A new world invalidates any previous sharing/join session.
 	int port = WIN64_NET_DEFAULT_PORT;
 	const char* bindIp = nullptr;
 	if (g_Win64DedicatedServer)
@@ -543,6 +546,9 @@ int CPlatformNetworkManagerStub::JoinGame(FriendSessionInfo* searchResult, int l
 	if (searchResult == nullptr)
 		return CGameNetworkManager::JOINGAME_FAIL_GENERAL;
 
+    const auto relay = JoinCodeRelay::Get();
+    if (relay.state == 3 && (strcmp(searchResult->data.hostIP, "127.0.0.1") != 0 || searchResult->data.hostPort != relay.port))
+        JoinCodeRelay::Stop();
 	const char* hostIP = searchResult->data.hostIP;
 	int hostPort = searchResult->data.hostPort;
 
@@ -961,6 +967,27 @@ void CPlatformNetworkManagerStub::SetSearchResultsReady(int resultCount)
 vector<FriendSessionInfo *> *CPlatformNetworkManagerStub::GetSessionList(int iPad, int localPlayers, bool partyOnly)
 {
 	vector<FriendSessionInfo*>* filteredList = new vector<FriendSessionInfo*>();
+#ifdef _WINDOWS64
+    const auto relay = JoinCodeRelay::Get();
+    if (relay.state == 3 && relay.port > 0 && relay.port <= 65535)
+    {
+        FriendSessionInfo* info = new FriendSessionInfo();
+        info->displayLabel = new wchar_t[relay.text.size() + 1];
+        wcscpy_s(info->displayLabel, relay.text.size() + 1, relay.text.c_str());
+        info->displayLabelLength = static_cast<unsigned char>(relay.text.size());
+        info->displayLabelViewableStartIndex = 0;
+        info->data.netVersion = MINECRAFT_NET_VERSION;
+        info->data.isReadyToJoin = true;
+        info->data.isJoinable = true;
+        info->data.playerCount = 1;
+        info->data.maxPlayers = MINECRAFT_NET_MAX_PLAYERS;
+        strcpy_s(info->data.hostIP, sizeof(info->data.hostIP), "127.0.0.1");
+        info->data.hostPort = static_cast<unsigned short>(relay.port);
+        wcscpy_s(info->data.hostName, XUSER_NAME_SIZE, L"Join Code");
+        info->sessionId = static_cast<uint64_t>(inet_addr("127.0.0.1")) | static_cast<uint64_t>(relay.port) << 32;
+        filteredList->push_back(info);
+    }
+#endif
 	for (size_t i = 0; i < friendsSessions[0].size(); i++)
 		filteredList->push_back(new FriendSessionInfo(*friendsSessions[0][i]));
 	return filteredList;
@@ -1091,3 +1118,4 @@ bool CPlatformNetworkManagerStub::IsReadyToPlayOrIdle()
 {
 	return true;
 }
+

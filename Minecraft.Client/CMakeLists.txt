@@ -153,3 +153,34 @@ if(PLATFORM_NAME STREQUAL "Windows64")
   add_gamehdd_target(Minecraft.Client)
 endif()
 
+
+
+# Compile the relay to a native DLL and ship it alongside the executable. The
+# player does not install .NET or launch a separate application.
+if(PLATFORM_NAME STREQUAL "Windows64" AND NOT CMAKE_CROSSCOMPILING)
+  find_program(LEGACY_DOTNET dotnet REQUIRED)
+  set(LEGACY_RELAY_ROOT "${CMAKE_SOURCE_DIR}/tools/join-code")
+  set(LEGACY_RELAY_OUTPUT "${CMAKE_BINARY_DIR}/native-relay")
+  add_custom_command(
+    OUTPUT "${LEGACY_RELAY_OUTPUT}/LegacyRelay.dll"
+    COMMAND "${LEGACY_DOTNET}" publish "${LEGACY_RELAY_ROOT}/native/LegacyRelay.csproj"
+      -c Release -r win-x64 -o "${LEGACY_RELAY_OUTPUT}"
+    DEPENDS
+      "${LEGACY_RELAY_ROOT}/native/LegacyRelay.csproj"
+      "${LEGACY_RELAY_ROOT}/native/Exports.cs"
+      "${LEGACY_RELAY_ROOT}/native/global.json"
+      "${LEGACY_RELAY_ROOT}/helper/Tunnel.cs"
+      "${LEGACY_RELAY_ROOT}/helper/SelfTest.cs"
+      "${LEGACY_RELAY_ROOT}/helper/ServerList.cs"
+    WORKING_DIRECTORY "${LEGACY_RELAY_ROOT}/native"
+    COMMENT "Compiling built-in join-code transport to native code"
+    VERBATIM
+  )
+  add_custom_target(LegacyRelayNative DEPENDS "${LEGACY_RELAY_OUTPUT}/LegacyRelay.dll")
+  add_dependencies(Minecraft.Client LegacyRelayNative)
+  add_custom_command(TARGET Minecraft.Client POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${LEGACY_RELAY_OUTPUT}/LegacyRelay.dll" "$<TARGET_FILE_DIR:Minecraft.Client>/LegacyRelay.dll"
+    VERBATIM
+  )
+endif()

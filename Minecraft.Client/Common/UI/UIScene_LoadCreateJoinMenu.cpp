@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#ifdef _WINDOWS64
+#include "../../Windows64/Network/JoinCodeRelay.h"
+#endif
 
 #include "UI.h"
 
@@ -1766,7 +1769,7 @@ void UIScene_LoadCreateJoinMenu::UpdateMouseHoverForActiveTab()
     case eTab_Join:
     {
 #ifdef _WINDOWS64
-        const int targetGameIndex = targetChildIndex - 1;
+        const int targetGameIndex = targetChildIndex - JOIN_ACTION_COUNT;
 #else
         const int targetGameIndex = targetChildIndex;
 #endif
@@ -2065,6 +2068,19 @@ void UIScene_LoadCreateJoinMenu::tick()
 
 #ifdef _WINDOWS64
     UpdateMouseHoverForActiveTab();
+    if (m_activeTab == eTab_Join && m_buttonListGames.getItemCount() >= JOIN_ACTION_COUNT)
+    {
+        const auto relay = JoinCodeRelay::Get();
+        wstring label = L"Join with Code";
+        if (relay.state == 1) label = L"Connecting... (change code)";
+        else if (relay.state < 0) label = relay.text + L" - Retry";
+        else if (relay.state == 3) label = L"Join code ready - select below";
+        if (m_joinRelayLabel != label)
+        {
+            m_joinRelayLabel = label;
+            m_buttonListGames.setButtonLabel(JOIN_CODE_BUTTON_INDEX, label);
+        }
+    }
 #endif
 
 #if (defined  __PS3__  || defined __ORBIS__ || defined _DURANGO || defined _WINDOWS64 || defined __PSVITA__)
@@ -3779,7 +3795,7 @@ void UIScene_LoadCreateJoinMenu::handleFocusChange(F64 controlId, F64 childId)
 
 #ifdef _WINDOWS64
 
-        m_iGameListIndex -= 1;
+        m_iGameListIndex -= JOIN_ACTION_COUNT;
 
 #endif
 
@@ -4027,6 +4043,12 @@ void UIScene_LoadCreateJoinMenu::handlePress(F64 controlId, F64 childId)
 
 #ifdef _WINDOWS64
 
+            if (static_cast<int>(childId) == JOIN_CODE_BUTTON_INDEX)
+            {
+                ui.PlayUISFX(eSFX_Press);
+                BeginJoinCode();
+                break;
+            }
             if (static_cast<int>(childId) == ADD_SERVER_BUTTON_INDEX)
 
             {
@@ -4053,7 +4075,7 @@ void UIScene_LoadCreateJoinMenu::handlePress(F64 controlId, F64 childId)
 
 #ifdef _WINDOWS64
 
-            nIndex -= 1;
+            nIndex -= JOIN_ACTION_COUNT;
 
 #endif
 
@@ -4073,7 +4095,7 @@ void UIScene_LoadCreateJoinMenu::CheckAndJoinGame(int gameIndex)
 
 {
 
-	if( m_buttonListGames.getItemCount() > 0 && gameIndex < m_currentSessions->size() )
+	if( m_currentSessions != nullptr && gameIndex >= 0 && m_buttonListGames.getItemCount() > 0 && gameIndex < m_currentSessions->size() )
 
 	{
 
@@ -4646,9 +4668,9 @@ void UIScene_LoadCreateJoinMenu::RebuildJoinGamesListVisual(bool syncFocus)
 
 #ifdef _WINDOWS64
 
-        if (m_currentSessions != nullptr && nIndex > 0 && (nIndex - 1) < m_currentSessions->size())
+        if (m_currentSessions != nullptr && nIndex >= JOIN_ACTION_COUNT && (nIndex - JOIN_ACTION_COUNT) < m_currentSessions->size())
 
-            pSelectedSession = m_currentSessions->at( nIndex - 1 );
+            pSelectedSession = m_currentSessions->at( nIndex - JOIN_ACTION_COUNT );
 
 #else
 
@@ -4669,6 +4691,8 @@ void UIScene_LoadCreateJoinMenu::RebuildJoinGamesListVisual(bool syncFocus)
 
 #ifdef _WINDOWS64
 
+    m_joinRelayLabel.clear();
+    m_buttonListGames.addItem(wstring(L"Join with Code"));
     m_buttonListGames.addItem(wstring(L"Add Server"));
     TrySetButtonListIcon(
         m_buttonListGames,
@@ -4764,7 +4788,7 @@ void UIScene_LoadCreateJoinMenu::RebuildJoinGamesListVisual(bool syncFocus)
 
 #ifdef _WINDOWS64
 
-            m_buttonListGames.setCurrentSelection(sessionIndex + 1);
+            m_buttonListGames.setCurrentSelection(sessionIndex + JOIN_ACTION_COUNT);
 
 #else
 
@@ -9029,6 +9053,20 @@ int UIScene_LoadCreateJoinMenu::CopySaveErrorDialogFinishedCallback(void *pParam
 
 
 
+void UIScene_LoadCreateJoinMenu::BeginJoinCode()
+{
+    JoinCodeRelay::Stop();
+    m_addServerPhase = eAddServer_Code;
+    UIKeyboardInitData kbData;
+    kbData.title = L"Enter Join Code";
+    kbData.defaultText = L"";
+    kbData.maxChars = 11;
+    kbData.callback = &UIScene_LoadCreateJoinMenu::AddServerKeyboardCallback;
+    kbData.lpParam = this;
+    kbData.pcMode = g_KBMInput.IsKBMActive();
+    ui.NavigateToScene(m_iPad, eUIScene_Keyboard, &kbData);
+}
+
 void UIScene_LoadCreateJoinMenu::BeginAddServer()
 
 {
@@ -9114,6 +9152,14 @@ int UIScene_LoadCreateJoinMenu::AddServerKeyboardCallback(LPVOID lpParam, bool b
 
     {
 
+    case eAddServer_Code:
+    {
+        JoinCodeRelay::Join(wBuf);
+        pClass->m_addServerPhase = eAddServer_Idle;
+        pClass->m_bIgnoreInput = false;
+        g_NetworkManager.ForceFriendsSessionRefresh();
+        break;
+    }
     case eAddServer_IP:
 
     {
@@ -9347,6 +9393,7 @@ void UIScene_LoadCreateJoinMenu::AppendServerToFile(const wstring& ip, const wst
 }
 
 #endif // _WINDOWS64
+
 
 
 
