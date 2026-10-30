@@ -23,6 +23,9 @@ private:
 	bool m_savesDisabled;
 	bool m_bTrialTexturePack;
 	bool m_bErrorDialogRunning;
+#ifdef _WINDOWS64
+	wstring m_joinCodeLabel;
+#endif
 
 	enum eActions
 	{
@@ -110,3 +113,4 @@ protected:
 	bool CheckForPatch();
 #endif
 };
+

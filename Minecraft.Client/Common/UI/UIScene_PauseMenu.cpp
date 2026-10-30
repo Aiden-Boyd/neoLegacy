@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#ifdef _WINDOWS64
+#include "../../Windows64/Network/JoinCodeRelay.h"
+#endif
 #include "UI.h"
 #include "UIScene_PauseMenu.h"
 #include "../../MinecraftServer.h"
@@ -32,7 +35,11 @@ UIScene_PauseMenu::UIScene_PauseMenu(int iPad, void *initData, UILayer *parentLa
 
 	m_buttons[BUTTON_PAUSE_RESUMEGAME].init(app.GetString(IDS_RESUME_GAME),BUTTON_PAUSE_RESUMEGAME);
 	m_buttons[BUTTON_PAUSE_HELPANDOPTIONS].init(app.GetString(IDS_HELP_AND_OPTIONS),BUTTON_PAUSE_HELPANDOPTIONS);
-	m_buttons[BUTTON_PAUSE_LEADERBOARDS].init(app.GetString(IDS_LEADERBOARDS),BUTTON_PAUSE_LEADERBOARDS);
+	#ifdef _WINDOWS64
+    m_buttons[BUTTON_PAUSE_LEADERBOARDS].init(L"Share Join Code",BUTTON_PAUSE_LEADERBOARDS);
+#else
+    m_buttons[BUTTON_PAUSE_LEADERBOARDS].init(app.GetString(IDS_LEADERBOARDS),BUTTON_PAUSE_LEADERBOARDS);
+#endif
 #ifdef _DURANGO
 	m_buttons[BUTTON_PAUSE_XBOXHELP].init(app.GetString(IDS_XBOX_HELP_APP), BUTTON_PAUSE_XBOXHELP);
 #else
@@ -142,6 +149,23 @@ wstring UIScene_PauseMenu::getMoviePath()
 void UIScene_PauseMenu::tick()
 {
 	UIScene::tick();
+#ifdef _WINDOWS64
+    if (g_NetworkManager.IsHost() && ProfileManager.GetPrimaryPad() == m_iPad)
+    {
+        const auto relay = JoinCodeRelay::Get();
+        wstring label = L"Share Join Code";
+        if (g_NetworkManager.IsLocalGame()) label = L"Online Game required";
+        else if (relay.state == 1) label = L"Connecting... (Cancel)";
+        else if (relay.state == 2) label = relay.text + L" - Stop sharing";
+        else if (relay.state < 0) label = relay.text;
+        if (m_joinCodeLabel != label)
+        {
+            m_joinCodeLabel = label;
+            m_buttons[BUTTON_PAUSE_LEADERBOARDS].setLabel(label);
+        }
+        m_buttons[BUTTON_PAUSE_LEADERBOARDS].setEnable(!g_NetworkManager.IsLocalGame());
+    }
+#endif
 
 #ifdef __PSVITA__
 	// 4J-MGH - Need to check for installed DLC here, as we delay the installation of the key file on Vita
@@ -254,6 +278,9 @@ void UIScene_PauseMenu::handlePreReload()
 
 void UIScene_PauseMenu::handleReload()
 {
+#ifdef _WINDOWS64
+    m_joinCodeLabel.clear();
+#endif
 	updateTooltips();
 	updateControlsVisibility();	
 
@@ -290,7 +317,9 @@ void UIScene_PauseMenu::updateControlsVisibility()
 		if( app.GetLocalPlayerCount()>1 )
 		{
 			// Hide the BUTTON_PAUSE_LEADERBOARDS and BUTTON_PAUSE_ACHIEVEMENTS
+#ifndef _WINDOWS64
 			removeControl( &m_buttons[BUTTON_PAUSE_LEADERBOARDS], false );
+#endif
 #ifndef _XBOX_ONE
 			removeControl( &m_buttons[BUTTON_PAUSE_ACHIEVEMENTS], false );
 #endif
@@ -319,6 +348,9 @@ void UIScene_PauseMenu::updateControlsVisibility()
 		removeControl( &m_buttons[BUTTON_PAUSE_SAVEGAME], false );
 	}
 
+#ifdef _WINDOWS64
+    if (!g_NetworkManager.IsHost()) removeControl(&m_buttons[BUTTON_PAUSE_LEADERBOARDS], false);
+#endif
 	// is saving disabled?
 	if(StorageManager.GetSaveDisabled())
 	{
@@ -516,6 +548,15 @@ void UIScene_PauseMenu::handlePress(F64 controlId, F64 childId)
 		navigateBack();
 		break;
 	case BUTTON_PAUSE_LEADERBOARDS:
+#ifdef _WINDOWS64
+        if (g_NetworkManager.IsHost() && !g_NetworkManager.IsLocalGame() && ProfileManager.GetPrimaryPad() == m_iPad)
+        {
+            const auto relay = JoinCodeRelay::Get();
+            if (relay.state == 1 || relay.state == 2) JoinCodeRelay::Stop();
+            else JoinCodeRelay::Host(25565);
+        }
+        break;
+#endif
 		{
 			UINT uiIDA[1];
 			uiIDA[0]=IDS_OK;

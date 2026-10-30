@@ -1,12 +1,12 @@
-name: Old Baseline Multiplayer
+name: Built-in Join Code Client
 on:
   push:
-    branches: [rollback/steam-multiplayer-baseline]
+    branches: [feature/join-code-relay]
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: old-baseline-${{ github.ref }}
+  group: integrated-join-code-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   build:
@@ -25,6 +25,7 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
+          dotnet-version: '10.0.x'
       - name: Configure and record revision
         shell: pwsh
         run: |
@@ -38,6 +39,9 @@ jobs:
         run: |
           cmake --build --preset windows64-release --target Minecraft.Client Minecraft.Server --parallel 2 --verbose 2>&1 | Tee-Object logs/build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Test native relay DLL against deployed Cloudflare relay
+        shell: pwsh
+        run: ./tools/join-code/Test-NativeRelay.ps1
       - name: Smoke test server startup, TCP listener and shutdown
         shell: pwsh
         run: ./Test-BaselineServer.ps1
@@ -60,13 +64,15 @@ jobs:
             @(
               "Build commit: ${{ github.sha }}",
               "Game source baseline: eaf2da084859e4990a3935c76527d9b07ac9a91e",
-              "Gameplay/network/save code unchanged from steam-proton-base.",
+              "Old gameplay/save baseline with built-in join-code multiplayer.",
               "Matching old client/server; not stock Java or Bedrock.",
               "Two-player gameplay and Bazzite acceptance remain unverified."
             ) | Set-Content "$stage/BUILD_INFO.txt"
             Copy-Item MULTIPLAYER_BASELINE.md "$stage/MULTIPLAYER_BASELINE.md"
             dumpbin /dependents "$stage/Minecraft.$kind.exe" | Out-File "logs/$kind-dependencies.txt"
           }
+          if (-not (Test-Path "staging/client/LegacyRelay.dll")) { throw "Client package missing built-in relay DLL" }
+          Copy-Item tools/join-code/BUILT_IN.md staging/client/JOIN_CODES.md
           Copy-Item Start-Server.cmd staging/server/Start-Server.cmd
           Copy-Item MULTIPLAYER_BASELINE.md staging/README.md
           Get-ChildItem staging -Recurse -File | ForEach-Object {
@@ -76,7 +82,7 @@ jobs:
           Copy-Item SHA256SUMS.txt staging/SHA256SUMS.txt
       - uses: actions/upload-artifact@v6
         with:
-          name: old-baseline-client-and-multiplayer-server
+          name: client-with-built-in-join-codes
           path: staging/
           if-no-files-found: error
           retention-days: 30
@@ -84,7 +90,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: old-baseline-build-logs
+          name: built-in-join-code-build-logs
           path: |
             logs/
             build/windows64/CMakeCache.txt
@@ -95,7 +101,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: old-baseline-symbols
+          name: built-in-join-code-symbols
           path: build/windows64/**/*.pdb
           if-no-files-found: ignore
           retention-days: 30
+

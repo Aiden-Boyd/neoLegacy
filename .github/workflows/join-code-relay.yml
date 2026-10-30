@@ -1,0 +1,118 @@
+name: Join Code Relay
+on:
+  push:
+    branches: [feature/join-code-relay]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-and-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: tools/join-code
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: false
+          persist-credentials: false
+          sparse-checkout: tools/join-code
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Build companion and install locked relay tooling
+        run: |
+          set -euo pipefail
+          mkdir -p logs
+          dotnet build helper/LegacyJoin.csproj -c Release 2>&1 | tee logs/build.log
+          cd relay
+          npm ci
+      - name: Test real Worker runtime and companion TCP transport
+        env:
+          WRANGLER_SEND_METRICS: 'false'
+        run: |
+          set -euo pipefail
+          cd relay
+          ./node_modules/.bin/wrangler dev --local --ip 127.0.0.1 --port 8787 > ../logs/worker.log 2>&1 &
+          relay_pid=$!
+          trap 'kill "$relay_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 45); do
+            if curl -fsS http://127.0.0.1:8787/health >/dev/null; then break; fi
+            if ! kill -0 "$relay_pid" 2>/dev/null; then cat ../logs/worker.log; exit 1; fi
+            sleep 1
+          done
+          npm test 2>&1 | tee ../logs/relay-tests.log
+          dotnet run --project ../helper/LegacyJoin.csproj -c Release --no-build -- self-test ws://127.0.0.1:8787 2>&1 | tee ../logs/transport-tests.log
+      - name: Test deployed public relay
+        timeout-minutes: 4
+        env:
+          RELAY_TEST_URL: wss://legacy-join-relay.newlifemedia.workers.dev
+        run: |
+          set -euo pipefail
+          test "$(curl --fail --silent --show-error --max-time 30 https://legacy-join-relay.newlifemedia.workers.dev/health)" = legacy-code-relay-v1
+          cd relay
+          timeout 120 npm test 2>&1 | tee ../logs/public-relay-tests.log
+          dotnet run --project ../helper/LegacyJoin.csproj -c Release --no-build -- self-test "$RELAY_TEST_URL" 2>&1 | tee ../logs/public-transport-tests.log
+      - name: Publish standalone companions
+        run: |
+          set -euo pipefail
+          for runtime in win-x64 linux-x64; do
+            dotnet publish helper/LegacyJoin.csproj -c Release -r "$runtime" --self-contained true -p:PublishSingleFile=true -o "artifacts/$runtime" 2>&1 | tee "logs/publish-$runtime.log"
+            cp README.md "artifacts/$runtime/README.md"
+            cp relay.default.json "artifacts/$runtime/relay.json"
+          done
+          mkdir -p artifacts/relay
+          cp -r relay/src artifacts/relay/
+          cp relay/package.json relay/package-lock.json relay/wrangler.jsonc artifacts/relay/
+      - uses: actions/upload-artifact@v6
+        with:
+          name: join-code-companions-and-relay
+          path: tools/join-code/artifacts/
+          retention-days: 30
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: join-code-test-and-build-logs
+          path: tools/join-code/logs/
+          retention-days: 30
+          if-no-files-found: ignore
+
+
+  native-client-abi:
+    runs-on: windows-2022
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: false
+          persist-credentials: false
+          sparse-checkout: |
+            tools/join-code
+            Minecraft.Client/Windows64/Network
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Compile native in-process library
+        shell: pwsh
+        working-directory: tools/join-code/native
+        run: |
+          New-Item -ItemType Directory -Force ../../../logs | Out-Null
+          dotnet publish LegacyRelay.csproj -c Release -r win-x64 -o ../../../build/windows64/Minecraft.Client/Release 2>&1 | Tee-Object ../../../logs/native-compile.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Test actual client loader and public relay
+        shell: pwsh
+        run: ./tools/join-code/Test-NativeRelay.ps1
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: native-client-relay-test-logs
+          path: logs/
+          retention-days: 30

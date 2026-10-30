@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PublishAot>true</PublishAot>
+    <NativeLib>Shared</NativeLib>
+    <AssemblyName>LegacyRelay</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../helper/Tunnel.cs" Link="Tunnel.cs" />
+    <Compile Include="../helper/SelfTest.cs" Link="SelfTest.cs" />
+    <Compile Include="../helper/ServerList.cs" Link="ServerList.cs" />
+  </ItemGroup>
+</Project>

@@ -262,8 +262,12 @@ private:
 	void CheckAndJoinGame(int gameIndex);
 
 #ifdef _WINDOWS64
-	static const int ADD_SERVER_BUTTON_INDEX = 0;
-	enum eAddServerPhase { eAddServer_Idle, eAddServer_IP, eAddServer_Port, eAddServer_Name };
+	static const int JOIN_CODE_BUTTON_INDEX = 0;
+	static const int ADD_SERVER_BUTTON_INDEX = 1;
+	static const int JOIN_ACTION_COUNT = 2;
+	wstring m_joinRelayLabel;
+	void BeginJoinCode();
+	enum eAddServerPhase { eAddServer_Idle, eAddServer_Code, eAddServer_IP, eAddServer_Port, eAddServer_Name };
 	eAddServerPhase m_addServerPhase;
 	wstring m_addServerIP;
 	wstring m_addServerPort;
@@ -405,6 +409,7 @@ private:
 	static int CopySaveErrorDialogFinishedCallback(void *pParam,int iPad,C4JStorage::EMessageResult result);
 #endif
 };
+
 
 
 
