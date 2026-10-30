@@ -278,6 +278,9 @@ void UIScene_PauseMenu::handlePreReload()
 
 void UIScene_PauseMenu::handleReload()
 {
+#ifdef _WINDOWS64
+    m_joinCodeLabel.clear();
+#endif
 	updateTooltips();
 	updateControlsVisibility();	
 

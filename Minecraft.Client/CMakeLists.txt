@@ -177,10 +177,14 @@ if(PLATFORM_NAME STREQUAL "Windows64" AND NOT CMAKE_CROSSCOMPILING)
     VERBATIM
   )
   add_custom_target(LegacyRelayNative DEPENDS "${LEGACY_RELAY_OUTPUT}/LegacyRelay.dll")
-  add_dependencies(Minecraft.Client LegacyRelayNative)
-  add_custom_command(TARGET Minecraft.Client POST_BUILD
+  # Always refresh the runtime DLL, including incremental builds where only
+  # transport code changed and the C++ executable does not need relinking.
+  add_custom_target(LegacyRelayRuntime
+    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Minecraft.Client>"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${LEGACY_RELAY_OUTPUT}/LegacyRelay.dll" "$<TARGET_FILE_DIR:Minecraft.Client>/LegacyRelay.dll"
+    DEPENDS LegacyRelayNative
     VERBATIM
   )
+  add_dependencies(Minecraft.Client LegacyRelayRuntime)
 endif()

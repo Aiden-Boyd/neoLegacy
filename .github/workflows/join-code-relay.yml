@@ -81,3 +81,38 @@ jobs:
           path: tools/join-code/logs/
           retention-days: 30
           if-no-files-found: ignore
+
+
+  native-client-abi:
+    runs-on: windows-2022
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: false
+          persist-credentials: false
+          sparse-checkout: |
+            tools/join-code
+            Minecraft.Client/Windows64/Network
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Compile native in-process library
+        shell: pwsh
+        working-directory: tools/join-code/native
+        run: |
+          New-Item -ItemType Directory -Force ../../../logs | Out-Null
+          dotnet publish LegacyRelay.csproj -c Release -r win-x64 -o ../../../build/windows64/Minecraft.Client/Release 2>&1 | Tee-Object ../../../logs/native-compile.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Test actual client loader and public relay
+        shell: pwsh
+        run: ./tools/join-code/Test-NativeRelay.ps1
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: native-client-relay-test-logs
+          path: logs/
+          retention-days: 30
