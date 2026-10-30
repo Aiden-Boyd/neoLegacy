@@ -142,6 +142,6 @@ static class Exports
     public static int Test()
     {
         try { return SelfTest.Run(Relay).GetAwaiter().GetResult(); }
-        catch (Exception e) { Log("Native self-test: " + e); return 1; }
+        catch (Exception e) { Console.Error.WriteLine(e); Log("Native self-test: " + e); return 1; }
     }
 }

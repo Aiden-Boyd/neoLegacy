@@ -36,7 +36,7 @@ not logged. Relay errors appear in the Join Game action row or pause sharing but
 select it again to retry. Missing or unsupported native DLLs show an error without
 preventing the rest of the game from starting.
 
-CI builds the actual client and DLL, tests native entry points, cancellation,
+CI builds the actual client and DLL, tests its real C++ loader and native entry points, cancellation,
 public host registration, and four simultaneous TCP streams carrying 4 MiB through
 the deployed Cloudflare relay. It also smoke-tests the matching dedicated server.
 A real two-house gameplay, save/rejoin, controller-menu, and Bazzite/Proton run

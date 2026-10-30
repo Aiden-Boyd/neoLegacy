@@ -158,7 +158,11 @@ void UIScene_PauseMenu::tick()
         else if (relay.state == 1) label = L"Connecting... (Cancel)";
         else if (relay.state == 2) label = relay.text + L" - Stop sharing";
         else if (relay.state < 0) label = relay.text;
-        m_buttons[BUTTON_PAUSE_LEADERBOARDS].setLabel(label);
+        if (m_joinCodeLabel != label)
+        {
+            m_joinCodeLabel = label;
+            m_buttons[BUTTON_PAUSE_LEADERBOARDS].setLabel(label);
+        }
         m_buttons[BUTTON_PAUSE_LEADERBOARDS].setEnable(!g_NetworkManager.IsLocalGame());
     }
 #endif
