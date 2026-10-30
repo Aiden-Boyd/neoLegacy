@@ -6,6 +6,7 @@ replace in-game save/reload, rendering, or world-generation acceptance tests.
 import os
 from pathlib import Path
 import shutil
+import shlex
 import subprocess
 import tempfile
 
@@ -203,7 +204,7 @@ def compile_and_run(folder, name, content):
         compiler = shutil.which("g++") or shutil.which("clang++")
         if not compiler:
             raise RuntimeError("Install g++/clang++ or use an MSVC developer shell")
-        command = [compiler, "-std=c++17", "-UNDEBUG", str(source), "-o", str(exe)]
+        command = [compiler, "-std=c++17", "-UNDEBUG", *shlex.split(os.environ.get("CXXFLAGS", "")), str(source), "-o", str(exe)]
     subprocess.run(command, cwd=folder, check=True)
     subprocess.run([str(exe)], cwd=folder, check=True)
     print(name + ": passed", flush=True)

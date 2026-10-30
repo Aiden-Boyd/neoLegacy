@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#if defined(_WINDOWS64) && !defined(MINECRAFT_SERVER_BUILD)
+#include "../Windows64/ClientDiagnostics.h"
+#endif
 #include "../../Minecraft.World/net.minecraft.world.entity.item.h"
 #include "../../Minecraft.World/net.minecraft.world.entity.player.h"
 #include "../../Minecraft.World/net.minecraft.world.level.tile.entity.h"
@@ -277,7 +280,7 @@ void CMinecraftApp::SetSkinAdjustments(unsigned int skinId,
 void CMinecraftApp::DebugPrintf(const char *szFormat, ...)
 {
 
-#ifndef _FINAL_BUILD
+#if !defined(_FINAL_BUILD) || (defined(_WINDOWS64) && !defined(MINECRAFT_SERVER_BUILD))
     va_list ap;
     va_start(ap, szFormat);
 #if defined(_WINDOWS64) && defined(MINECRAFT_SERVER_BUILD)
@@ -292,14 +295,19 @@ void CMinecraftApp::DebugPrintf(const char *szFormat, ...)
     char    buf[1024];
     vsnprintf(buf, sizeof(buf), szFormat, ap);
     va_end(ap);
+#ifndef _FINAL_BUILD
     OutputDebugStringA(buf);
+#endif
+#if defined(_WINDOWS64) && !defined(MINECRAFT_SERVER_BUILD)
+    ClientDiagnostics::Log(buf);
+#endif
 #endif
 
 }
 
 void CMinecraftApp::DebugPrintf(int user, const char *szFormat, ...)
 {
-#ifndef _FINAL_BUILD
+#if !defined(_FINAL_BUILD) || (defined(_WINDOWS64) && !defined(MINECRAFT_SERVER_BUILD))
     if(user == USER_NONE)
         return;
     va_list ap;
@@ -349,7 +357,12 @@ void CMinecraftApp::DebugPrintf(int user, const char *szFormat, ...)
         break;
     }
 #else
+#ifndef _FINAL_BUILD
     OutputDebugStringA(buf);
+#endif
+#if defined(_WINDOWS64) && !defined(MINECRAFT_SERVER_BUILD)
+    ClientDiagnostics::Log(buf);
+#endif
 #endif
 #ifndef _XBOX
     if(user == USER_UI)
@@ -4761,7 +4774,7 @@ void CMinecraftApp::loadStringTable()
 		{
 			byteArray locFile = m_mediaArchive->getFile(localisationFile);
 			m_stringTable = new StringTable(locFile.data, locFile.length);
-			delete locFile.data;
+			delete[] locFile.data;
 		}
 	}
 
@@ -4776,7 +4789,7 @@ void CMinecraftApp::loadStringTable()
 	{
 		byteArray locFile = m_mediaArchive->getFile(localisationFile);
 		m_stringTable = new StringTable(locFile.data, locFile.length);
-		delete locFile.data;
+		delete[] locFile.data;
 	}
 	else
 	{

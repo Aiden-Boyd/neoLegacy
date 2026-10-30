@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "ClientDiagnostics.h"
 
 #include <dxgi1_4.h>  // IDXGISwapChain3 for SetColorSpace1
 
@@ -954,6 +955,15 @@ HRESULT InitDevice()
 		g_driverType = driverTypes[driverTypeIndex];
 		hr = D3D11CreateDeviceAndSwapChain( nullptr, g_driverType, nullptr, createDeviceFlags, featureLevels, numFeatureLevels,
 			D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext );
+		app.DebugPrintf("D3D device driver=%u flags=0x%X result=0x%08lX\n", g_driverType, createDeviceFlags, static_cast<unsigned long>(hr));
+		if (hr == DXGI_ERROR_SDK_COMPONENT_MISSING && (createDeviceFlags & D3D11_CREATE_DEVICE_DEBUG))
+		{
+			// Debug builds must still launch on machines without Graphics Tools.
+			createDeviceFlags &= ~D3D11_CREATE_DEVICE_DEBUG;
+			hr = D3D11CreateDeviceAndSwapChain(nullptr, g_driverType, nullptr, createDeviceFlags, featureLevels, numFeatureLevels,
+				D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext);
+			app.DebugPrintf("D3D retry without debug layer result=0x%08lX\n", static_cast<unsigned long>(hr));
+		}
 		if( HRESULT_SUCCEEDED( hr ) )
 			break;
 	}
@@ -982,6 +992,12 @@ HRESULT InitDevice()
 	descDepth.CPUAccessFlags = 0;
 	descDepth.MiscFlags = 0;
 	hr = g_pd3dDevice->CreateTexture2D(&descDepth, nullptr, &g_pDepthStencilBuffer);
+	if (FAILED(hr))
+	{
+		app.DebugPrintf("FATAL CreateTexture2D(depth) failed: 0x%08lX\n", static_cast<unsigned long>(hr));
+		pBackBuffer->Release();
+		return hr;
+	}
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSView;
 	ZeroMemory(&descDSView, sizeof(descDSView));
@@ -990,6 +1006,12 @@ HRESULT InitDevice()
 	descDSView.Texture2D.MipSlice = 0;
 
 	hr = g_pd3dDevice->CreateDepthStencilView(g_pDepthStencilBuffer, &descDSView, &g_pDepthStencilView);
+	if (FAILED(hr))
+	{
+		app.DebugPrintf("FATAL CreateDepthStencilView failed: 0x%08lX\n", static_cast<unsigned long>(hr));
+		pBackBuffer->Release();
+		return hr;
+	}
 
 	hr = g_pd3dDevice->CreateRenderTargetView( pBackBuffer, nullptr, &g_pRenderTargetView );
 	pBackBuffer->Release();
@@ -1464,15 +1486,18 @@ void CleanupDevice()
 
 static Minecraft* InitialiseMinecraftRuntime()
 {
+	ClientDiagnostics::Log("Startup: loading media archive");
 	app.loadMediaArchive();
 	// @CDevJoud: No need to call this method as it gets called once in `InitDevice()`
 	// Calling it again and it results of 20MB of memory leak!
 	//RenderManager.Initialise(g_pd3dDevice, g_pSwapChain);
 
 	app.loadStringTable();
+	ClientDiagnostics::Log("Startup: initializing UI");
 	ui.init(g_pd3dDevice, g_pImmediateContext, g_pRenderTargetView, g_pDepthStencilView, g_rScreenWidth, g_rScreenHeight);
 
 	InputManager.Initialise(1, 3, MINECRAFT_ACTION_MAX, ACTION_MAX_MENU);
+	ClientDiagnostics::Log("Startup: initializing input/profile/network");
 	g_KBMInput.Init();
 	DefineActions();
 	InputManager.SetJoypadMapVal(0, 0);
@@ -1514,6 +1539,7 @@ static Minecraft* InitialiseMinecraftRuntime()
 	Tile::CreateNewThreadStorage();
 
 	Minecraft::main();
+	ClientDiagnostics::Log("Startup: Minecraft::main returned");
 	Minecraft* pMinecraft = Minecraft::GetInstance();
 	if (pMinecraft == nullptr)
 		return nullptr;
@@ -1533,14 +1559,39 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
 	// 4J-Win64: set CWD to exe dir so asset paths resolve correctly
+	bool workingDirectoryReady = false;
 	{
-		char szExeDir[MAX_PATH] = {};
-		GetModuleFileNameA(nullptr, szExeDir, MAX_PATH);
-		char *pSlash = strrchr(szExeDir, '\\');
-		if (pSlash) { *(pSlash + 1) = '\0'; SetCurrentDirectoryA(szExeDir); }
+		wchar_t szExeDir[MAX_PATH] = {};
+		const DWORD length = GetModuleFileNameW(nullptr, szExeDir, MAX_PATH);
+		wchar_t* pSlash = length > 0 && length < MAX_PATH ? wcsrchr(szExeDir, L'\\') : nullptr;
+		if (pSlash) { *(pSlash + 1) = L'\0'; workingDirectoryReady = SetCurrentDirectoryW(szExeDir) != FALSE; }
 	}
 
 	// Declare DPI awareness so GetSystemMetrics returns physical pixels
+	ClientDiagnostics::Initialize();
+	if (!workingDirectoryReady)
+	{
+		ClientDiagnostics::Log("FATAL unable to select executable directory (missing/truncated path or SetCurrentDirectory failure)");
+		return 1;
+	}
+	ClientDiagnostics::Log("Startup: executable directory selected");
+	const wchar_t* requiredFolders[] = {L"Common\\Media\\MediaWindows64", L"Common\\res"};
+	for (const wchar_t* folder : requiredFolders)
+	{
+		const DWORD attributes = GetFileAttributesW(folder);
+		if (attributes == INVALID_FILE_ATTRIBUTES || !(attributes & FILE_ATTRIBUTE_DIRECTORY))
+		{
+			std::fprintf(stderr, "FATAL missing runtime folder: %ls (extract the complete build)\n", folder);
+			return 1;
+		}
+	}
+	FILE* buildInfo = nullptr;
+	if (fopen_s(&buildInfo, "BUILD_INFO.txt", "r") == 0 && buildInfo)
+	{
+		char line[512];
+		while (fgets(line, sizeof(line), buildInfo)) ClientDiagnostics::Log(line);
+		fclose(buildInfo);
+	}
 	SetProcessDPIAware();
 	// Use the native monitor resolution for the window and swap chain,
 	// but keep g_iScreenWidth/Height at 1920x1080 for logical resolution
@@ -1550,16 +1601,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	g_rScreenHeight = GetSystemMetrics(SM_CYSCREEN);
 
 	// Load username from username.txt
-    char exePath[MAX_PATH] = {};
-    GetModuleFileNameA(nullptr, exePath, MAX_PATH);
-    char *lastSlash = strrchr(exePath, '\\');
-    if (lastSlash)
-    {
-        *(lastSlash + 1) = '\0';
-    }
-
-    char filePath[MAX_PATH] = {};
-    _snprintf_s(filePath, sizeof(filePath), _TRUNCATE, "%susername.txt", exePath);
+    const char* filePath = "username.txt";
 
     FILE *f = nullptr;
     if (fopen_s(&f, filePath, "r") == 0 && f)
@@ -1586,8 +1628,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	ApplyScreenMode(launchOptions.screenMode);
 
 	// load resolution from resolution.txt
-	char resPath[MAX_PATH] = {};
-	_snprintf_s(resPath, sizeof(resPath), _TRUNCATE, "%sresolution.txt", exePath);
+	const char* resPath = "resolution.txt";
 	FILE *fRes = nullptr;
 	if (fopen_s(&fRes, resPath, "r") == 0 && fRes)
 	{
@@ -1690,20 +1731,28 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	}
 
 	// Initialize global strings
-	MyRegisterClass(hInstance);
+	if (!MyRegisterClass(hInstance))
+	{
+		app.DebugPrintf("FATAL RegisterClassExW failed: error=%lu\n", GetLastError());
+		return 1;
+	}
 
 	// Perform application initialization:
 	if (!InitInstance (hInstance, nCmdShow))
 	{
-		return FALSE;
+		app.DebugPrintf("FATAL CreateWindowW failed: error=%lu\n", GetLastError());
+		return 1;
 	}
 
 	hMyInst=hInstance;
 
-	if( FAILED( InitDevice() ) )
+	ClientDiagnostics::Log("Startup: initializing Direct3D");
+	const HRESULT deviceResult = InitDevice();
+	if( FAILED(deviceResult) )
 	{
+		app.DebugPrintf("FATAL InitDevice failed: 0x%08lX\n", static_cast<unsigned long>(deviceResult));
 		CleanupDevice();
-		return 0;
+		return 1;
 	}
 	// Restore fullscreen state from previous session. Route through the
 	// deferred exclusive fullscreen path so the main loop applies it on the
@@ -1771,10 +1820,12 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	Minecraft *pMinecraft = InitialiseMinecraftRuntime();
 	if (pMinecraft == nullptr)
 	{
+		ClientDiagnostics::Log("FATAL Minecraft runtime returned no instance");
 		CleanupDevice();
 		return 1;
 	}
 	g_bResizeReady = true;
+	ClientDiagnostics::Log("Startup complete: entering game loop");
 
 	//app.TemporaryCreateGameStart();
 
@@ -2271,7 +2322,9 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
 	// Free resources, unregister custom classes, and exit.
 	//	app.Uninit();
+	ClientDiagnostics::Log("Shutdown: game loop ended normally");
 	g_pd3dDevice->Release();
+	return static_cast<int>(msg.wParam);
 }
 
 #ifdef MEMORY_TRACKING

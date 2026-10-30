@@ -39,17 +39,21 @@ void Sponge::tryAbsorb(Level* level, int x, int y, int z) {
 }
 
 bool Sponge::absorb(Level* level, int x, int y, int z) {
-    std::queue<std::tuple<int, int, int, int>> queue;
-    std::vector<std::tuple<int, int, int>> absorbed;
-    queue.push({ x, y, z, 0 });
+    // The limit is checked after all six neighbors, so a scan starting at
+    // 64 can reach 70. Keep that existing behavior and room for the root.
+    // Local storage avoids heap allocation even when there is no water.
+    static const int MAX_ABSORBED = 64 + 6;
+    std::tuple<int, int, int, int> queue[MAX_ABSORBED + 1];
+    std::tuple<int, int, int> absorbed[MAX_ABSORBED];
+    int head = 0, tail = 0;
+    queue[tail++] = { x, y, z, 0 };
     int count = 0;
     int dx[] = { 1,-1,0,0,0,0 };
     int dy[] = { 0,0,1,-1,0,0 };
     int dz[] = { 0,0,0,0,1,-1 };
-    while (!queue.empty())
+    while (head < tail)
     {
-        auto [bx, by, bz, depth] = queue.front();
-        queue.pop();
+        auto [bx, by, bz, depth] = queue[head++];
         for (int i = 0; i < 6; i++)
         {
             int nx = bx + dx[i];
@@ -58,19 +62,19 @@ bool Sponge::absorb(Level* level, int x, int y, int z) {
             if (level->getMaterial(nx, ny, nz) == Material::water)
             {
                 const auto position = std::make_tuple(nx, ny, nz);
-                if (std::find(absorbed.begin(), absorbed.end(), position) != absorbed.end())
+                if (std::find(absorbed, absorbed + count, position) != absorbed + count)
                     continue;
-                absorbed.push_back({ nx, ny, nz });
+                absorbed[count] = position;
                 ++count;
                 if (depth < 6)
-                    queue.push({ nx, ny, nz, depth + 1 });
+                    queue[tail++] = { nx, ny, nz, depth + 1 };
             }
         }
         if (count > 64)
             break;
     }
 
-    if (absorbed.empty())
+    if (count == 0)
         return false;
 
     // Publish this block's wet state before water removal notifies neighbors.
@@ -78,8 +82,9 @@ bool Sponge::absorb(Level* level, int x, int y, int z) {
     if (!level->setTileAndData(x, y, z, Tile::sponge_Id, 1, UPDATE_CLIENTS))
         return false;
 
-    for (auto [ax, ay, az] : absorbed)
+    for (int i = 0; i < count; ++i)
     {
+        auto [ax, ay, az] = absorbed[i];
         if (level->getMaterial(ax, ay, az) == Material::water)
             level->removeTile(ax, ay, az);
     }

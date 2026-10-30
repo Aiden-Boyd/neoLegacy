@@ -37,7 +37,7 @@ function(configure_compiler_target target)
   if (MSVC)
     target_compile_options(${target} PRIVATE
       $<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:C,CXX>>:/W3>
-      $<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:C,CXX>>:/W0>
+      $<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:C,CXX>>:/W3>
       $<$<COMPILE_LANGUAGE:C,CXX>:/MP>
       $<$<COMPILE_LANGUAGE:C,CXX>:/FS>
       $<$<COMPILE_LANGUAGE:C,CXX>:/GS>
