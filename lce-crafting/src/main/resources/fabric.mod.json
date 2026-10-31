@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "lce_crafting",
+  "version": "${version}",
+  "name": "LCE Crafting",
+  "description": "Legacy Console style crafting for Minecraft Java.",
+  "authors": [
+    "Aiden Boyd"
+  ],
+  "environment": "client",
+  "mixins": [
+    "lce-crafting.client.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.20.1",
+    "minecraft": "26.3",
+    "java": ">=25"
+  }
+}

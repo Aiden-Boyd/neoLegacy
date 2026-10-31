@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "co.newlifemedia.lcecrafting.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "GuiMixin",
+    "SlotAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
